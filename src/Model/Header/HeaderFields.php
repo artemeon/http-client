@@ -4,20 +4,23 @@ declare(strict_types=1);
 
 namespace Artemeon\HttpClient\Model\Header;
 
+/**
+ * Class to create constants for common used header fields
+ */
 class HeaderFields
 {
     /** @var string */
-    const AUTHORISATION = 'Authorization';
+    public const AUTHORISATION = 'Authorization';
 
     /** @var string */
-    const REFERER = "Referer";
+    public const REFERER = "Referer";
 
-    /** @var string  */
-    const USER_AGENT = "User-Agent";
+    /** @var string */
+    public const USER_AGENT = "User-Agent";
 
-    /** @var string  */
-    const CONTENT_TYPE = 'Content-Type';
+    /** @var string */
+    public const CONTENT_TYPE = 'Content-Type';
 
-    /** @var string  */
-    const CONTENT_LENGTH = 'Content-Length';
+    /** @var string */
+    public const CONTENT_LENGTH = 'Content-Length';
 }

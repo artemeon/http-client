@@ -3,7 +3,7 @@ version: '3'
 services:
     php:
         build: docker/php
-        image: php:7.3-fpm-alpine-dev
+        image: php:7.2-fpm-alpine-dev
         volumes:
             - ./:/var/www/html
         networks:

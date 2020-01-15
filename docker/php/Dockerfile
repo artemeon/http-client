@@ -1,4 +1,4 @@
-FROM php:7.3-fpm-alpine
+FROM php:7.2-fpm-alpine
 
 COPY xdebug.ini $PHP_INI_DIR/conf.d/docker-php-ext-xdebug.ini
 

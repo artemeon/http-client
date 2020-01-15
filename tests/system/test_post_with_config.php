@@ -6,13 +6,12 @@ namespace Artemeon\HttpClient\Tests\System;
 
 use Artemeon\HttpClient\Model\Authorisation;
 use Artemeon\HttpClient\Model\Body\Body;
+use Artemeon\HttpClient\Model\ClientOptions;
 use Artemeon\HttpClient\Model\Header\Header;
 use Artemeon\HttpClient\Model\Header\Headers;
 use Artemeon\HttpClient\Model\Request;
 use Artemeon\HttpClient\Model\Url;
 use Artemeon\HttpClient\Service\GuzzleHttpClient;
-
-use function json_encode;
 
 $headers = new Headers();
 $headers->addHeader(Header::forAuthorisation(Authorisation::forAuthBasic('John.Doe', 'geheim')));
@@ -20,9 +19,12 @@ $headers->addHeader(Header::forUserAgent());
 
 $request = Request::forPost(
     Url::fromString('http://test.de'),
-    Body::forJsonEncoded(json_encode(["test" => 2342])),
+    Body::forUrlEncodedFormData(["test" => 2342]),
     $headers
 );
 
+$clientOptions = ClientOptions::fromDefaults();
+$clientOptions->disableCertificateVerification();
+
 $httpClient = new GuzzleHttpClient();
-$httpClient->send($request);
+$httpClient->send($request, $clientOptions);

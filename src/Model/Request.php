@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Artemeon\HttpClient\Model;
 
-use Artemeon\HttpClient\Model\Body\Content;
+use Artemeon\HttpClient\Model\Body\Body;
 use Artemeon\HttpClient\Model\Header\Header;
-use Artemeon\HttpClient\Model\Header\HeaderBag;
 use Artemeon\HttpClient\Model\Header\HeaderFields;
+use Artemeon\HttpClient\Model\Header\Headers;
 
 use function strval;
 
@@ -16,43 +16,45 @@ class Request
     /** @var string */
     private $method;
 
-    /** @var string */
+    /** @var Url */
     private $url;
 
-    /** @var HeaderBag */
+    /** @var Headers */
     private $headerBag;
 
-    /** @var Content */
+    /** @var Body */
     private $content;
 
     /** @var string */
-    const METHOD_POST = 'POST';
+    public const METHOD_POST = 'POST';
 
     /** @var string */
-    const METHOD_GET = 'GET';
+    public const METHOD_GET = 'GET';
 
     /** @var string */
-    const METHOD_PUT = 'PUT';
+    public const METHOD_PUT = 'PUT';
 
     /** @var string */
-    const METHOD_DELETE = 'DELETE';
+    public const METHOD_DELETE = 'DELETE';
 
     /** @var string */
-    const METHOD_OPTIONS = 'OPTIONS';
+    public const METHOD_OPTIONS = 'OPTIONS';
 
     /** @var string */
-    const METHOD_PATCH = 'PATCH';
+    public const METHOD_PATCH = 'PATCH';
 
-    private function __construct(string $method, string $url, HeaderBag $headerBag = null, Content $content = null)
+    private function __construct(string $method, Url $url, Headers $headerBag = null, Body $content = null)
     {
         $this->method = $method;
         $this->url = $url;
-        $this->headerBag = $headerBag ?? new HeaderBag();
+        $this->headerBag = $headerBag ?? new Headers();
         $this->content = $content;
 
-        if ($content instanceof Content) {
-            $this->headerBag->addHeader(Header::fromString(HeaderFields::CONTENT_TYPE, $content->getType()));
-            $this->headerBag->addHeader(Header::fromString(HeaderFields::CONTENT_LENGTH, strval($content->getLength())));
+        if ($content instanceof Body) {
+            $this->headerBag->addHeader(Header::fromString(HeaderFields::CONTENT_TYPE, $content->getMimeType()));
+            $this->headerBag->addHeader(
+                Header::fromString(HeaderFields::CONTENT_LENGTH, strval($content->getContentLength()))
+            );
         }
     }
 
@@ -61,31 +63,31 @@ class Request
         return $this->method;
     }
 
-    public function getUrl(): string
+    public function getUrl(): Url
     {
         return $this->url;
     }
 
-    public function getHeaderBag(): HeaderBag
+    public function getHeaderBag(): Headers
     {
         return $this->headerBag;
     }
 
-    public function getContent(): Content
+    public function getContent(): Body
     {
         return $this->content;
     }
 
-    public static function forGet(string $url, HeaderBag $headerBag = null): self
+    public static function forGet(Url $url, Headers $headerBag = null): self
     {
         return new self(
             self::METHOD_GET,
             $url,
-            $headerBag,
+            $headerBag
         );
     }
 
-    public static function forPost(string $url, Content $content, HeaderBag $headerBag = null): self
+    public static function forPost(Url $url, Body $content, Headers $headerBag = null): self
     {
         return new self(
             self::METHOD_POST,

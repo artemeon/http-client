@@ -8,25 +8,37 @@ use Artemeon\HttpClient\Model\Authorisation;
 
 use function strval;
 
+/**
+ * Value object for a http header field
+ */
 class Header
 {
+    /** @var string */
     private $name;
-    private $values;
 
-    private function __construct(string $name, string $values)
+    /** @var string */
+    private $value;
+
+    /**
+     * Header constructor.
+     */
+    private function __construct(string $name, string $value)
     {
         $this->name = $name;
-        $this->values = $values;
+        $this->value = $value;
     }
 
-    public function getName(): string
+    /**
+     * Return the field name like "Accept-Encoding2
+     */
+    public function getFieldName(): string
     {
         return $this->name;
     }
 
-    public function getValues(): string
+    public function getValue(): string
     {
-        return $this->values;
+        return $this->value;
     }
 
     public static function fromString(string $name, string $value): self

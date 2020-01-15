@@ -4,13 +4,15 @@ declare(strict_types=1);
 
 namespace Artemeon\HttpClient\Tests\System;
 
-use Artemeon\HttpClient\Model\Body\Content;
+use Artemeon\HttpClient\Model\Body\Body;
 use Artemeon\HttpClient\Model\Request;
+use Artemeon\HttpClient\Model\Url;
 use Artemeon\HttpClient\Service\GuzzleHttpClient;
 
-use function json_encode;
+$request = Request::forPost(
+    Url::fromString('http://test.de'),
+    Body::forUrlEncodedFormData(["test" => 2342])
+);
 
-$content = Content::forJsonEncoded(json_encode(["test" => 2342]));
-
-$httpClient = new GuzzleHttpClient();
-$httpClient->send(Request::forPost('http://test.de', $content));
+$client = new GuzzleHttpClient();
+$client->send($request);
