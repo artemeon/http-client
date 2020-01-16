@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Artemeon\HttpClient\Tests\System;
 
+use Artemeon\HttpClient\Exception\HttpClientException;
 use Artemeon\HttpClient\Model\Authorisation;
 use Artemeon\HttpClient\Model\Body\Body;
 use Artemeon\HttpClient\Model\Header\Header;
@@ -13,16 +14,23 @@ use Artemeon\HttpClient\Model\Url;
 use Artemeon\HttpClient\Service\GuzzleHttpClient;
 
 use function json_encode;
+use function print_r;
 
-$headers = new Headers();
-$headers->addHeader(Header::forAuthorisation(Authorisation::forAuthBasic('John.Doe', 'geheim')));
-$headers->addHeader(Header::forUserAgent());
+try {
+    $headers = new Headers();
+    $headers->addHeader(Header::forAuthorisation(Authorisation::forAuthBasic('John.Doe', 'geheim')));
+    $headers->addHeader(Header::forUserAgent());
 
-$request = Request::forPost(
-    Url::fromString('http://test.de'),
-    Body::forJsonEncoded(json_encode(["test" => 2342])),
-    $headers
-);
+    $request = Request::forPost(
+        Url::fromString('http://test.de'),
+        Body::forJsonEncoded(json_encode(["test" => 2342])),
+        $headers
+    );
 
-$httpClient = new GuzzleHttpClient();
-$httpClient->send($request);
+    $httpClient = new GuzzleHttpClient();
+    $response = $httpClient->send($request);
+
+    print_r($response);
+} catch (HttpClientException $exception) {
+    print_r($exception);
+}

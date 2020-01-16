@@ -4,13 +4,20 @@ declare(strict_types=1);
 
 namespace Artemeon\HttpClient\Tests\System;
 
+use Artemeon\HttpClient\Exception\HttpClientException;
 use Artemeon\HttpClient\Model\Request;
 use Artemeon\HttpClient\Model\Url;
 use Artemeon\HttpClient\Service\GuzzleHttpClient;
 
-$request = Request::forGet(
-    Url::withQueryParams('http://test.de', ["pager" => 5])
-);
+use function print_r;
 
-$client = new GuzzleHttpClient();
-$client->send($request);
+try {
+    $request = Request::forGet(Url::withQueryParams('http://test.de', ["pager" => 5]));
+
+    $client = new GuzzleHttpClient();
+    $response = $client->send($request);
+
+    print_r($response);
+} catch (HttpClientException $exception) {
+    print_r($exception);
+}

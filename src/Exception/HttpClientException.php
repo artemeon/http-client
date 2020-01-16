@@ -15,4 +15,9 @@ class HttpClientException extends Exception
     {
         return new self("Header field '$fieldName' is already registered");
     }
+
+    public static function forNonExistentHeaderFields(string $fieldName): self
+    {
+        return new self("Header field '$fieldName' does not exists");
+    }
 }
