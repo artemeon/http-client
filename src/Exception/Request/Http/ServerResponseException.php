@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Artemeon\HttpClient\Exception\Http;
+namespace Artemeon\HttpClient\Exception\Request\Http;
 
 /**
  * Exception class to catch all server related http errors (500 range)

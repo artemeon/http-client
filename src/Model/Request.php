@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Artemeon\HttpClient\Model;
 
+use Artemeon\HttpClient\Exception\HttpClientException;
 use Artemeon\HttpClient\Model\Body\Body;
 use Artemeon\HttpClient\Model\Header\Header;
 use Artemeon\HttpClient\Model\Header\HeaderFields;
@@ -20,10 +21,10 @@ class Request
     private $url;
 
     /** @var Headers */
-    private $headerBag;
+    private $headers;
 
     /** @var Body */
-    private $content;
+    private $body;
 
     /** @var string */
     public const METHOD_POST = 'POST';
@@ -43,17 +44,20 @@ class Request
     /** @var string */
     public const METHOD_PATCH = 'PATCH';
 
-    private function __construct(string $method, Url $url, Headers $headerBag = null, Body $content = null)
+    /**
+     * @throws HttpClientException
+     */
+    private function __construct(string $method, Url $url, Headers $headers = null, Body $body = null)
     {
         $this->method = $method;
         $this->url = $url;
-        $this->headerBag = $headerBag ?? new Headers();
-        $this->content = $content;
+        $this->headers = $headers ?? new Headers();
+        $this->body = $body;
 
-        if ($content instanceof Body) {
-            $this->headerBag->addHeader(Header::fromString(HeaderFields::CONTENT_TYPE, $content->getMimeType()));
-            $this->headerBag->addHeader(
-                Header::fromString(HeaderFields::CONTENT_LENGTH, strval($content->getContentLength()))
+        if ($body instanceof Body) {
+            $this->headers->addHeader(Header::fromString(HeaderFields::CONTENT_TYPE, $body->getMimeType()));
+            $this->headers->addHeader(
+                Header::fromString(HeaderFields::CONTENT_LENGTH, strval($body->getContentLength()))
             );
         }
     }
@@ -68,32 +72,88 @@ class Request
         return $this->url;
     }
 
-    public function getHeaderBag(): Headers
+    public function getHeaders(): Headers
     {
-        return $this->headerBag;
+        return $this->headers;
     }
 
-    public function getContent(): Body
+    public function getBody(): Body
     {
-        return $this->content;
+        return $this->body;
     }
 
-    public static function forGet(Url $url, Headers $headerBag = null): self
+    /**
+     * @throws HttpClientException
+     */
+    public static function forGet(Url $url, Headers $headers = null): self
     {
         return new self(
             self::METHOD_GET,
             $url,
-            $headerBag
+            $headers
         );
     }
 
-    public static function forPost(Url $url, Body $content, Headers $headerBag = null): self
+    /**
+     * @throws HttpClientException
+     */
+    public static function forOptions(Url $url, Headers $headers = null): self
+    {
+        return new self(
+            self::METHOD_OPTIONS,
+            $url,
+            $headers
+        );
+    }
+
+    /**
+     * @throws HttpClientException
+     */
+    public static function forPost(Url $url, Body $body, Headers $headers = null): self
     {
         return new self(
             self::METHOD_POST,
             $url,
-            $headerBag,
-            $content
+            $headers,
+            $body
+        );
+    }
+
+    /**
+     * @throws HttpClientException
+     */
+    public static function forPut(Url $url, Body $body, Headers $headers = null): self
+    {
+        return new self(
+            self::METHOD_PUT,
+            $url,
+            $headers,
+            $body
+        );
+    }
+
+    /**
+     * @throws HttpClientException
+     */
+    public static function forPatch(Url $url, Body $body, Headers $headers = null): self
+    {
+        return new self(
+            self::METHOD_PATCH,
+            $url,
+            $headers,
+            $body
+        );
+    }
+
+    /**
+     * @throws HttpClientException
+     */
+    public static function forDelete(Url $url, Headers $headers = null): self
+    {
+        return new self(
+            self::METHOD_DELETE,
+            $url,
+            $headers
         );
     }
 }

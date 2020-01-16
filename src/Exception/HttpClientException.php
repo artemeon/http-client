@@ -4,40 +4,15 @@ declare(strict_types=1);
 
 namespace Artemeon\HttpClient\Exception;
 
-use Artemeon\HttpClient\Model\Request;
 use Exception;
 
 /**
- * Base class to catch all possible exceptions during the request
+ * Base class to catch all possible exceptions related to the http client
  */
 class HttpClientException extends Exception
 {
-    /** @var Request */
-    private $request;
-
-    /**
-     * HttpClientException constructor.
-     */
-    protected function __construct(Request $request, string $message, Exception $previous = null)
+    public static function forAlreadyRegisteredHeaderFields(string $fieldName): self
     {
-        $this->request = $request;
-
-        parent::__construct($message, 0, $previous);
-    }
-
-    /**
-     * Named constuctor to create an instance based on the given request object
-     */
-    public static function fromRequest(Request $request, string $message, Exception $previous = null): self
-    {
-        return new self($request, $message, $previous);
-    }
-
-    /**
-     * Returns the request object of the failed request
-     */
-    public function getRequest(): Request
-    {
-        return $this->request;
+        return new self("Header field '$fieldName' is already registered");
     }
 }

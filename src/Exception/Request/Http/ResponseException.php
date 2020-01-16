@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Artemeon\HttpClient\Exception\Http;
+namespace Artemeon\HttpClient\Exception\Request\Http;
 
-use Artemeon\HttpClient\Exception\HttpClientException;
+use Artemeon\HttpClient\Exception\Request\RequestException;
 use Artemeon\HttpClient\Model\Request;
 use Artemeon\HttpClient\Model\Response;
 use Exception;
@@ -12,7 +12,7 @@ use Exception;
 /**
  * Exception class to catch all possible http status code ranges
  */
-class ResponseException extends HttpClientException
+class ResponseException extends RequestException
 {
     /** @var Response */
     private $response;

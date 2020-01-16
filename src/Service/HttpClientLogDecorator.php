@@ -9,7 +9,6 @@ use Artemeon\HttpClient\Model\Request;
 
 class HttpClientLogDecorator implements HttpClient
 {
-
     public function send(Request $request, ClientOptions $requestOptions = null)
     {
         //void
