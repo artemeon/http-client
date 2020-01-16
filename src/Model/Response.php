@@ -15,7 +15,7 @@ class Response
     /** @var string */
     private $version;
 
-    /** @var Body */
+    /** @var string */
     private $body;
 
     /** @var Headers */
@@ -28,7 +28,7 @@ class Response
      * @param Body $body
      * @param Headers $headerBag
      */
-    public function __construct(int $statusCode, string $version, Body $body, Headers $headerBag)
+    public function __construct(int $statusCode, string $version, string $body, Headers $headerBag)
     {
         $this->statusCode = $statusCode;
         $this->version = $version;
@@ -55,7 +55,7 @@ class Response
     /**
      * @return Body
      */
-    public function getBody(): Body
+    public function getBody(): string
     {
         return $this->body;
     }
@@ -63,7 +63,7 @@ class Response
     /**
      * @return Headers
      */
-    public function getHeaderBag(): Headers
+    public function getHeaders(): Headers
     {
         return $this->headerBag;
     }

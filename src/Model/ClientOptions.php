@@ -51,6 +51,22 @@ class ClientOptions
     }
 
     /**
+     * @return bool
+     */
+    public function isCertificateVerificationEnabled(): bool
+    {
+        return $this->verifySsl;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCustomCaBundlePath(): string
+    {
+        return $this->customCaBundlePath;
+    }
+
+    /**
      * Set the timeout in seconds for requests
      */
     public function setTimeout(int $timeout): void
@@ -114,5 +130,23 @@ class ClientOptions
     {
         return $this->addReferer;
     }
+
+    /**
+     * @return int
+     */
+    public function getTimeout(): int
+    {
+        return $this->timeout;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasCustomCaBundlePath(): bool
+    {
+        return !empty($this->getCustomCaBundlePath());
+    }
+
+
 
 }

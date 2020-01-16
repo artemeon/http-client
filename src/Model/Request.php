@@ -26,6 +26,9 @@ class Request
     /** @var Body */
     private $body;
 
+    /** @var float */
+    private $version;
+
     /** @var string */
     public const METHOD_POST = 'POST';
 
@@ -47,8 +50,13 @@ class Request
     /**
      * @throws HttpClientException
      */
-    private function __construct(string $method, Url $url, Headers $headers = null, Body $body = null)
-    {
+    private function __construct(
+        string $method,
+        Url $url,
+        Headers $headers = null,
+        ?Body $body = null,
+        float $version = 1.1
+    ) {
         $this->method = $method;
         $this->url = $url;
         $this->headers = $headers ?? new Headers();
@@ -60,6 +68,8 @@ class Request
                 Header::fromString(HeaderFields::CONTENT_LENGTH, strval($body->getContentLength()))
             );
         }
+
+        $this->version = $version;
     }
 
     public function getMethod(): string
@@ -77,83 +87,105 @@ class Request
         return $this->headers;
     }
 
-    public function getBody(): Body
+    public function getBody(): ?Body
     {
         return $this->body;
     }
 
+    public function hasBody(): bool
+    {
+        return $this->body instanceof Body;
+    }
+
+    /**
+     * @return float
+     */
+    public function getVersion(): float
+    {
+        return $this->version;
+    }
+
     /**
      * @throws HttpClientException
      */
-    public static function forGet(Url $url, Headers $headers = null): self
+    public static function forGet(Url $url, ?Headers $headers = null, float $version = 1.1): self
     {
         return new self(
             self::METHOD_GET,
             $url,
-            $headers
+            $headers,
+            null,
+            $version
         );
     }
 
     /**
      * @throws HttpClientException
      */
-    public static function forOptions(Url $url, Headers $headers = null): self
+    public static function forOptions(Url $url, ?Headers $headers = null, float $version = 1.1): self
     {
         return new self(
             self::METHOD_OPTIONS,
             $url,
-            $headers
+            $headers,
+            null,
+            $version
         );
     }
 
     /**
      * @throws HttpClientException
      */
-    public static function forPost(Url $url, Body $body, Headers $headers = null): self
+    public static function forPost(Url $url, Body $body, ?Headers $headers = null, float $version = 1.1): self
     {
         return new self(
             self::METHOD_POST,
             $url,
             $headers,
-            $body
+            $body,
+            $version
         );
     }
 
     /**
      * @throws HttpClientException
      */
-    public static function forPut(Url $url, Body $body, Headers $headers = null): self
+    public static function forPut(Url $url, Body $body, ?Headers $headers = null, float $version = 1.1): self
     {
         return new self(
             self::METHOD_PUT,
             $url,
             $headers,
-            $body
+            $body,
+            $version
         );
     }
 
     /**
      * @throws HttpClientException
      */
-    public static function forPatch(Url $url, Body $body, Headers $headers = null): self
+    public static function forPatch(Url $url, Body $body, ?Headers $headers = null, float $version = 1.1): self
     {
         return new self(
             self::METHOD_PATCH,
             $url,
             $headers,
-            $body
+            $body,
+            $version
         );
     }
 
     /**
      * @throws HttpClientException
      */
-    public static function forDelete(Url $url, Headers $headers = null): self
+    public static function forDelete(Url $url, ?Headers $headers = null, float $version = 1.1): self
     {
         return new self(
             self::METHOD_DELETE,
             $url,
-            $headers
+            $headers,
+            null,
+            $version
         );
     }
 }

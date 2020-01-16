@@ -18,7 +18,7 @@ try {
         Body::forUrlEncodedFormData(["test" => 2342])
     );
 
-    $client = new GuzzleHttpClient();
+    $client = GuzzleHttpClient::create();
     $response = $client->send($request);
 
     print_r($response);

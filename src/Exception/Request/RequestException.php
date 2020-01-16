@@ -8,8 +8,6 @@ use Artemeon\HttpClient\Exception\HttpClientException;
 use Artemeon\HttpClient\Model\Request;
 use Exception;
 
-;
-
 class RequestException extends HttpClientException
 {
     /** @var Request */

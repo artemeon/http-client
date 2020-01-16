@@ -27,7 +27,7 @@ try {
         $headers
     );
 
-    $httpClient = new GuzzleHttpClient();
+    $httpClient = GuzzleHttpClient::create();
     $response = $httpClient->send($request);
 
     print_r($response);

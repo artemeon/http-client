@@ -30,7 +30,7 @@ try {
     $clientOptions = ClientOptions::fromDefaults();
     $clientOptions->disableCertificateVerification();
 
-    $httpClient = new GuzzleHttpClient();
+    $httpClient = GuzzleHttpClient::create();
     $response = $httpClient->send($request, $clientOptions);
 
     print_r($response);

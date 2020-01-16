@@ -11,10 +11,12 @@ use Artemeon\HttpClient\Service\GuzzleHttpClient;
 
 use function print_r;
 
-try {
-    $request = Request::forGet(Url::withQueryParams('http://test.de', ["pager" => 5]));
+require '../../vendor/autoload.php';
 
-    $client = new GuzzleHttpClient();
+try {
+    $request = Request::forGet(Url::fromString('http://www.heise.de'));
+
+    $client = GuzzleHttpClient::create();
     $response = $client->send($request);
 
     print_r($response);

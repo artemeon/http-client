@@ -18,6 +18,14 @@ class Headers implements Countable, IteratorAggregate
     private $headers;
 
     /**
+     * Headers constructor.
+     */
+    public function __construct()
+    {
+        $this->headers = [];
+    }
+
+    /**
      * Adds a header to the collection
      * @throws HttpClientException
      */
@@ -51,6 +59,21 @@ class Headers implements Countable, IteratorAggregate
         }
 
         return $this->headers[$headerField];
+    }
+
+    /**
+     * Return an associative array with the header field name as a key and the header value as value
+     * @return string[]
+     */
+    public function toArray(): array
+    {
+        $result = [];
+
+        foreach ($this->headers as $header) {
+            $result[$header->getFieldName()] = $header->getValue();
+        }
+
+        return $result;
     }
 
     /**

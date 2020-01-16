@@ -10,5 +10,5 @@ use Artemeon\HttpClient\Model\Response;
 
 interface HttpClient
 {
-    public function send(Request $request, ClientOptions $requestOptions = null): Response;
+    public function send(Request $request, ClientOptions $clientOptions = null): Response;
 }
