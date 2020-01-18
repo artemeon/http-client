@@ -10,7 +10,7 @@ class HttpClientFactory
 {
     public static function create(): HttpClient
     {
-        return new GuzzleHttpClient(
+        return new ArtemeonHttpClient(
             new GuzzleClient(),
             new ClientOptionsConverter()
         );

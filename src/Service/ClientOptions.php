@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Artemeon\HttpClient\Model;
+namespace Artemeon\HttpClient\Service;
 
 class ClientOptions
 {

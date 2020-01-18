@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Artemeon\HttpClient\Service;
 
-use Artemeon\HttpClient\Model\ClientOptions;
 use GuzzleHttp\RequestOptions as GuzzleRequestOptions;
 
 class ClientOptionsConverter

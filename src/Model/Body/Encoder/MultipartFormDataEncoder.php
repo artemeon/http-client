@@ -12,18 +12,42 @@ class MultipartFormDataEncoder implements Encoder
     private $boundary = "HTTP-Client";
 
     /** @var string[] */
-    private $multiParts = [];
+    private $multiParts;
+
+    /**
+     * MultipartFormDataEncoder constructor.
+     */
+    private function __construct(string $boundary)
+    {
+        $this->boundary = $boundary;
+        $this->multiParts = [];
+    }
+
+    public static function create(): self
+    {
+        return new self(uniqid('---------------------------'));
+    }
+
+    public function addFieldPart($fieldname, $value): self
+    {
+        return $this;
+    }
+
+    public function addFilePart(string $name, string $filename, string $contentType): self
+    {
+        return $this;
+    }
 
     public function encode(): string
     {
         $encoded = '';
 
         foreach ($this->multiParts as $index => $part) {
-            $encoded .= '---------------------------' . $this->boundary . "\r\n";
+            $encoded .= $this->boundary . "\r\n";
             $encoded .= $part;
         }
 
-        $encoded .= '---------------------------' . $this->boundary . "--\r\n";
+        $encoded .= $this->boundary . "--\r\n";
 
         return $encoded;
     }

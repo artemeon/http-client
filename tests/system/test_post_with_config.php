@@ -7,12 +7,12 @@ namespace Artemeon\HttpClient\Tests\System;
 use Artemeon\HttpClient\Exception\HttpClientException;
 use Artemeon\HttpClient\Model\Body\Body;
 use Artemeon\HttpClient\Model\Body\Encoder\FormUrlEncoder;
-use Artemeon\HttpClient\Model\ClientOptions;
 use Artemeon\HttpClient\Model\Header\Fields\Authorisation;
 use Artemeon\HttpClient\Model\Header\Fields\UserAgent;
 use Artemeon\HttpClient\Model\Header\Headers;
 use Artemeon\HttpClient\Model\Request;
 use Artemeon\HttpClient\Model\Url;
+use Artemeon\HttpClient\Service\ClientOptions;
 use Artemeon\HttpClient\Service\HttpClientFactory;
 
 use function print_r;

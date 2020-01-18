@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Artemeon\HttpClient\Service;
 
 use Artemeon\HttpClient\Exception\HttpClientException;
-use Artemeon\HttpClient\Model\ClientOptions;
 use Artemeon\HttpClient\Model\Header\Header;
 use Artemeon\HttpClient\Model\Header\Headers;
 use Artemeon\HttpClient\Model\Request;
@@ -16,7 +15,7 @@ use Psr\Http\Message\ResponseInterface as GuzzleResponse;
 
 use function implode;
 
-class GuzzleHttpClient implements HttpClient
+class ArtemeonHttpClient implements HttpClient
 {
     /** @var GuzzleClient */
     private $guzzleClient;
