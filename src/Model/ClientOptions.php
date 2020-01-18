@@ -7,7 +7,7 @@ namespace Artemeon\HttpClient\Model;
 class ClientOptions
 {
     /** @var bool */
-    private $maxAllowRedirects;
+    private $allowRedirects;
 
     /** @var int */
     private $timeout;
@@ -27,7 +27,7 @@ class ClientOptions
     public static function fromDefaults(): self
     {
         $instance = new self();
-        $instance->maxAllowRedirects = true;
+        $instance->allowRedirects = true;
         $instance->timeout = 10;
         $instance->verifySsl = true;
         $instance->customCaBundlePath = '';
@@ -37,15 +37,28 @@ class ClientOptions
         return $instance;
     }
 
-    public function setMaxAllowedRedirects(int $max = 5): void
+    public function optSetMaxAllowedRedirects(int $max): void
     {
-        $this->maxAllowRedirects = $max;
+        $this->maxRedirects = $max;
+    }
+
+    public function optDisableRedirects(): void
+    {
+        $this->allowRedirects = false;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isRedirectAllowed(): bool
+    {
+        return $this->allowRedirects;
     }
 
     /**
      * Disable SSL certificate verification
      */
-    public function disableCertificateVerification(): void
+    public function optDisableCertificateVerification(): void
     {
         $this->verifySsl = false;
     }
@@ -59,6 +72,15 @@ class ClientOptions
     }
 
     /**
+     * As default we use the CA bundle provided by operating system. Use this function to allows custom
+     * CA bundle certificates.
+     */
+    public function confSetCustomCaBundlePath(string $customCaBundlePath): void
+    {
+        $this->customCaBundlePath = $customCaBundlePath;
+    }
+
+    /**
      * @return string
      */
     public function getCustomCaBundlePath(): string
@@ -69,42 +91,25 @@ class ClientOptions
     /**
      * Set the timeout in seconds for requests
      */
-    public function setTimeout(int $timeout): void
+    public function optSetTimeout(int $timeout): void
     {
         $this->timeout = $timeout;
     }
 
     /**
-     * As default we use the CA bundle provided by operating system. Use this function to allows custom
-     * CA bundle certificates.
+     * @return int
      */
-    public function setCustomCaBundlePath(string $customCaBundlePath): void
+    public function getTimeout(): int
     {
-        $this->customCaBundlePath = $customCaBundlePath;
+        return $this->timeout;
     }
 
     /**
      * @param int $maxRedirects
      */
-    public function setMaxRedirects(int $maxRedirects): void
+    public function optSetMaxRedirects(int $maxRedirects): void
     {
         $this->maxRedirects = $maxRedirects;
-    }
-
-    /**
-     * @param bool $allowRedirects
-     */
-    public function disableRedirects(): void
-    {
-        $this->maxAllowRedirects = false;
-    }
-
-    /**
-     * @param bool $addReferer
-     */
-    public function disableReferer(): void
-    {
-        $this->addReferer = false;
     }
 
     /**
@@ -116,11 +121,11 @@ class ClientOptions
     }
 
     /**
-     * @return bool
+     * @param bool $addReferer
      */
-    public function isRedirectAllowed(): bool
+    public function optDisableReferer(): void
     {
-        return $this->maxAllowRedirects;
+        $this->addReferer = false;
     }
 
     /**
@@ -129,14 +134,6 @@ class ClientOptions
     public function isRefererAllowed(): bool
     {
         return $this->addReferer;
-    }
-
-    /**
-     * @return int
-     */
-    public function getTimeout(): int
-    {
-        return $this->timeout;
     }
 
     /**

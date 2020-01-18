@@ -34,24 +34,13 @@ class GuzzleHttpClient implements HttpClient
     }
 
     /**
-     * Static factory to run without a dic container
-     */
-    public static function create(): self
-    {
-        return new self(
-            new GuzzleClient(),
-            new ClientOptionsConverter()
-        );
-    }
-
-    /**
      * @inheritDoc
      * @throws HttpClientException
      */
     final public function send(Request $request, ClientOptions $clientOptions = null): Response
     {
         if ($clientOptions instanceof  ClientOptions) {
-            $guzzleOptions = $this->clientOptionsConverter->toGuzzleRequestOptionsArray($clientOptions);
+            $guzzleOptions = $this->clientOptionsConverter->toGuzzleOptionsArray($clientOptions);
         } else {
             $guzzleOptions = [];
         }

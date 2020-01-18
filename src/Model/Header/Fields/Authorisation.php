@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Artemeon\HttpClient\Model;
+namespace Artemeon\HttpClient\Model\Header\Fields;
 
-use function base64_encode;
+use Artemeon\HttpClient\Model\Header\HeaderField;
 
-class Authorisation
+class Authorisation implements HeaderField
 {
     /** @var string */
     private $type;
@@ -30,7 +30,12 @@ class Authorisation
         return new self('Basic', base64_encode($user . ':' . $password));
     }
 
-    public function __toString(): string
+    public function getName(): string
+    {
+        return self::AUTHORISATION;
+    }
+
+    public function getValue(): string
     {
         return $this->type . ': ' . $this->credentials;
     }

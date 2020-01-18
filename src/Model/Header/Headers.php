@@ -15,14 +15,21 @@ use IteratorAggregate;
 class Headers implements Countable, IteratorAggregate
 {
     /** @var Header[] */
-    private $headers;
+    private $headers = [];
 
     /**
-     * Headers constructor.
+     * @param HeaderField[] $headerFields
+     * @throws HttpClientException
      */
-    public function __construct()
+    public static function fromFields(array $headerFields): self
     {
-        $this->headers = [];
+        $instance = new self();
+
+        foreach ($headerFields as $field) {
+            $instance->addHeader(Header::fromField($field));
+        }
+
+        return $instance;
     }
 
     /**

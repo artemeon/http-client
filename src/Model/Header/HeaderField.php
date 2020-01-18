@@ -7,7 +7,7 @@ namespace Artemeon\HttpClient\Model\Header;
 /**
  * Class to create constants for common used header fields
  */
-class HeaderFields
+interface HeaderField
 {
     /** @var string */
     public const AUTHORISATION = 'Authorization';
@@ -23,4 +23,8 @@ class HeaderFields
 
     /** @var string */
     public const CONTENT_LENGTH = 'Content-Length';
+
+    public function getName(): string ;
+
+    public function getValue(): string;
 }

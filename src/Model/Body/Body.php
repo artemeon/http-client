@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace Artemeon\HttpClient\Model\Body;
 
-use function http_build_query;
+use Artemeon\HttpClient\Model\Body\Encoder\Encoder;
+use Artemeon\HttpClient\Model\Body\Reader\Reader;
 
 /**
  * Value object zo cover all http body related content
@@ -23,35 +24,38 @@ class Body
     /**
      * Body constructor.
      */
-    private function __construct(string $type, string $value)
+    private function __construct(string $mimeType, string $value)
     {
-        $this->mimeType = $type;
+        $this->mimeType = $mimeType;
         $this->value = $value;
         $this->length = strlen($value);
     }
 
     /**
-     * Named constructor to create an instance for json encoded content ("application/json")
+     * Named constructor to create an instance based on the given values
      */
-    public static function forJsonEncoded(string $jsonString): self
+    public static function fromString(string $mimeType, string $value): self
     {
-        return new self(MediaType::JSON, $jsonString);
+        return new self($mimeType, $value);
     }
 
     /**
-     * Named constructor to create an instance for form url encoded content (application/x-www-form-urlencoded)
+     * Named constructor to create an instance based on the given Encoder
      */
-    public static function forUrlEncodedFormData(array $formData)
+    public static function fromEncoder(Encoder $encoder): self
     {
-        return new self(MediaType::FORM_URL_ENCODED, http_build_query($formData));
+        return new self($encoder->getMimeType(), $encoder->encode());
     }
 
     /**
-     * Named constructor to create an instance for multipart form data (multipart/form-data)
+     * Named constructor to create an instance based on the given Reader
      */
-    public static function forMultipartFormData(string $multipartData)
+    public static function fromReader(Reader $reader): self
     {
-        return new self(MediaType::MULTIPART_FORM_DATA, $multipartData);
+        $mimeType = MediaType::mapFileExtensionToMimeType($reader->getFileExtension());
+        $value = $reader->read();
+
+        return new self($mimeType, $value);
     }
 
     /**

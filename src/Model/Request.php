@@ -6,11 +6,10 @@ namespace Artemeon\HttpClient\Model;
 
 use Artemeon\HttpClient\Exception\HttpClientException;
 use Artemeon\HttpClient\Model\Body\Body;
+use Artemeon\HttpClient\Model\Header\Fields\ContentLength;
+use Artemeon\HttpClient\Model\Header\Fields\ContentType;
 use Artemeon\HttpClient\Model\Header\Header;
-use Artemeon\HttpClient\Model\Header\HeaderFields;
 use Artemeon\HttpClient\Model\Header\Headers;
-
-use function strval;
 
 class Request
 {
@@ -63,10 +62,8 @@ class Request
         $this->body = $body;
 
         if ($body instanceof Body) {
-            $this->headers->addHeader(Header::fromString(HeaderFields::CONTENT_TYPE, $body->getMimeType()));
-            $this->headers->addHeader(
-                Header::fromString(HeaderFields::CONTENT_LENGTH, strval($body->getContentLength()))
-            );
+            $this->headers->addHeader(Header::fromField(ContentType::fromString($body->getMimeType())));
+            $this->headers->addHeader(Header::fromField(ContentLength::fromInt($body->getContentLength())));
         }
 
         $this->version = $version;

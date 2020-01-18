@@ -4,10 +4,6 @@ declare(strict_types=1);
 
 namespace Artemeon\HttpClient\Model\Header;
 
-use Artemeon\HttpClient\Model\Authorisation;
-
-use function strval;
-
 /**
  * Value object for a http header field
  */
@@ -46,13 +42,8 @@ class Header
         return new self($name, $value);
     }
 
-    public static function forAuthorisation(Authorisation $authorisation): self
+    public static function fromField(HeaderField $headerField): self
     {
-        return new self(HeaderFields::AUTHORISATION, strval($authorisation));
-    }
-
-    public static function forUserAgent(string $userAgent = "ArtemeonHttpClient")
-    {
-        return new self(HeaderFields::USER_AGENT, $userAgent);
+        return new self($headerField->getName(), $headerField->getValue());
     }
 }

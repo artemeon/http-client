@@ -9,7 +9,7 @@ use GuzzleHttp\RequestOptions as GuzzleRequestOptions;
 
 class ClientOptionsConverter
 {
-    public function toGuzzleRequestOptionsArray(ClientOptions $clientOptions): array
+    public function toGuzzleOptionsArray(ClientOptions $clientOptions): array
     {
         $options = [];
 
