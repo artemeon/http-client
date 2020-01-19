@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Artemeon\HttpClient\Model;
+namespace Artemeon\HttpClient\Http;
 
-use Artemeon\HttpClient\Model\Body\Body;
-use Artemeon\HttpClient\Model\Header\Headers;
+use Artemeon\HttpClient\Http\Body\Body;
+use Artemeon\HttpClient\Http\Header\Headers;
 
 class Response
 {
@@ -23,6 +23,7 @@ class Response
 
     /**
      * Response constructor.
+     *
      * @param int $statusCode
      * @param string $version
      * @param Body $body

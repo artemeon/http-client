@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Artemeon\HttpClient\Model\Body;
+namespace Artemeon\HttpClient\Http;
 
 /**
- * Class to create constants for common media types
+ * Static class to describe media type MIME types
  */
 class MediaType
 {
@@ -33,6 +33,7 @@ class MediaType
     /** @var string */
     public const UNKNOWN = "application/octet-stream";
 
+    /** @var string[] */
     private static $extensionToType = [
         'json' => self::JSON,
         'pdf' => self::PDF,
@@ -41,6 +42,11 @@ class MediaType
         'gif' => self::GIF,
     ];
 
+    /**
+     * Static helper function to map a file extension to the related MIME type
+     *
+     * @param string $fileExtension The file extension string
+     */
     public static function mapFileExtensionToMimeType(string $fileExtension): string
     {
         $fileExtension = strtolower($fileExtension);

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Artemeon\HttpClient\Model\Header;
+namespace Artemeon\HttpClient\Http\Header;
 
 use ArrayIterator;
 use Artemeon\HttpClient\Exception\HttpClientException;
@@ -18,7 +18,10 @@ class Headers implements Countable, IteratorAggregate
     private $headers = [];
 
     /**
+     * Named constructor to create an instance based on the given array of HeaderField objects
+     *
      * @param HeaderField[] $headerFields
+     *
      * @throws HttpClientException
      */
     public static function fromFields(array $headerFields): self
@@ -34,6 +37,7 @@ class Headers implements Countable, IteratorAggregate
 
     /**
      * Adds a header to the collection
+     *
      * @throws HttpClientException
      */
     public function addHeader(Header $header): void
@@ -57,6 +61,7 @@ class Headers implements Countable, IteratorAggregate
 
     /**
      * Return a Header object for the given header field name
+     *
      * @throws HttpClientException
      */
     public function getHeader($headerField): Header
@@ -70,6 +75,7 @@ class Headers implements Countable, IteratorAggregate
 
     /**
      * Return an associative array with the header field name as a key and the header value as value
+     *
      * @return string[]
      */
     public function toArray(): array

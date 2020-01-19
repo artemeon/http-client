@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Artemeon\HttpClient\Service;
+namespace Artemeon\HttpClient\Client;
 
 use GuzzleHttp\Client as GuzzleClient;
 

@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Artemeon\HttpClient\Model;
+namespace Artemeon\HttpClient\Http;
 
 use Artemeon\HttpClient\Exception\HttpClientException;
-use Artemeon\HttpClient\Model\Body\Body;
-use Artemeon\HttpClient\Model\Header\Fields\ContentLength;
-use Artemeon\HttpClient\Model\Header\Fields\ContentType;
-use Artemeon\HttpClient\Model\Header\Header;
-use Artemeon\HttpClient\Model\Header\Headers;
+use Artemeon\HttpClient\Http\Body\Body;
+use Artemeon\HttpClient\Http\Header\Fields\ContentLength;
+use Artemeon\HttpClient\Http\Header\Fields\ContentType;
+use Artemeon\HttpClient\Http\Header\Header;
+use Artemeon\HttpClient\Http\Header\Headers;
 
 class Request
 {
@@ -47,6 +47,14 @@ class Request
     public const METHOD_PATCH = 'PATCH';
 
     /**
+     * Request constructor.
+     *
+     * @param string $method The request method string
+     * @param Url $url The Url object
+     * @param Headers|null $headers Optional: Headers collection or null
+     * @param Body|null $body Optional: Body object or null
+     * @param float $version Optional: Http protocol version string
+     *
      * @throws HttpClientException
      */
     private function __construct(
@@ -69,40 +77,13 @@ class Request
         $this->version = $version;
     }
 
-    public function getMethod(): string
-    {
-        return $this->method;
-    }
-
-    public function getUrl(): Url
-    {
-        return $this->url;
-    }
-
-    public function getHeaders(): Headers
-    {
-        return $this->headers;
-    }
-
-    public function getBody(): ?Body
-    {
-        return $this->body;
-    }
-
-    public function hasBody(): bool
-    {
-        return $this->body instanceof Body;
-    }
-
     /**
-     * @return float
-     */
-    public function getVersion(): float
-    {
-        return $this->version;
-    }
-
-    /**
+     * Named constructor to create an instance for post requests
+     *
+     * @param Url $url The Url object
+     * @param Headers|null $headers Optional: Headers collection or null
+     * @param float $version Optional: http protocol version string
+     *
      * @throws HttpClientException
      */
     public static function forGet(Url $url, ?Headers $headers = null, float $version = 1.1): self
@@ -117,6 +98,12 @@ class Request
     }
 
     /**
+     * Named constructor to create an instance for OPTIONS requests
+     *
+     * @param Url $url The Url object
+     * @param Headers|null $headers Optional: Headers collection or null
+     * @param float $version Optional: the http protocol version string
+     *
      * @throws HttpClientException
      */
     public static function forOptions(Url $url, ?Headers $headers = null, float $version = 1.1): self
@@ -131,6 +118,13 @@ class Request
     }
 
     /**
+     * Named constructor to create an instance for POST requests
+     *
+     * @param Url $url The Url object
+     * @param Body $body The Body object
+     * @param Headers|null $headers Optional: Headers collection or null
+     * @param float $version Optional: the http protocol version string
+     *
      * @throws HttpClientException
      */
     public static function forPost(Url $url, Body $body, ?Headers $headers = null, float $version = 1.1): self
@@ -145,6 +139,13 @@ class Request
     }
 
     /**
+     * Named constructor to create an instance for PUT requests
+     *
+     * @param Url $url The Url object
+     * @param Body $body The Body object
+     * @param Headers|null $headers Optional: Headers collection or null
+     * @param float $version Optional: the http protocol version string
+     *
      * @throws HttpClientException
      */
     public static function forPut(Url $url, Body $body, ?Headers $headers = null, float $version = 1.1): self
@@ -159,6 +160,13 @@ class Request
     }
 
     /**
+     * Named constructor to create an instance for PATCH requests
+     *
+     * @param Url $url The Url object
+     * @param Body $body The Body object
+     * @param Headers|null $headers Optional: Headers collection or null
+     * @param float $version Optional: the http protocol version string
+     *
      * @throws HttpClientException
      */
     public static function forPatch(Url $url, Body $body, ?Headers $headers = null, float $version = 1.1): self
@@ -173,6 +181,12 @@ class Request
     }
 
     /**
+     * Named constructor to create an instance for DELETE requests
+     *
+     * @param Url $url The Url object
+     * @param Headers|null $headers Optional: Headers collection or null
+     * @param float $version Optional: http protocol version string
+     *
      * @throws HttpClientException
      */
     public static function forDelete(Url $url, ?Headers $headers = null, float $version = 1.1): self
@@ -184,5 +198,53 @@ class Request
             null,
             $version
         );
+    }
+
+    /**
+     * Returns the request method string
+     */
+    public function getMethod(): string
+    {
+        return $this->method;
+    }
+
+    /**
+     * Returns the Url Object
+     */
+    public function getUrl(): Url
+    {
+        return $this->url;
+    }
+
+    /**
+     * Return the Header collection
+     */
+    public function getHeaders(): Headers
+    {
+        return $this->headers;
+    }
+
+    /**
+     * Returns the body or null
+     */
+    public function getBody(): ?Body
+    {
+        return $this->body;
+    }
+
+    /**
+     * Checks if the request contains a body
+     */
+    public function hasBody(): bool
+    {
+        return $this->body instanceof Body;
+    }
+
+    /**
+     * Returns the http protocol version float number
+     */
+    public function getVersion(): float
+    {
+        return $this->version;
     }
 }

@@ -2,13 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Artemeon\HttpClient\Model\Body;
+namespace Artemeon\HttpClient\Http\Body;
 
-use Artemeon\HttpClient\Model\Body\Encoder\Encoder;
-use Artemeon\HttpClient\Model\Body\Reader\Reader;
+use Artemeon\HttpClient\Http\Body\Encoder\Encoder;
+use Artemeon\HttpClient\Http\Body\Reader\Reader;
+use Artemeon\HttpClient\Http\MediaType;
 
 /**
- * Value object zo cover all http body related content
+ * Value object to cover all http body related content
  */
 class Body
 {
@@ -19,20 +20,23 @@ class Body
     private $mimeType;
 
     /** @var string */
-    private $value;
+    private $content;
 
     /**
      * Body constructor.
      */
-    private function __construct(string $mimeType, string $value)
+    private function __construct(string $mimeType, string $content)
     {
         $this->mimeType = $mimeType;
-        $this->value = $value;
-        $this->length = strlen($value);
+        $this->content = $content;
+        $this->length = strlen($content);
     }
 
     /**
      * Named constructor to create an instance based on the given values
+     *
+     * @param string $mimeType MIME-Type of the content
+     * @param string $value String to set the content
      */
     public static function fromString(string $mimeType, string $value): self
     {
@@ -41,6 +45,8 @@ class Body
 
     /**
      * Named constructor to create an instance based on the given Encoder
+     *
+     * @param Encoder $encoder Body Encoder implementation
      */
     public static function fromEncoder(Encoder $encoder): self
     {
@@ -67,7 +73,7 @@ class Body
     }
 
     /**
-     * Returns the associated MIME type string
+     * Returns the associated mime type string
      */
     public function getMimeType(): string
     {
@@ -79,6 +85,6 @@ class Body
      */
     public function getContent(): string
     {
-        return $this->value;
+        return $this->content;
     }
 }

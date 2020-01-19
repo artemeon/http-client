@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Artemeon\HttpClient\Exception\Request\Http;
 
 use Artemeon\HttpClient\Exception\Request\RequestException;
-use Artemeon\HttpClient\Model\Request;
-use Artemeon\HttpClient\Model\Response;
+use Artemeon\HttpClient\Http\Request;
+use Artemeon\HttpClient\Http\Response;
 use Exception;
 
 /**

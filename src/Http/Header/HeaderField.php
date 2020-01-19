@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Artemeon\HttpClient\Model\Header;
+namespace Artemeon\HttpClient\Http\Header;
 
 /**
- * Class to create constants for common used header fields
+ * Interface for http header fields
  */
 interface HeaderField
 {
@@ -24,7 +24,13 @@ interface HeaderField
     /** @var string */
     public const CONTENT_LENGTH = 'Content-Length';
 
-    public function getName(): string ;
+    /**
+     * Returns the name of the field
+     */
+    public function getName(): string;
 
+    /**
+     * Returns the value of the field
+     */
     public function getValue(): string;
 }

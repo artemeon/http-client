@@ -5,15 +5,15 @@ declare(strict_types=1);
 namespace Artemeon\HttpClient\Tests\System;
 
 use Artemeon\HttpClient\Exception\HttpClientException;
-use Artemeon\HttpClient\Model\Body\Body;
-use Artemeon\HttpClient\Model\Body\Encoder\FormUrlEncoder;
-use Artemeon\HttpClient\Model\Header\Fields\Authorisation;
-use Artemeon\HttpClient\Model\Header\Fields\UserAgent;
-use Artemeon\HttpClient\Model\Header\Headers;
-use Artemeon\HttpClient\Model\Request;
-use Artemeon\HttpClient\Model\Url;
-use Artemeon\HttpClient\Service\ClientOptions;
-use Artemeon\HttpClient\Service\HttpClientFactory;
+use Artemeon\HttpClient\Http\Body\Body;
+use Artemeon\HttpClient\Http\Body\Encoder\FormUrlEncoder;
+use Artemeon\HttpClient\Http\Header\Fields\Authorisation;
+use Artemeon\HttpClient\Http\Header\Fields\UserAgent;
+use Artemeon\HttpClient\Http\Header\Headers;
+use Artemeon\HttpClient\Http\Request;
+use Artemeon\HttpClient\Http\Url;
+use Artemeon\HttpClient\Client\ClientOptions;
+use Artemeon\HttpClient\Client\HttpClientFactory;
 
 use function print_r;
 

@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Artemeon\HttpClient\Service;
+namespace Artemeon\HttpClient\Client;
 
-use Artemeon\HttpClient\Model\Request;
-use Artemeon\HttpClient\Model\Response;
+use Artemeon\HttpClient\Http\Request;
+use Artemeon\HttpClient\Http\Response;
 
 interface HttpClient
 {
