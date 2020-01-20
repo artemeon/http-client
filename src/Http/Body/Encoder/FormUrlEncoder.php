@@ -34,6 +34,11 @@ class FormUrlEncoder implements Encoder
     /**
      * Named constructor to create an instance based on the given array
      *
+     * ```php
+     * $encoder = FormUrlEncoder->fromArray(['username' = 'John.Doe'])
+     * $encoder->encode();
+     * ```
+     *
      * @param array $formValues ['formFieldName' = 'value'],
      */
     public static function fromArray(array $formValues): self

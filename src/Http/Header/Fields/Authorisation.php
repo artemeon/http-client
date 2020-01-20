@@ -37,6 +37,13 @@ class Authorisation implements HeaderField
 
     /**
      * Name constructor to create an 'Authorisation: Bearer' field
+     *
+     * Example:
+     * ```php
+     * Authorisation::forAuthBearer('some-string-with-credentials')
+     * ```
+     *
+     * @param string $credentials String with credentials for Bearer authorisation
      */
     public static function forAuthBearer(string $credentials): self
     {
@@ -45,6 +52,14 @@ class Authorisation implements HeaderField
 
     /**
      * Name constructor to create an 'Authorisation: Basic' field
+     *
+     * Example:
+     * ```php
+     * Authorisation::forAuthBasic('John.Doe', 'secret_password')
+     * ```
+     *
+     * @param string $user String for the username
+     * @param string $password String for the password
      */
     public static function forAuthBasic(string $user, string $password): self
     {

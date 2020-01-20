@@ -24,6 +24,30 @@ class JsonEncoder implements Encoder
     /** @var array|object */
     private $value;
 
+    /**
+     * Named constructor to create an instance based on the given array
+     *
+     * ```php
+     * Example 1:
+     * Associative arrays are always encoded as json object:
+     * $encoder = JsonEncoder::fromArray(['username' = 'John.Doe'])
+     * $encoder->encode();
+     *
+     * Example 2:
+     * Use second parameter to force json object even for non associative arrays
+     * $encoder = JsonEncoder::fromArray(['value1', 'value2','value3'], true)
+     * $encoder->encode();
+     * ```
+     *
+     * @param array $value Array to encode, associative array always encoded as json object
+     * @param bool $forceObject Set to true to force non-associative arrays encoded as json object
+     */
+    public static function fromArray(array $value, bool $forceObject = false): self
+    {
+        $options = $forceObject === true ? JSON_FORCE_OBJECT : 0;
+        return new self($value, $options);
+    }
+
     /** @var int */
     private $options;
 
@@ -42,18 +66,6 @@ class JsonEncoder implements Encoder
 
         $this->value = $value;
         $this->options = $options;
-    }
-
-    /**
-     * Named constructor to create an instance based on the given array
-     *
-     * @param array $value Array to encode, associative array always encoded as json object
-     * @param bool $forceObject Set to true to force non-associative arrays encoded as json object
-     */
-    public static function fromArray(array $value, bool $forceObject = false): self
-    {
-        $options = $forceObject === true ? JSON_FORCE_OBJECT : 0;
-        return new self($value, $options);
     }
 
     /**
