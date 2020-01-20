@@ -13,22 +13,14 @@ declare(strict_types=1);
 
 namespace Artemeon\HttpClient\Http;
 
+use Artemeon\HttpClient\Exception\HttpClientException;
 use Artemeon\HttpClient\Http\Body\Body;
 use Artemeon\HttpClient\Http\Header\Headers;
 
-class Response
+class Response extends Message
 {
     /** @var int */
     private $statusCode;
-
-    /** @var string */
-    private $version;
-
-    /** @var string */
-    private $body;
-
-    /** @var Headers */
-    private $headerBag;
 
     /**
      * Response constructor.
@@ -36,14 +28,14 @@ class Response
      * @param int $statusCode
      * @param string $version
      * @param Body $body
-     * @param Headers $headerBag
+     * @param Headers $headers
+     *
+     * @throws HttpClientException
      */
-    public function __construct(int $statusCode, string $version, string $body, Headers $headerBag)
+    public function __construct(int $statusCode, float $version, string $body, Headers $headers)
     {
         $this->statusCode = $statusCode;
-        $this->version = $version;
-        $this->body = $body;
-        $this->headerBag = $headerBag;
+        parent::__construct($headers, $body, $version);
     }
 
     /**
@@ -52,29 +44,5 @@ class Response
     public function getStatusCode(): int
     {
         return $this->statusCode;
-    }
-
-    /**
-     * @return string
-     */
-    public function getVersion(): string
-    {
-        return $this->version;
-    }
-
-    /**
-     * @return Body
-     */
-    public function getBody(): string
-    {
-        return $this->body;
-    }
-
-    /**
-     * @return Headers
-     */
-    public function getHeaders(): Headers
-    {
-        return $this->headerBag;
     }
 }

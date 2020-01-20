@@ -15,27 +15,20 @@ namespace Artemeon\HttpClient\Http;
 
 use Artemeon\HttpClient\Exception\HttpClientException;
 use Artemeon\HttpClient\Http\Body\Body;
-use Artemeon\HttpClient\Http\Header\Fields\ContentLength;
-use Artemeon\HttpClient\Http\Header\Fields\ContentType;
-use Artemeon\HttpClient\Http\Header\Header;
 use Artemeon\HttpClient\Http\Header\Headers;
 
-class Request
+/**
+ * Class to decripe http requests
+ *
+ * @see https://developer.mozilla.org/de/docs/Web/HTTP/Methods
+ */
+class Request extends Message
 {
     /** @var string */
     private $method;
 
     /** @var Url */
     private $url;
-
-    /** @var Headers */
-    private $headers;
-
-    /** @var Body */
-    private $body;
-
-    /** @var float */
-    private $version;
 
     /** @var string */
     public const METHOD_POST = 'POST';
@@ -58,32 +51,29 @@ class Request
     /**
      * Request constructor.
      *
-     * @param string $method The request method string
-     * @param Url $url The Url object
-     * @param Headers|null $headers Optional: Headers collection or null
-     * @param Body|null $body Optional: Body object or null
-     * @param float $version Optional: Http protocol version string
+     * @param string $method
+     * @param Url $url
+     * @param Headers|null $headers
+     * @param Body|null $body
+     * @param float $version
      *
      * @throws HttpClientException
      */
     private function __construct(
         string $method,
         Url $url,
-        Headers $headers = null,
+        ?Headers $headers = null,
         ?Body $body = null,
         float $version = 1.1
     ) {
         $this->method = $method;
         $this->url = $url;
-        $this->headers = $headers ?? new Headers();
-        $this->body = $body;
 
-        if ($body instanceof Body) {
-            $this->headers->addHeader(Header::fromField(ContentType::fromString($body->getMimeType())));
-            $this->headers->addHeader(Header::fromField(ContentLength::fromInt($body->getContentLength())));
-        }
-
-        $this->version = $version;
+        parent::__construct(
+            $headers,
+            $body,
+            $version
+        );
     }
 
     /**
@@ -223,37 +213,5 @@ class Request
     public function getUrl(): Url
     {
         return $this->url;
-    }
-
-    /**
-     * Return the Header collection
-     */
-    public function getHeaders(): Headers
-    {
-        return $this->headers;
-    }
-
-    /**
-     * Returns the body or null
-     */
-    public function getBody(): ?Body
-    {
-        return $this->body;
-    }
-
-    /**
-     * Checks if the request contains a body
-     */
-    public function hasBody(): bool
-    {
-        return $this->body instanceof Body;
-    }
-
-    /**
-     * Returns the http protocol version float number
-     */
-    public function getVersion(): float
-    {
-        return $this->version;
     }
 }

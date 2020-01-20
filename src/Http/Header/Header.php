@@ -35,7 +35,7 @@ class Header
 
     /**
      * Named constructor to create an instance based on the given string values
-     *
+
      * @param string $name Name of the http header field
      * @param string $value Value of the http header field
      */
