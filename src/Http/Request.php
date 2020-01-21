@@ -16,13 +16,15 @@ namespace Artemeon\HttpClient\Http;
 use Artemeon\HttpClient\Exception\HttpClientException;
 use Artemeon\HttpClient\Http\Body\Body;
 use Artemeon\HttpClient\Http\Header\Headers;
+use Artemeon\HttpClient\Psr7\RequestInterfaceSubset;
+use Artemeon\HttpClient\Psr7\UriInterfaceSubset;
 
 /**
- * Class to decripe http requests
+ * Class to describe http requests
  *
  * @see https://developer.mozilla.org/de/docs/Web/HTTP/Methods
  */
-class Request extends Message
+class Request extends Message implements RequestInterfaceSubset
 {
     /** @var string */
     private $method;
@@ -55,7 +57,7 @@ class Request extends Message
      * @param Url $url
      * @param Headers|null $headers
      * @param Body|null $body
-     * @param float $version
+     * @param string $version
      *
      * @throws HttpClientException
      */
@@ -64,7 +66,7 @@ class Request extends Message
         Url $url,
         ?Headers $headers = null,
         ?Body $body = null,
-        float $version = 1.1
+        string $version = '1.1'
     ) {
         $this->method = $method;
         $this->url = $url;
@@ -85,7 +87,7 @@ class Request extends Message
      *
      * @throws HttpClientException
      */
-    public static function forGet(Url $url, ?Headers $headers = null, float $version = 1.1): self
+    public static function forGet(Url $url, ?Headers $headers = null, string $version = '1.1'): self
     {
         return new self(
             self::METHOD_GET,
@@ -105,7 +107,7 @@ class Request extends Message
      *
      * @throws HttpClientException
      */
-    public static function forOptions(Url $url, ?Headers $headers = null, float $version = 1.1): self
+    public static function forOptions(Url $url, ?Headers $headers = null, string $version = '1.1'): self
     {
         return new self(
             self::METHOD_OPTIONS,
@@ -126,7 +128,7 @@ class Request extends Message
      *
      * @throws HttpClientException
      */
-    public static function forPost(Url $url, Body $body, ?Headers $headers = null, float $version = 1.1): self
+    public static function forPost(Url $url, Body $body, ?Headers $headers = null, string $version = '1.1'): self
     {
         return new self(
             self::METHOD_POST,
@@ -147,7 +149,7 @@ class Request extends Message
      *
      * @throws HttpClientException
      */
-    public static function forPut(Url $url, Body $body, ?Headers $headers = null, float $version = 1.1): self
+    public static function forPut(Url $url, Body $body, ?Headers $headers = null, string $version = '1.1'): self
     {
         return new self(
             self::METHOD_PUT,
@@ -168,7 +170,7 @@ class Request extends Message
      *
      * @throws HttpClientException
      */
-    public static function forPatch(Url $url, Body $body, ?Headers $headers = null, float $version = 1.1): self
+    public static function forPatch(Url $url, Body $body, ?Headers $headers = null, string $version = '1.1'): self
     {
         return new self(
             self::METHOD_PATCH,
@@ -188,7 +190,7 @@ class Request extends Message
      *
      * @throws HttpClientException
      */
-    public static function forDelete(Url $url, ?Headers $headers = null, float $version = 1.1): self
+    public static function forDelete(Url $url, ?Headers $headers = null, string $version = '1.1'): self
     {
         return new self(
             self::METHOD_DELETE,
@@ -200,7 +202,7 @@ class Request extends Message
     }
 
     /**
-     * Returns the request method string
+     * @inheritDoc
      */
     public function getMethod(): string
     {
@@ -208,10 +210,25 @@ class Request extends Message
     }
 
     /**
-     * Returns the Url Object
+     * @inheritDoc
      */
-    public function getUrl(): Url
+    public function getUrl(): UriInterfaceSubset
     {
         return $this->url;
+    }
+
+    public function getRequestTarget(): string
+    {
+        $target = $this->url->getPath();
+
+        if ($target == '') {
+            $target = '/';
+        }
+
+        if ($this->url->getQuery() != '') {
+            $target .= '?' . $this->url->getQuery();
+        }
+
+        return $target;
     }
 }

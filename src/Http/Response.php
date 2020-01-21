@@ -16,8 +16,9 @@ namespace Artemeon\HttpClient\Http;
 use Artemeon\HttpClient\Exception\HttpClientException;
 use Artemeon\HttpClient\Http\Body\Body;
 use Artemeon\HttpClient\Http\Header\Headers;
+use Artemeon\HttpClient\Psr7\ResponseInterfaceSubset;
 
-class Response extends Message
+class Response extends Message implements ResponseInterfaceSubset
 {
     /** @var int */
     private $statusCode;
@@ -32,14 +33,14 @@ class Response extends Message
      *
      * @throws HttpClientException
      */
-    public function __construct(int $statusCode, float $version, string $body, Headers $headers)
+    public function __construct(int $statusCode, string $version, Body $body, Headers $headers)
     {
         $this->statusCode = $statusCode;
         parent::__construct($headers, $body, $version);
     }
 
     /**
-     * @return int
+     * @inheritDoc
      */
     public function getStatusCode(): int
     {

@@ -14,29 +14,26 @@ declare(strict_types=1);
 namespace Artemeon\HttpClient\Http;
 
 use Artemeon\HttpClient\Exception\HttpClientException;
-use InvalidArgumentException;
-use Psr\Http\Message\UriInterface;
+use Artemeon\HttpClient\Psr7\UriInterfaceSubset;
 
 use function count;
 use function http_build_query;
-use function is_int;
-use function is_string;
 use function parse_url;
-use function strval;
 
+use const PHP_URL_FRAGMENT;
 use const PHP_URL_HOST;
 use const PHP_URL_PASS;
 use const PHP_URL_PORT;
 use const PHP_URL_SCHEME;
 use const PHP_URL_USER;
 
-class Url implements UriInterface
+class Url implements UriInterfaceSubset
 {
     /** @var string */
     private $url;
 
     /** @var string */
-    private $queryString = '';
+    private $query = '';
 
     /** @var string */
     private $scheme;
@@ -54,7 +51,10 @@ class Url implements UriInterface
     private $port;
 
     /** @var string */
-    private $authority;
+    private $path;
+
+    /** @var string */
+    private $fragment;
 
     /**
      * Url constructor.
@@ -66,6 +66,10 @@ class Url implements UriInterface
      */
     private function __construct(string $url, array $queryParams)
     {
+        if (count($queryParams) > 0) {
+            $url .= '?' . http_build_query($queryParams);
+        }
+
         if (!filter_var($url, FILTER_VALIDATE_URL)) {
             throw new HttpClientException('Url is invalid: ' . $url);
         }
@@ -73,14 +77,10 @@ class Url implements UriInterface
         $this->url = $url;
         $this->scheme = parse_url($url, PHP_URL_SCHEME) ?? '';
         $this->host = parse_url($url, PHP_URL_HOST) ?? '';
-        $this->user = parse_url($url, PHP_URL_USER) ?? '';
         $this->port = parse_url($url, PHP_URL_PORT);
+        $this->fragment = parse_url($url, PHP_URL_FRAGMENT) ?? '';
+        $this->user = parse_url($url, PHP_URL_USER) ?? '';
         $this->password = parse_url($url, PHP_URL_PASS) ?? '';
-        $this->authority = $this->user . $this->host . $this->port;
-
-        if (count($queryParams) > 0) {
-            $this->queryString = http_build_query($queryParams);
-        }
     }
 
     /**
@@ -111,112 +111,6 @@ class Url implements UriInterface
     /**
      * @inheritDoc
      */
-    public function withScheme($scheme)
-    {
-        $this->assertString($scheme);
-
-        $cloned = clone $this;
-        $cloned->scheme = $scheme;
-
-        return $cloned;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function withUserInfo($user, $password = null)
-    {
-        $this->assertString($user);
-
-        if ($password !== null) {
-            $this->assertString($password);
-        }
-
-        $cloned = clone $this;
-
-        // Remove all user info if user is empty
-        if (empty($user)) {
-            $cloned->user = '';
-            $cloned->password = null;
-
-            return $cloned;
-        }
-
-        $cloned->user = $user;
-        $cloned->password = $password;
-
-        return $cloned;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function withHost($host)
-    {
-        $host = strval($host);
-        $cloned = clone $this;
-
-        if (empty($host)) {
-            return $cloned->host = '';
-        }
-
-        return $cloned->host = $host;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function withPort($port)
-    {
-        if ($port !== null && !is_int($port)) {
-            throw new \InvalidArgumentException('Port int or null');
-        }
-
-        if ($port < 0 || $port > 65535) {
-            throw new \InvalidArgumentException('Port Must be between 0 and 65535');
-        }
-
-        $cloned = clone $this;
-        $cloned->port = $port;
-
-        return $cloned->port;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function withPath($path)
-    {
-        // TODO: Implement withPath() method.
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function withQuery($query)
-    {
-        // TODO: Implement withQuery() method.
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function withFragment($fragment)
-    {
-        // TODO: Implement withFragment() method.
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getUrl(): string
-    {
-        return $this->url;
-    }
-
-    /**
-     * @inheritDoc
-     */
     public function getScheme(): string
     {
         return $this->scheme;
@@ -233,14 +127,6 @@ class Url implements UriInterface
     /**
      * @inheritDoc
      */
-    public function getUser(): string
-    {
-        return $this->user;
-    }
-
-    /**
-     * @inheritDoc
-     */
     public function getPort(): int
     {
         return $this->port;
@@ -249,66 +135,46 @@ class Url implements UriInterface
     /**
      * @inheritDoc
      */
-    public function getAuthority(): string
+    public function getUserInfo(): string
     {
-        return $this->authority;
+        if (!empty($this->user)) {
+            if (!empty($this->password)) {
+                return $this->user . ':' . $this->password;
+            }
+            return $this->user;
+        }
+        return '';
     }
 
     /**
      * @inheritDoc
      */
-    public function getUserInfo()
+    public function getPath(): string
     {
-        // TODO: Implement getUserInfo() method.
+        return $this->path;
     }
 
     /**
      * @inheritDoc
      */
-    public function getPath()
+    public function getQuery(): string
     {
-        // TODO: Implement getPath() method.
+        return $this->query;
     }
 
     /**
      * @inheritDoc
      */
-    public function getQuery()
+    public function getFragment(): string
     {
-        // TODO: Implement getQuery() method.
+        return $this->fragment;
     }
 
     /**
      * @inheritDoc
-     */
-    public function getFragment()
-    {
-        // TODO: Implement getFragment() method.
-    }
-
-    /**
-     * Convert to string
-     *
-     * @see https://www.php.net/manual/de/language.oop5.magic.php#object.tostring
      */
     public function __toString(): string
     {
-        if (!empty($this->queryString)) {
-            return $this->url . '?' . $this->queryString;
-        }
-
         return $this->url;
-    }
-
-    /**
-     * @param $string
-     *
-     * @throws InvalidArgumentException
-     */
-    private function assertString($string)
-    {
-        if (!is_string($string)) {
-            throw new InvalidArgumentException('Parameter mus be a string');
-        }
     }
 }

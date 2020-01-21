@@ -18,6 +18,8 @@ use Artemeon\HttpClient\Exception\HttpClientException;
 use Countable;
 use IteratorAggregate;
 
+use function strtolower;
+
 /**
  * Header collection class for http requests and responses
  */
@@ -61,11 +63,17 @@ class Headers implements Countable, IteratorAggregate
     }
 
     /**
-     * Checks for a specific header field
+     * Checks case incentive for a specific header field
      */
     public function hasHeader($headerField): bool
     {
-        return isset($this->headers[$headerField]);
+        foreach ($this->headers as $header) {
+            if (strtolower($headerField) === strtolower($header->getFieldName())) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -85,14 +93,14 @@ class Headers implements Countable, IteratorAggregate
     /**
      * Return an associative array with the header field name as a key and the header value as value
      *
-     * @return string[]
+     * @return string[] ['headerField' => 'headerValue']
      */
     public function toArray(): array
     {
         $result = [];
 
         foreach ($this->headers as $header) {
-            $result[$header->getFieldName()] = $header->getValue();
+            $result[$header->getFieldName()] = $header->getValues();
         }
 
         return $result;

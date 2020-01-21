@@ -13,6 +13,8 @@ declare(strict_types=1);
 
 namespace Artemeon\HttpClient\Http\Header;
 
+use function implode;
+
 /**
  * Value object for parsed http header fields
  */
@@ -21,16 +23,16 @@ class Header
     /** @var string */
     private $name;
 
-    /** @var string */
-    private $value;
+    /** @var string[] */
+    private $values;
 
     /**
      * Header constructor.
      */
-    private function __construct(string $name, string $value)
+    private function __construct(string $name, array $values)
     {
         $this->name = $name;
-        $this->value = $value;
+        $this->values = $values;
     }
 
     /**
@@ -41,7 +43,7 @@ class Header
      */
     public static function fromString(string $name, string $value): self
     {
-        return new self($name, $value);
+        return new self($name, [$value]);
     }
 
     /**
@@ -51,7 +53,8 @@ class Header
      */
     public static function fromField(HeaderField $headerField): self
     {
-        return new self($headerField->getName(), $headerField->getValue());
+        return new self($headerField->getName(), [$headerField->getValue()]);
+
     }
 
     /**
@@ -63,10 +66,26 @@ class Header
     }
 
     /**
-     * Returns value of the http header field
+     * Add a value to the header
+     */
+    public function addValue(string $value): void
+    {
+        $this->values[] = $value;
+    }
+
+    /**
+     * Returns all value of the http header field
+     */
+    public function getValues(): array
+    {
+        return $this->values;
+    }
+
+    /**
+     * Returns all values as a concatenated comma separated string
      */
     public function getValue(): string
     {
-        return $this->value;
+        return implode(', ', $this->values);
     }
 }

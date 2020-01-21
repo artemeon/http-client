@@ -19,13 +19,16 @@ use Artemeon\HttpClient\Http\Header\Fields\ContentLength;
 use Artemeon\HttpClient\Http\Header\Fields\ContentType;
 use Artemeon\HttpClient\Http\Header\Header;
 use Artemeon\HttpClient\Http\Header\Headers;
+use Artemeon\HttpClient\Psr7\MessageInterfaceSubset;
+use Artemeon\HttpClient\Stream\Stream;
+use Psr\Http\Message\StreamInterface;
 
 /**
  * Abstract class to describe a http message
  *
  * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Messages
  */
-abstract class Message
+abstract class Message implements MessageInterfaceSubset
 {
     /** @var Headers */
     protected $headers;
@@ -33,7 +36,7 @@ abstract class Message
     /** @var Body */
     protected $body;
 
-    /** @var float */
+    /** @var string */
     protected $version;
 
     /**
@@ -45,7 +48,7 @@ abstract class Message
      *
      * @throws HttpClientException
      */
-    protected function __construct(?Headers $headers = null, ?Body $body = null, float $version = 1.1)
+    protected function __construct(?Headers $headers = null, ?Body $body = null, string $version = '1.1')
     {
         $this->headers = $headers ?? new Headers();
         $this->body = $body;
@@ -61,36 +64,75 @@ abstract class Message
     /**
      * Return the Header collection
      */
-    public function getHeaders(): Headers
+    public function getHeaders(): array
     {
-        return $this->headers;
+        $headers = [];
+
+        /** @var Header $header */
+        foreach ($this->headers as $header) {
+            $headers[$header->getFieldName()] = $header->getValues();
+        }
+
+        return $headers;
     }
 
     /**
-     * Returns the body or null
+     * @inheritDoc
      */
-    public function getBody(): string
+    public function getBody(): StreamInterface
     {
-        if (!$this->hasBody()) {
+        if (!$this->body instanceof StreamInterface) {
+            return Stream::fromString('');
+        }
+
+        return $this->body;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getProtocolVersion(): string
+    {
+        return $this->version;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function hasHeader($name): bool
+    {
+        return $this->headers->hasHeader($name);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getHeader($name): array
+    {
+        if (!$this->headers->hasHeader($name)) {
+            return [];
+        }
+
+        try {
+            return $this->headers->getHeader($name)->getValues();
+        } catch (HttpClientException $e) {
+            return [];
+        }
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getHeaderLine($name): string
+    {
+        if (!$this->headers->hasHeader($name)) {
             return '';
         }
 
-        return $this->body->getContent();
-    }
-
-    /**
-     * Checks if the request contains a body
-     */
-    public function hasBody(): bool
-    {
-        return $this->body instanceof Body;
-    }
-
-    /**
-     * Returns the http protocol version float number
-     */
-    public function getVersion(): float
-    {
-        return $this->version;
+        try {
+            return $this->headers->getHeader($name)->getValue();
+        } catch (HttpClientException $e) {
+            return '';
+        }
     }
 }

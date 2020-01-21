@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Artemeon\HttpClient\Client;
 
 use Artemeon\HttpClient\Exception\HttpClientException;
+use Artemeon\HttpClient\Http\Body\Body;
 use Artemeon\HttpClient\Http\Header\Header;
 use Artemeon\HttpClient\Http\Header\Headers;
 use Artemeon\HttpClient\Http\Request;
@@ -64,11 +65,12 @@ class ArtemeonHttpClient implements HttpClient
      */
     private function convertToGuzzleRequest(Request $request): GuzzleRequest
     {
+
+
         return new GuzzleRequest(
             $request->getMethod(),
             $request->getUrl()->__toString(),
-            $request->getHeaders()->toArray(),
-            $request->hasBody() ? $request->getBody()->getContent() : null
+            $request->getHeaders()
         );
     }
 
@@ -88,7 +90,7 @@ class ArtemeonHttpClient implements HttpClient
         return new Response(
             $guzzleResponse->getStatusCode(),
             $guzzleResponse->getProtocolVersion(),
-            $guzzleResponse->getBody()->getContents(),
+            Body::fromString('test,', $guzzleResponse->getBody()->getContents()),
             $headers
         );
     }

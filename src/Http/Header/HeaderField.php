@@ -41,5 +41,5 @@ interface HeaderField
     /**
      * Returns the value of the field
      */
-    public function getValue(): string;
+    public function getValue(): string ;
 }
