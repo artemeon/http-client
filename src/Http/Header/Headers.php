@@ -46,6 +46,11 @@ class Headers implements Countable, IteratorAggregate
         return $instance;
     }
 
+    public static function create(): self
+    {
+        return new self();
+    }
+
     /**
      * Adds a header to the collection
      *

@@ -13,6 +13,8 @@ declare(strict_types=1);
 
 namespace Artemeon\HttpClient\Http\Body\Encoder;
 
+use Psr\Http\Message\StreamInterface;
+
 /**
  * Interface for http body Encoder
  */
@@ -21,7 +23,7 @@ interface Encoder
     /**
      * Encodes the body content
      */
-    public function encode(): string;
+    public function encode(): StreamInterface;
 
     /**
      * Returns the supported MimeType

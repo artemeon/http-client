@@ -14,9 +14,9 @@ declare(strict_types=1);
 namespace Artemeon\HttpClient\Http;
 
 use Artemeon\HttpClient\Exception\HttpClientException;
-use Artemeon\HttpClient\Http\Body\Body;
 use Artemeon\HttpClient\Http\Header\Headers;
 use Artemeon\HttpClient\Psr7\ResponseInterfaceSubset;
+use Psr\Http\Message\StreamInterface;
 
 class Response extends Message implements ResponseInterfaceSubset
 {
@@ -28,12 +28,12 @@ class Response extends Message implements ResponseInterfaceSubset
      *
      * @param int $statusCode
      * @param string $version
-     * @param Body $body
+     * @param StreamInterface $body
      * @param Headers $headers
      *
      * @throws HttpClientException
      */
-    public function __construct(int $statusCode, string $version, Body $body, Headers $headers)
+    public function __construct(int $statusCode, string $version, StreamInterface $body, Headers $headers)
     {
         $this->statusCode = $statusCode;
         parent::__construct($headers, $body, $version);

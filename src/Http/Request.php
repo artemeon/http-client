@@ -15,14 +15,16 @@ namespace Artemeon\HttpClient\Http;
 
 use Artemeon\HttpClient\Exception\HttpClientException;
 use Artemeon\HttpClient\Http\Body\Body;
+use Artemeon\HttpClient\Http\Header\Fields\ContentLength;
+use Artemeon\HttpClient\Http\Header\Fields\ContentType;
+use Artemeon\HttpClient\Http\Header\Header;
 use Artemeon\HttpClient\Http\Header\Headers;
 use Artemeon\HttpClient\Psr7\RequestInterfaceSubset;
 use Artemeon\HttpClient\Psr7\UriInterfaceSubset;
+use Psr\Http\Message\StreamInterface;
 
 /**
  * Class to describe http requests
- *
- * @see https://developer.mozilla.org/de/docs/Web/HTTP/Methods
  */
 class Request extends Message implements RequestInterfaceSubset
 {
@@ -65,7 +67,7 @@ class Request extends Message implements RequestInterfaceSubset
         string $method,
         Url $url,
         ?Headers $headers = null,
-        ?Body $body = null,
+        ?StreamInterface $body = null,
         string $version = '1.1'
     ) {
         $this->method = $method;
@@ -130,11 +132,13 @@ class Request extends Message implements RequestInterfaceSubset
      */
     public static function forPost(Url $url, Body $body, ?Headers $headers = null, string $version = '1.1'): self
     {
+        $headers = self::addHeaderFromBody($body, $headers);
+
         return new self(
             self::METHOD_POST,
             $url,
             $headers,
-            $body,
+            $body->getStream(),
             $version
         );
     }
@@ -151,11 +155,13 @@ class Request extends Message implements RequestInterfaceSubset
      */
     public static function forPut(Url $url, Body $body, ?Headers $headers = null, string $version = '1.1'): self
     {
+        $headers = self::addHeaderFromBody($body, $headers);
+
         return new self(
             self::METHOD_PUT,
             $url,
             $headers,
-            $body,
+            $body->getStream(),
             $version
         );
     }
@@ -172,11 +178,13 @@ class Request extends Message implements RequestInterfaceSubset
      */
     public static function forPatch(Url $url, Body $body, ?Headers $headers = null, string $version = '1.1'): self
     {
+        $headers = self::addHeaderFromBody($body, $headers);
+
         return new self(
             self::METHOD_PATCH,
             $url,
             $headers,
-            $body,
+            $body->getStream(),
             $version
         );
     }
@@ -202,6 +210,21 @@ class Request extends Message implements RequestInterfaceSubset
     }
 
     /**
+     * @param Body $body
+     * @param Headers|null $headers
+     *
+     * @throws HttpClientException
+     */
+    public static function addHeaderFromBody(Body $body, ?Headers $headers): Headers
+    {
+        $headers = $headers ?? Headers::create();
+        $headers->addHeader(Header::fromField(ContentType::fromString($body->getMimeType())));
+        $headers->addHeader(Header::fromField(ContentLength::fromInt($body->getContentLength())));
+
+        return $headers;
+    }
+
+    /**
      * @inheritDoc
      */
     public function getMethod(): string
@@ -217,6 +240,9 @@ class Request extends Message implements RequestInterfaceSubset
         return $this->url;
     }
 
+    /**
+     * @inheritDoc
+     */
     public function getRequestTarget(): string
     {
         $target = $this->url->getPath();

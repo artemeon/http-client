@@ -13,8 +13,12 @@ declare(strict_types=1);
 
 namespace Artemeon\HttpClient\Stream;
 
+use Artemeon\HttpClient\Exception\HttpClientException;
 use Psr\Http\Message\StreamInterface;
 use RuntimeException;
+
+use function fopen;
+use function is_resource;
 
 class Stream implements StreamInterface
 {
@@ -31,15 +35,29 @@ class Stream implements StreamInterface
      * Stream constructor.
      *
      * @param resource $resource
+     * @throws HttpClientException
      */
     public function __construct($resource)
     {
+        if (!is_resource($resource)) {
+            throw new HttpClientException('Invalid resource');
+        }
+
         $this->resource = $resource;
         $this->metaData = stream_get_meta_data($resource);
     }
 
+    /**
+     * @throws HttpClientException
+     */
     public static function fromString(string $string): self
     {
+        $resource = fopen("php://temp", 'r+');
+
+        $instance = new self($resource);
+        $instance->write($string);
+
+        return $instance;
     }
 
     public static function fromFile($file)
@@ -51,7 +69,7 @@ class Stream implements StreamInterface
      */
     public function __toString()
     {
-        // TODO: Implement __toString() method.
+        return $this->getContents();
     }
 
     /**
@@ -137,6 +155,7 @@ class Stream implements StreamInterface
      */
     public function isWritable()
     {
+        return true;
         $writeModes = ['r+', 'w', 'w+', 'a', 'a+', 'x', 'x+',];
     }
 

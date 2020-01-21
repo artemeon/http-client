@@ -26,7 +26,7 @@ try {
     $request = Request::forGet(Url::fromString('http://www.heise.de'));
     $response = HttpClientFactory::create()->send($request);
 
-    print_r($response);
+    print_r($response->getBody()->getContents());
 } catch (HttpClientException $exception) {
     print_r($exception);
 }

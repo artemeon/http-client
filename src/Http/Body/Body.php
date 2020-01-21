@@ -13,9 +13,12 @@ declare(strict_types=1);
 
 namespace Artemeon\HttpClient\Http\Body;
 
+use Artemeon\HttpClient\Exception\HttpClientException;
 use Artemeon\HttpClient\Http\Body\Encoder\Encoder;
 use Artemeon\HttpClient\Http\Body\Reader\Reader;
 use Artemeon\HttpClient\Http\MediaType;
+use Artemeon\HttpClient\Stream\Stream;
+use Psr\Http\Message\StreamInterface;
 
 /**
  * Value object to cover all http body related content
@@ -29,16 +32,16 @@ class Body
     private $mimeType;
 
     /** @var string */
-    private $content;
+    private $stream;
 
     /**
      * Body constructor.
      */
-    private function __construct(string $mimeType, string $content)
+    private function __construct(string $mimeType, StreamInterface $stream)
     {
         $this->mimeType = $mimeType;
-        $this->content = $content;
-        $this->length = strlen($content);
+        $this->stream = $stream;
+        $this->length = $stream->getSize();
     }
 
     /**
@@ -46,10 +49,12 @@ class Body
      *
      * @param string $mimeType MIME-Type of the content
      * @param string $value String to set the content
+     *
+     * @throws HttpClientException
      */
     public static function fromString(string $mimeType, string $value): self
     {
-        return new self($mimeType, $value);
+        return new self($mimeType, Stream::fromString($value));
     }
 
     /**
@@ -64,13 +69,14 @@ class Body
 
     /**
      * Named constructor to create an instance based on the given Reader
+     * @throws HttpClientException
      */
     public static function fromReader(Reader $reader): self
     {
         $mimeType = MediaType::mapFileExtensionToMimeType($reader->getFileExtension());
         $value = $reader->read();
 
-        return new self($mimeType, $value);
+        return new self($mimeType, Stream::fromString($value));
     }
 
     /**
@@ -92,8 +98,8 @@ class Body
     /**
      * Returns the content string
      */
-    public function getContent(): string
+    public function getStream(): StreamInterface
     {
-        return $this->content;
+        return $this->stream;
     }
 }

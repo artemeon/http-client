@@ -15,8 +15,6 @@ namespace Artemeon\HttpClient\Http;
 
 use Artemeon\HttpClient\Exception\HttpClientException;
 use Artemeon\HttpClient\Http\Body\Body;
-use Artemeon\HttpClient\Http\Header\Fields\ContentLength;
-use Artemeon\HttpClient\Http\Header\Fields\ContentType;
 use Artemeon\HttpClient\Http\Header\Header;
 use Artemeon\HttpClient\Http\Header\Headers;
 use Artemeon\HttpClient\Psr7\MessageInterfaceSubset;
@@ -33,7 +31,7 @@ abstract class Message implements MessageInterfaceSubset
     /** @var Headers */
     protected $headers;
 
-    /** @var Body */
+    /** @var StreamInterface */
     protected $body;
 
     /** @var string */
@@ -48,16 +46,10 @@ abstract class Message implements MessageInterfaceSubset
      *
      * @throws HttpClientException
      */
-    protected function __construct(?Headers $headers = null, ?Body $body = null, string $version = '1.1')
+    protected function __construct(?Headers $headers = null, StreamInterface $body = null, string $version = '1.1')
     {
         $this->headers = $headers ?? new Headers();
         $this->body = $body;
-
-        if ($body instanceof Body) {
-            $this->headers->addHeader(Header::fromField(ContentType::fromString($body->getMimeType())));
-            $this->headers->addHeader(Header::fromField(ContentLength::fromInt($body->getContentLength())));
-        }
-
         $this->version = $version;
     }
 
@@ -78,6 +70,7 @@ abstract class Message implements MessageInterfaceSubset
 
     /**
      * @inheritDoc
+     * @throws HttpClientException
      */
     public function getBody(): StreamInterface
     {

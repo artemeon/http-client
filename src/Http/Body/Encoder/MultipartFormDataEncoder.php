@@ -15,6 +15,8 @@ namespace Artemeon\HttpClient\Http\Body\Encoder;
 
 use Artemeon\HttpClient\Exception\HttpClientException;
 use Artemeon\HttpClient\Http\MediaType;
+use Artemeon\HttpClient\Stream\Stream;
+use Psr\Http\Message\StreamInterface;
 
 /**
  * Encoder for "multipart/form-data" encoded body content
@@ -97,8 +99,9 @@ class MultipartFormDataEncoder implements Encoder
 
     /**
      * @inheritDoc
+     * @throws HttpClientException
      */
-    public function encode(): string
+    public function encode(): StreamInterface
     {
         $parts = '';
 
@@ -106,7 +109,7 @@ class MultipartFormDataEncoder implements Encoder
             $parts .= $parts;
         }
 
-        return $parts . $this->boundary . "--\r\n";
+        return Stream::fromString($parts . $this->boundary . "--\r\n");
     }
 
     /**
