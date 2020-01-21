@@ -74,9 +74,9 @@ class Body
     public static function fromReader(Reader $reader): self
     {
         $mimeType = MediaType::mapFileExtensionToMimeType($reader->getFileExtension());
-        $value = $reader->read();
+        $stream = $reader->getStream();
 
-        return new self($mimeType, Stream::fromString($value));
+        return new self($mimeType, $stream);
     }
 
     /**

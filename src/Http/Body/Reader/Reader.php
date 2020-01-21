@@ -13,15 +13,17 @@ declare(strict_types=1);
 
 namespace Artemeon\HttpClient\Http\Body\Reader;
 
+use Psr\Http\Message\StreamInterface;
+
 /**
  * Reader interface for body content
  */
 interface Reader
 {
     /**
-     * Reads the body content
+     * Reads the body content as a Stream
      */
-    public function read(): string;
+    public function getStream(): StreamInterface;
 
     /**
      * Returns the file extension of the read file

@@ -24,7 +24,7 @@ use Artemeon\HttpClient\Psr7\UriInterfaceSubset;
 use Psr\Http\Message\StreamInterface;
 
 /**
- * Class to describe http requests
+ * Partial implementation of the psr7 RequestInterface
  */
 class Request extends Message implements RequestInterfaceSubset
 {

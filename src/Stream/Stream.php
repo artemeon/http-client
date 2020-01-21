@@ -17,9 +17,6 @@ use Artemeon\HttpClient\Exception\HttpClientException;
 use Psr\Http\Message\StreamInterface;
 use RuntimeException;
 
-use function fopen;
-use function is_resource;
-
 class Stream implements StreamInterface
 {
     /** @var resource */
@@ -35,6 +32,7 @@ class Stream implements StreamInterface
      * Stream constructor.
      *
      * @param resource $resource
+     *
      * @throws HttpClientException
      */
     public function __construct($resource)
@@ -60,8 +58,23 @@ class Stream implements StreamInterface
         return $instance;
     }
 
-    public static function fromFile($file)
+    /**
+     * @param string $file
+     * @param string|null $wrapper
+     * @param array|null $streamOptions
+     *
+     * @return Stream
+     * @throws HttpClientException
+     */
+    public static function fromFile(string $file)
     {
+        $resource = fopen($file, 'r+');
+
+        if (is_resource($resource)) {
+            throw new HttpClientException("Cam't open file $file");
+        }
+
+        return new self($resource);
     }
 
     /**
@@ -95,7 +108,7 @@ class Stream implements StreamInterface
     {
         $fstat = fstat($this->resource);
 
-        if ($fstat['size'] > 0) {
+        if ($fstat['size'] < 0) {
             return null;
         }
 

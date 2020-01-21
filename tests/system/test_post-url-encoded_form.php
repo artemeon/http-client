@@ -17,15 +17,20 @@ use Artemeon\HttpClient\Client\HttpClientFactory;
 use Artemeon\HttpClient\Exception\HttpClientException;
 use Artemeon\HttpClient\Http\Body\Body;
 use Artemeon\HttpClient\Http\Body\Encoder\FormUrlEncoder;
+use Artemeon\HttpClient\Http\Header\Fields\Authorisation;
+use Artemeon\HttpClient\Http\Header\Headers;
 use Artemeon\HttpClient\Http\Request;
 use Artemeon\HttpClient\Http\Url;
 
 use function print_r;
 
+require '../../vendor/autoload.php';
+
 try {
     $request = Request::forPost(
-        Url::fromString('http://test.de'),
-        Body::fromEncoder(FormUrlEncoder::fromArray(["test" => 2342]))
+        Url::fromString('http://tgdfgd.de'),
+        Body::fromEncoder(FormUrlEncoder::fromArray(["test" => 2342])),
+        Headers::fromFields([Authorisation::forAuthBasic('john.doe', 'geheim')])
     );
 
     $response = HttpClientFactory::create()->send($request);
