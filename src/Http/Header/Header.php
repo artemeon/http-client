@@ -37,13 +37,13 @@ class Header
 
     /**
      * Named constructor to create an instance based on the given string values
-
+     *
      * @param string $name Name of the http header field
-     * @param string $value Value of the http header field
+     * @param string $values Value of the http header field
      */
-    public static function fromString(string $name, string $value): self
+    public static function fromString(string $name, array $values): self
     {
-        return new self($name, [$value]);
+        return new self($name, $values);
     }
 
     /**
@@ -54,7 +54,6 @@ class Header
     public static function fromField(HeaderField $headerField): self
     {
         return new self($headerField->getName(), [$headerField->getValue()]);
-
     }
 
     /**

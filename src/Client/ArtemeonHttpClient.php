@@ -22,8 +22,6 @@ use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Psr7\Request as GuzzleRequest;
 use Psr\Http\Message\ResponseInterface as GuzzleResponse;
 
-use function implode;
-
 class ArtemeonHttpClient implements HttpClient
 {
     /** @var GuzzleClient */
@@ -61,15 +59,17 @@ class ArtemeonHttpClient implements HttpClient
 
     /**
      * Converts our Request object to a GuzzleRequest
+     *
+     * @throws HttpClientException
      */
     private function convertToGuzzleRequest(Request $request): GuzzleRequest
     {
-
-
         return new GuzzleRequest(
             $request->getMethod(),
-            $request->getUrl()->__toString(),
-            $request->getHeaders()
+            $request->getUrl(),
+            $request->getHeaders(),
+            $request->getBody(),
+            $request->getProtocolVersion()
         );
     }
 
@@ -80,10 +80,10 @@ class ArtemeonHttpClient implements HttpClient
      */
     private function convertFromGuzzleResponse(GuzzleResponse $guzzleResponse): Response
     {
-        $headers = new Headers();
+        $headers = Headers::create();
 
-        foreach ($guzzleResponse->getHeaders() as $headerField => $headerValue) {
-            $headers->addHeader(Header::fromString($headerField, implode(' ', $headerValue)));
+        foreach (array_keys($guzzleResponse->getHeaders()) as $headerField) {
+            $headers->addHeader(Header::fromString($headerField, $guzzleResponse->getHeader($headerField)));
         }
 
         return new Response(

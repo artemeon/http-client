@@ -18,15 +18,23 @@ use Artemeon\HttpClient\Exception\HttpClientException;
 use Countable;
 use IteratorAggregate;
 
-use function strtolower;
-
 /**
  * Header collection class for http requests and responses
  */
 class Headers implements Countable, IteratorAggregate
 {
     /** @var Header[] */
-    private $headers = [];
+    private $headers;
+
+    /**
+     * Headers constructor.
+     *
+     * @param Header[] $headers
+     */
+    private function __construct()
+    {
+        $this->headers = [];
+    }
 
     /**
      * Named constructor to create an instance based on the given array of HeaderField objects

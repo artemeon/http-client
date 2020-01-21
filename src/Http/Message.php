@@ -48,7 +48,7 @@ abstract class Message implements MessageInterfaceSubset
      */
     protected function __construct(?Headers $headers = null, StreamInterface $body = null, string $version = '1.1')
     {
-        $this->headers = $headers ?? new Headers();
+        $this->headers = $headers ?? Headers::create();
         $this->body = $body;
         $this->version = $version;
     }
