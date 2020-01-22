@@ -17,7 +17,7 @@ use Artemeon\HttpClient\Exception\HttpClientException;
 use Artemeon\HttpClient\Http\Request;
 use Exception;
 
-class RequestException extends HttpClientException
+class TransferException extends HttpClientException
 {
     /** @var Request */
     private $request;

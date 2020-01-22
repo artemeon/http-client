@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Artemeon\HttpClient\Http\Body\Encoder;
 
 use Artemeon\HttpClient\Exception\HttpClientException;
+use Artemeon\HttpClient\Http\Body\Reader\Reader;
 use Artemeon\HttpClient\Http\MediaType;
 use Artemeon\HttpClient\Stream\Stream;
 use Psr\Http\Message\StreamInterface;
@@ -45,6 +46,7 @@ class JsonEncoder implements Encoder
         $this->value = $value;
         $this->options = $options;
     }
+
     /**
      * Named constructor to create an instance based on the given array
      *
@@ -84,6 +86,16 @@ class JsonEncoder implements Encoder
     public static function fromString(string $value): self
     {
         return new self($value);
+    }
+
+    /**
+     * Named constructor to create an instance based on the given reader
+     *
+     * @param Reader $reader
+     */
+    public static function fromReader(Reader $reader)
+    {
+        return new self($reader->getStream()->getContents());
     }
 
     /**

@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Artemeon\HttpClient\Exception\Request\Http;
 
-use Artemeon\HttpClient\Exception\Request\RequestException;
+use Artemeon\HttpClient\Exception\Request\TransferException;
 use Artemeon\HttpClient\Http\Request;
 use Artemeon\HttpClient\Http\Response;
 use Exception;
@@ -21,7 +21,7 @@ use Exception;
 /**
  * Exception class to catch all possible http status code ranges
  */
-class ResponseException extends RequestException
+class ResponseException extends TransferException
 {
     /** @var Response */
     private $response;

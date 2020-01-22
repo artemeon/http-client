@@ -13,12 +13,11 @@ declare(strict_types=1);
 
 namespace Artemeon\HttpClient\Exception\Request\Network;
 
-use Artemeon\HttpClient\Exception\Request\RequestException;
+use Artemeon\HttpClient\Exception\Request\TransferException;
 
 /**
  * Exception class to catch all network related exceptions
  */
-class ConnectException extends RequestException
+class ConnectException extends TransferException
 {
-
 }

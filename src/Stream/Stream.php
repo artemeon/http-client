@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Artemeon\HttpClient\Stream;
 
+use Artemeon\HttpClient\Exception\HttpClientException;
 use Psr\Http\Message\StreamInterface;
 use RuntimeException;
 
@@ -37,7 +38,7 @@ class Stream implements StreamInterface
      *
      * @param resource $resource
      *
-     * @throws RuntimeException
+     * @throws HttpClientException
      */
     public function __construct($resource)
     {
@@ -54,11 +55,11 @@ class Stream implements StreamInterface
      *
      * @param string $string
      *
-     * @throws RuntimeException
+     * @throws HttpClientException
      */
     public static function fromString(string $string): self
     {
-        $resource = fopen("php://temp", 'rw');
+        $resource = fopen("php://temp", 'r+');
 
         $instance = new self($resource);
         $instance->write($string);
@@ -72,14 +73,14 @@ class Stream implements StreamInterface
      * @param string $file Path to the file
      * @param string $mode Stream Modes: @see https://www.php.net/manual/de/function.fopen.php
      *
-     * @throws RuntimeException;
+     * @throws HttpClientException;
      */
     public static function fromFile(string $file, $mode = 'r+'): self
     {
         $resource = fopen($file, $mode);
 
-        if (is_resource($resource)) {
-            throw new RuntimeException("Cam't open file $file");
+        if (!is_resource($resource)) {
+            throw new HttpClientException("Cam't open file $file");
         }
 
         return new self($resource);
@@ -90,9 +91,15 @@ class Stream implements StreamInterface
      */
     public function __toString()
     {
-        $this->assertStreamIsNotDetached();
-        $this->rewind();
-        return $this->getContents();
+        try {
+            $this->assertStreamIsNotDetached();
+            $this->rewind();
+            $content = $this->getContents();
+        } catch (HttpClientException $exception) {
+            $content = '';
+        }
+
+        return $content;
     }
 
     /**
@@ -116,7 +123,7 @@ class Stream implements StreamInterface
 
     /**
      * @inheritDoc
-     * @throws RuntimeException
+     * @throws HttpClientException
      */
     public function getSize()
     {
@@ -139,7 +146,7 @@ class Stream implements StreamInterface
         $position = ftell($this->resource);
 
         if ($position === false) {
-            throw new RuntimeException("Can't determine postition");
+            throw new HttpClientException("Can't determine position");
         }
 
         return $position;
@@ -162,7 +169,7 @@ class Stream implements StreamInterface
         $this->assertStreamIsNotDetached();
 
         // According to the fopen manual mode 'a' and 'a+' are not seekable
-       foreach (['a', 'a+'] as $mode) {
+        foreach (['a', 'a+'] as $mode) {
             if (strpos($this->metaData["mode"], $mode) >= 0) {
                 return false;
             }
@@ -180,7 +187,7 @@ class Stream implements StreamInterface
         $result = fseek($this->resource, $offset, $whence);
 
         if ($result === -1) {
-            throw new RuntimeException("Cant't seek with offset $offset");
+            throw new HttpClientException("Cant't seek with offset $offset");
         }
     }
 
@@ -192,7 +199,7 @@ class Stream implements StreamInterface
     {
         $this->assertStreamIsNotDetached();
         if (!$this->isSeekable()) {
-            throw new RuntimeException('Stream is not seekable');
+            throw new HttpClientException('Stream is not seekable');
         }
 
         $this->seek(0);
@@ -208,7 +215,7 @@ class Stream implements StreamInterface
         $writeModes = ['r+', 'w', 'w+', 'a', 'a+', 'x', 'x+', 'c', 'c+'];
 
         foreach ($writeModes as $mode) {
-            if (strpos($this->metaData["mode"], $mode)  >= 0) {
+            if (strpos($this->metaData["mode"], $mode) >= 0) {
                 return true;
             }
         }
@@ -218,7 +225,7 @@ class Stream implements StreamInterface
 
     /**
      * @inheritDoc
-     * @throws RuntimeException
+     * @throws HttpClientException
      */
     public function write($string)
     {
@@ -236,7 +243,7 @@ class Stream implements StreamInterface
 
     /**
      * @inheritDoc
-     * @throws RuntimeException
+     * @throws HttpClientException
      */
     public function isReadable()
     {
@@ -254,7 +261,7 @@ class Stream implements StreamInterface
 
     /**
      * @inheritDoc
-     * @throws RuntimeException
+     * @throws HttpClientException
      */
     public function read($length)
     {
@@ -264,7 +271,7 @@ class Stream implements StreamInterface
         $string = fread($this->resource, $length);
 
         if ($string === false) {
-            throw  new RuntimeException("Can't read from stream");
+            throw  new HttpClientException("Can't read from stream");
         }
 
         return $string;
@@ -272,7 +279,7 @@ class Stream implements StreamInterface
 
     /**
      * @inheritDoc
-     * @throws RuntimeException
+     * @throws HttpClientException
      */
     public function getContents()
     {
@@ -282,7 +289,7 @@ class Stream implements StreamInterface
         $content = stream_get_contents($this->resource);
 
         if ($content === false) {
-            throw  new RuntimeException("Can't read content from stream");
+            throw  new HttpClientException("Can't read content from stream");
         }
 
         return $content;
@@ -290,7 +297,7 @@ class Stream implements StreamInterface
 
     /**
      * @inheritDoc
-     * @throws RuntimeException
+     * @throws HttpClientException
      */
     public function getMetadata($key = null)
     {
@@ -308,32 +315,32 @@ class Stream implements StreamInterface
     }
 
     /**
-     * @throws RuntimeException
+     * @throws HttpClientException
      */
     private function assertStreamIsNotDetached(): void
     {
         if ($this->resource === null) {
-            throw new RuntimeException('Stream is detached');
+            throw new HttpClientException('Stream is detached');
         }
     }
 
     /**
-     * @throws RuntimeException
+     * @throws HttpClientException
      */
     private function assertStreamIsReadable(): void
     {
         if (!$this->isReadable()) {
-            throw new RuntimeException('Stream is detached');
+            throw new HttpClientException('Stream is not readable');
         }
     }
 
     /**
-     * @throws RuntimeException
+     * @throws HttpClientException
      */
     private function assertStreamIsWriteable(): void
     {
         if (!$this->isWritable()) {
-            throw new RuntimeException('Stream is detached');
+            throw new HttpClientException('Stream is not writeable');
         }
     }
 }

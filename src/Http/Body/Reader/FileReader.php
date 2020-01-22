@@ -39,7 +39,7 @@ class FileReader implements Reader
      */
     public function __construct(StreamInterface $stream, string $file)
     {
-        if ($stream->isReadable()) {
+        if (!$stream->isReadable()) {
             throw new HttpClientException('Stream is nor readable');
         }
 
@@ -55,7 +55,7 @@ class FileReader implements Reader
      */
     public static function fromFile(string $file): self
     {
-        return new self(Stream::fromFile($file), $file);
+        return new self(Stream::fromFile($file, 'r'), $file);
     }
 
     /**
