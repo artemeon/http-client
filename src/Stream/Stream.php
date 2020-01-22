@@ -17,6 +17,9 @@ use Artemeon\HttpClient\Exception\HttpClientException;
 use Psr\Http\Message\StreamInterface;
 use RuntimeException;
 
+use function intval;
+use function is_resource;
+
 /**
  * Stream interface implementation for large strings and files
  *
@@ -48,6 +51,14 @@ class Stream implements StreamInterface
 
         $this->resource = $resource;
         $this->metaData = stream_get_meta_data($resource);
+    }
+
+    /**
+     * Force to close the file handle
+     */
+    public function __destruct()
+    {
+        $this->close();
     }
 
     /**
@@ -107,8 +118,9 @@ class Stream implements StreamInterface
      */
     public function close()
     {
-        $this->assertStreamIsNotDetached();
-        fclose($this->resource);
+        if (is_resource($this->resource)) {
+            fclose($this->resource);
+        }
     }
 
     /**
@@ -127,7 +139,6 @@ class Stream implements StreamInterface
      */
     public function getSize()
     {
-        $this->assertStreamIsNotDetached();
         $fstat = fstat($this->resource);
 
         if ($fstat['size'] < 0 || !isset($fstat['size'])) {
@@ -170,7 +181,7 @@ class Stream implements StreamInterface
 
         // According to the fopen manual mode 'a' and 'a+' are not seekable
         foreach (['a', 'a+'] as $mode) {
-            if (strpos($this->metaData["mode"], $mode) >= 0) {
+            if (strpos($this->metaData["mode"], $mode) !== false) {
                 return false;
             }
         }
@@ -198,6 +209,7 @@ class Stream implements StreamInterface
     public function rewind()
     {
         $this->assertStreamIsNotDetached();
+
         if (!$this->isSeekable()) {
             throw new HttpClientException('Stream is not seekable');
         }
@@ -265,6 +277,8 @@ class Stream implements StreamInterface
      */
     public function read($length)
     {
+        $length = intval($length);
+
         $this->assertStreamIsNotDetached();
         $this->assertStreamIsReadable();
 
