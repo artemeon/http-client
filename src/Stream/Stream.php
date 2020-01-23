@@ -63,17 +63,28 @@ class Stream implements StreamInterface
     /**
      * Named constructor to create an instance based on the given string
      *
-     * @param string $string
+     * @param string $string String content
+     * @param string $mode @see https://www.php.net/manual/de/function.fopen.php
      * @throws HttpClientException
      */
-    public static function fromString(string $string): self
+    public static function fromString(string $string, string $mode = 'r+'): self
     {
-        $resource = fopen("php://temp", 'r+');
-
+        $resource = fopen("php://temp", $mode);
         $instance = new self($resource);
         $instance->write($string);
 
         return $instance;
+    }
+
+    /**
+     * Named constructor to create an instance based on the given file mode
+     *
+     * @param string $mode Stream Modes: @see https://www.php.net/manual/de/function.fopen.php
+     */
+    public static function fromFileMode(string $mode): self
+    {
+        $resource = fopen("php://temp", $mode);
+        return new self($resource);
     }
 
     /**
@@ -142,10 +153,6 @@ class Stream implements StreamInterface
 
         $fstat = fstat($this->resource);
 
-        if ($fstat['size'] < 0 || !isset($fstat['size'])) {
-            return null;
-        }
-
         return ($fstat['size']);
     }
 
@@ -161,7 +168,7 @@ class Stream implements StreamInterface
             throw new HttpClientException("Can't determine position");
         }
 
-        return $position;
+        return (int) $position;
     }
 
     /**
@@ -170,7 +177,8 @@ class Stream implements StreamInterface
     public function eof()
     {
         if (!is_resource($this->resource)) {
-            return false;
+            // php.net doc: feof returns TRUE if the file pointer is at EOF or an error occurs
+            return true;
         }
 
         return feof($this->resource);
@@ -192,7 +200,7 @@ class Stream implements StreamInterface
             }
         }
 
-        return $this->getMetadata('seekable');
+        return (bool) $this->getMetadata('seekable');
     }
 
     /**
@@ -236,7 +244,7 @@ class Stream implements StreamInterface
         $writeModes = ['r+', 'w', 'w+', 'a', 'a+', 'x', 'x+', 'c', 'c+'];
 
         foreach ($writeModes as $mode) {
-            if (strpos($this->metaData["mode"], $mode) >= 0) {
+            if (strpos($this->metaData["mode"], $mode) !== false) {
                 return true;
             }
         }
@@ -272,10 +280,10 @@ class Stream implements StreamInterface
             return false;
         }
 
-        $readModes = ['r', 'r+', 'w+', 'a+', 'x', 'x+', 'c+'];
+        $readModes = ['r', 'r+', 'w+', 'a+', 'x+', 'c+'];
 
         foreach ($readModes as $mode) {
-            if (strpos($this->metaData["mode"], $mode) >= 0) {
+            if (strpos($this->metaData["mode"], $mode) !== false) {
                 return true;
             }
         }
