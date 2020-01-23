@@ -40,7 +40,6 @@ class Stream implements StreamInterface
      * Stream constructor.
      *
      * @param resource $resource
-     *
      * @throws HttpClientException
      */
     public function __construct($resource)
@@ -65,7 +64,6 @@ class Stream implements StreamInterface
      * Named constructor to create an instance based on the given string
      *
      * @param string $string
-     *
      * @throws HttpClientException
      */
     public static function fromString(string $string): self
@@ -83,7 +81,6 @@ class Stream implements StreamInterface
      *
      * @param string $file Path to the file
      * @param string $mode Stream Modes: @see https://www.php.net/manual/de/function.fopen.php
-     *
      * @throws HttpClientException;
      */
     public static function fromFile(string $file, $mode = 'r+'): self
@@ -120,6 +117,7 @@ class Stream implements StreamInterface
     {
         if (is_resource($this->resource)) {
             fclose($this->resource);
+            $this->resource = null;
         }
     }
 
@@ -130,7 +128,6 @@ class Stream implements StreamInterface
     {
         $this->close();
         $this->metaData = [];
-        $this->resource = null;
     }
 
     /**
@@ -139,6 +136,10 @@ class Stream implements StreamInterface
      */
     public function getSize()
     {
+        if (!is_resource($this->resource)) {
+            return null;
+        }
+
         $fstat = fstat($this->resource);
 
         if ($fstat['size'] < 0 || !isset($fstat['size'])) {
@@ -168,8 +169,11 @@ class Stream implements StreamInterface
      */
     public function eof()
     {
-        $this->assertStreamIsNotDetached();
-        feof($this->resource);
+        if (!is_resource($this->resource)) {
+            return false;
+        }
+
+        return feof($this->resource);
     }
 
     /**
@@ -177,7 +181,9 @@ class Stream implements StreamInterface
      */
     public function isSeekable()
     {
-        $this->assertStreamIsNotDetached();
+        if (!is_resource($this->resource)) {
+            return false;
+        }
 
         // According to the fopen manual mode 'a' and 'a+' are not seekable
         foreach (['a', 'a+'] as $mode) {
@@ -223,7 +229,10 @@ class Stream implements StreamInterface
      */
     public function isWritable()
     {
-        $this->assertStreamIsNotDetached();
+        if (!is_resource($this->resource)) {
+            return false;
+        }
+
         $writeModes = ['r+', 'w', 'w+', 'a', 'a+', 'x', 'x+', 'c', 'c+'];
 
         foreach ($writeModes as $mode) {
@@ -244,7 +253,7 @@ class Stream implements StreamInterface
         $this->assertStreamIsNotDetached();
         $this->assertStreamIsWriteable();
 
-        $bytes = fwrite($this->resource, $string);
+        $bytes = fwrite($this->resource, strval($string));
 
         if ($bytes === false) {
             throw new RuntimeException("Cant't write to stream");
@@ -259,7 +268,10 @@ class Stream implements StreamInterface
      */
     public function isReadable()
     {
-        $this->assertStreamIsNotDetached();
+        if (!is_resource($this->resource)) {
+            return false;
+        }
+
         $readModes = ['r', 'r+', 'w+', 'a+', 'x', 'x+', 'c+'];
 
         foreach ($readModes as $mode) {
@@ -311,12 +323,9 @@ class Stream implements StreamInterface
 
     /**
      * @inheritDoc
-     * @throws HttpClientException
      */
     public function getMetadata($key = null)
     {
-        $this->assertStreamIsNotDetached();
-
         if ($key === null) {
             return $this->metaData;
         }

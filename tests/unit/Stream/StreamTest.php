@@ -13,13 +13,15 @@ declare(strict_types=1);
 
 namespace Artemeon\HttpClient\Tests\Stream;
 
-use Artemeon\HttpClient\Exception\HttpClientException;
 use Artemeon\HttpClient\Stream\Stream;
 use phpmock\prophecy\PHPProphet;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 use Prophecy\Prophecy\ProphecyInterface;
 
+/**
+ * Class StreamTest
+ */
 class StreamTest extends TestCase
 {
     /** @var Stream */
@@ -55,7 +57,6 @@ class StreamTest extends TestCase
     {
         $this->stream = Stream::fromString('some_content');
         $this->stream->detach();
-
         $content = $this->stream->__toString();
 
         self::assertEmpty($content);
@@ -68,7 +69,6 @@ class StreamTest extends TestCase
     {
         $expected = 'some_content';
         $this->stream = Stream::fromString($expected);
-
         $content = $this->stream->__toString();
 
         self::assertSame($expected, $content);
@@ -90,27 +90,72 @@ class StreamTest extends TestCase
 
     /**
      * @test
+     * @doesNotPerformAssertions
+     * @runInSeparateProcess
      */
-    public function close_IsDetached_ThrowsException(): void
+    public function close_IsDetached_ShouldNotCallClose(): void
     {
+        $this->globalProphecy->fclose(Argument::type('resource'))->shouldBeCalledTimes(1);
+        $this->globalProphecy->reveal();
+
         $this->stream = Stream::fromString('content');
         $this->stream->detach();
-        $this->expectException(HttpClientException::class);
         $this->stream->close();
+    }
+
+    /**
+     * @test
+     * @doesNotPerformAssertions
+     * @runInSeparateProcess
+     */
+    public function close_ShouldCallClose(): void
+    {
+        $this->globalProphecy->fclose(Argument::type('resource'))->will(
+            function ($args) {
+                return fclose($args[0]);
+            }
+        )->shouldBeCalled();
+
+        $this->globalProphecy->reveal();
+
+        $this->stream = Stream::fromString('content');
+        $this->stream->close();
+        $this->stream->eof();
     }
 
     /**
      * @test
      * @runInSeparateProcess
      */
-    public function close_CloseResource(): void
+    public function detach_ShouldCallClose(): void
     {
-        $this->globalProphecy->fclose(Argument::type('resource'))->shouldBeCalled();
-        $this->globalProphecy->reveal();
+        $this->globalProphecy->fclose(Argument::type('resource'))->will(
+            function ($args) {
+                return fclose($args[0]);
+            }
+        )->shouldBeCalled();
 
+        $this->globalProphecy->reveal();
         $this->stream = Stream::fromString('content');
-        $this->stream->close();
+        $this->stream->detach();
+
+        self::assertSame([], $this->stream->getMetadata());
     }
 
+    /**
+     * @test
+     */
+    public function getSize_ReturnExpectedValue(): void
+    {
+        $this->globalProphecy->fstat(Argument::type('resource'))->will(
+            function ($args) {
+                return fstat($args[0]);
+            }
+        )->shouldBeCalled();
 
+        $this->globalProphecy->reveal();
+        $this->stream = Stream::fromString('content');
+
+        self::assertSame(7, $this->stream->getSize());
+    }
 }
