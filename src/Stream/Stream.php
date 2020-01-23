@@ -17,9 +17,6 @@ use Artemeon\HttpClient\Exception\HttpClientException;
 use Psr\Http\Message\StreamInterface;
 use RuntimeException;
 
-use function intval;
-use function is_resource;
-
 /**
  * Stream interface implementation for large strings and files
  *
@@ -111,7 +108,6 @@ class Stream implements StreamInterface
     public function __toString()
     {
         try {
-            $this->assertStreamIsNotDetached();
             $this->rewind();
             $content = $this->getContents();
         } catch (HttpClientException $exception) {
@@ -297,12 +293,10 @@ class Stream implements StreamInterface
      */
     public function read($length)
     {
-        $length = intval($length);
-
         $this->assertStreamIsNotDetached();
         $this->assertStreamIsReadable();
 
-        $string = fread($this->resource, $length);
+        $string = fread($this->resource, intval($length));
 
         if ($string === false) {
             throw  new HttpClientException("Can't read from stream");

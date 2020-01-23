@@ -205,7 +205,7 @@ class StreamTest extends TestCase
     /**
      * @test
      */
-    public function tell_ftellReturnsFalse_ThrowsException(): void
+    public function tell_FtellReturnsFalse_ThrowsException(): void
     {
         $this->globalProphecy->ftell(Argument::type('resource'))->willReturn(false);
         $this->globalProphecy->reveal();
@@ -513,7 +513,7 @@ class StreamTest extends TestCase
     }
 
     /**
-     * All fopen modes for the status isWriteable
+     * All fopen modes for the status isReadable
      */
     public function provideIsReadable(): array
     {
