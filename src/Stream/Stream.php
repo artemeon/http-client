@@ -14,7 +14,6 @@ declare(strict_types=1);
 namespace Artemeon\HttpClient\Stream;
 
 use Artemeon\HttpClient\Exception\HttpClientException;
-use Psr\Http\Message\StreamInterface;
 use RuntimeException;
 
 /**
@@ -22,7 +21,7 @@ use RuntimeException;
  *
  * @see https://www.php.net/manual/de/intro.stream.php
  */
-class Stream implements StreamInterface
+class Stream implements AppendableStream
 {
     /** @var resource */
     private $resource;
@@ -120,12 +119,43 @@ class Stream implements StreamInterface
     /**
      * @inheritDoc
      */
+    public function appendStream(AppendableStream $stream): int
+    {
+        $this->assertStreamIsNotDetached();
+        $this->assertStreamIsWriteable();
+
+        if (!$stream->isReadable()) {
+            throw new HttpClientException("Can't append not readable stream");
+        }
+
+        $stream->rewind();
+        $bytes = stream_copy_to_stream($stream->getResource(), $this->resource);
+
+        if ($bytes === false) {
+            throw new HttpClientException("Append failed");
+        }
+
+        return  $bytes;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getResource()
+    {
+        return $this->resource;
+    }
+
+    /**
+     * @inheritDoc
+     */
     public function close()
     {
         if (is_resource($this->resource)) {
-            fclose($this->resource);
-            $this->resource = null;
+            return;
         }
+
+        fclose($this->resource);
     }
 
     /**
@@ -135,6 +165,7 @@ class Stream implements StreamInterface
     {
         $this->close();
         $this->metaData = [];
+        $this->resource = null;
     }
 
     /**
@@ -163,7 +194,7 @@ class Stream implements StreamInterface
             throw new HttpClientException("Can't determine position");
         }
 
-        return (int) $position;
+        return (int)$position;
     }
 
     /**
@@ -195,7 +226,7 @@ class Stream implements StreamInterface
             }
         }
 
-        return (bool) $this->getMetadata('seekable');
+        return (bool)$this->getMetadata('seekable');
     }
 
     /**
@@ -307,6 +338,9 @@ class Stream implements StreamInterface
     /**
      * @inheritDoc
      * @throws HttpClientException
+     *
+     * This function reads the complete stream fom the current! file pointer. If you
+     * want ensure to read the complete stream use __toString() instead.
      */
     public function getContents()
     {
@@ -367,4 +401,5 @@ class Stream implements StreamInterface
             throw new HttpClientException('Stream is not writeable');
         }
     }
+
 }

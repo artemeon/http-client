@@ -15,6 +15,9 @@ namespace Artemeon\HttpClient\Client;
 
 use GuzzleHttp\RequestOptions as GuzzleRequestOptions;
 
+/**
+ * Class to convert http-client options object to the guzzle options array format
+ */
 class ClientOptionsConverter
 {
     public function toGuzzleOptionsArray(ClientOptions $clientOptions): array
