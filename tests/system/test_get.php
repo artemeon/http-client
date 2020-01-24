@@ -18,8 +18,6 @@ use Artemeon\HttpClient\Exception\HttpClientException;
 use Artemeon\HttpClient\Http\Request;
 use Artemeon\HttpClient\Http\Url;
 
-use function print_r;
-
 require '../../vendor/autoload.php';
 
 try {

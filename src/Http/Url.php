@@ -16,17 +16,6 @@ namespace Artemeon\HttpClient\Http;
 use Artemeon\HttpClient\Exception\HttpClientException;
 use Artemeon\HttpClient\Psr7\UriInterfaceSubset;
 
-use function count;
-use function http_build_query;
-use function parse_url;
-
-use const PHP_URL_FRAGMENT;
-use const PHP_URL_HOST;
-use const PHP_URL_PASS;
-use const PHP_URL_PORT;
-use const PHP_URL_SCHEME;
-use const PHP_URL_USER;
-
 class Url implements UriInterfaceSubset
 {
     /** @var string */

@@ -22,8 +22,6 @@ use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 use Prophecy\Prophecy\ProphecyInterface;
 
-use function strlen;
-
 /**
  * Class StreamTest
  */

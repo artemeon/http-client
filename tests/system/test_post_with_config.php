@@ -24,16 +24,16 @@ use Artemeon\HttpClient\Http\Header\Headers;
 use Artemeon\HttpClient\Http\Request;
 use Artemeon\HttpClient\Http\Url;
 
-use function print_r;
-
 try {
     $request = Request::forPost(
         Url::fromString('http://test.de'),
         Body::fromEncoder(FormUrlEncoder::fromArray(["test" => 2342])),
-        Headers::fromFields([
-            Authorisation::forAuthBasic('John.Doe', 'geheim'),
-            UserAgent::fromString()
-        ])
+        Headers::fromFields(
+            [
+                Authorisation::forAuthBasic('John.Doe', 'geheim'),
+                UserAgent::fromString(),
+            ]
+        )
     );
 
     $clientOptions = ClientOptions::fromDefaults();

@@ -23,8 +23,6 @@ use Artemeon\HttpClient\Http\Header\Headers;
 use Artemeon\HttpClient\Http\Request;
 use Artemeon\HttpClient\Http\Url;
 
-use function var_dump;
-
 require '../../vendor/autoload.php';
 
 try {

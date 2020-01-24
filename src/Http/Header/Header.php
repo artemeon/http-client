@@ -13,8 +13,6 @@ declare(strict_types=1);
 
 namespace Artemeon\HttpClient\Http\Header;
 
-use function implode;
-
 /**
  * Value object for parsed http header fields
  */

@@ -85,7 +85,7 @@ class Stream implements StreamInterface
     }
 
     /**
-     * Named constructor to create an instance based on the given file an read/write mode
+     * Named constructor to create an instance based on the given file and read/write mode
      *
      * @param string $file Path to the file
      * @param string $mode Stream Modes: @see https://www.php.net/manual/de/function.fopen.php
@@ -139,7 +139,6 @@ class Stream implements StreamInterface
 
     /**
      * @inheritDoc
-     * @throws HttpClientException
      */
     public function getSize()
     {

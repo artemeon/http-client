@@ -17,8 +17,6 @@ use Artemeon\HttpClient\Exception\HttpClientException;
 use Artemeon\HttpClient\Stream\Stream;
 use Psr\Http\Message\StreamInterface;
 
-use function preg_match;
-
 /**
  * Reader to read body content from local and remote file system
  */

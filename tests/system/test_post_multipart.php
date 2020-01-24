@@ -22,8 +22,6 @@ use Artemeon\HttpClient\Http\Header\Headers;
 use Artemeon\HttpClient\Http\Request;
 use Artemeon\HttpClient\Http\Url;
 
-use function print_r;
-
 try {
     $request = Request::forPost(
         Url::fromString('http://test.de'),
