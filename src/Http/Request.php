@@ -203,20 +203,6 @@ class Request extends Message implements RequestInterfaceSubset
     }
 
     /**
-     * @param Body $body
-     * @param Headers|null $headers
-     * @throws HttpClientException
-     */
-    public static function addHeaderFromBody(Body $body, ?Headers $headers): Headers
-    {
-        $headers = $headers ?? Headers::create();
-        $headers->addHeader(Header::fromField(ContentType::fromString($body->getMimeType())));
-        $headers->addHeader(Header::fromField(ContentLength::fromInt($body->getContentLength())));
-
-        return $headers;
-    }
-
-    /**
      * @inheritDoc
      */
     public function getMethod(): string
@@ -248,5 +234,21 @@ class Request extends Message implements RequestInterfaceSubset
         }
 
         return $target;
+    }
+
+    /**
+     * Add the calculated header fields from the body to the headers collection
+     *
+     * @param Body $body
+     * @param Headers|null $headers
+     * @throws HttpClientException
+     */
+    private static function addHeaderFromBody(Body $body, ?Headers $headers): Headers
+    {
+        $headers = $headers ?? Headers::create();
+        $headers->addHeader(Header::fromField(ContentType::fromString($body->getMimeType())));
+        $headers->addHeader(Header::fromField(ContentLength::fromInt($body->getContentLength())));
+
+        return $headers;
     }
 }

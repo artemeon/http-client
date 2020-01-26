@@ -113,7 +113,7 @@ class MultipartFormDataEncoder implements Encoder
      */
     public function getMimeType(): string
     {
-        return MediaType::MULTIPART_FORM_DATA . '; boundary="' . $this->boundary . '"';
+        return sprintf('%s; boundary="%s"', MediaType::MULTIPART_FORM_DATA, $this->boundary);
     }
 
     /**

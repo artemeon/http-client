@@ -31,7 +31,7 @@ $transactions = [];
 $formatter = new MessageFormatter('{request}');
 
 try {
-    $request = Request::forPost(
+    $request = Request::forPut(
         Url::fromString('http://apache/endpoints/upload.php'),
         Body::fromEncoder(
             FormUrlEncoder::fromArray([
