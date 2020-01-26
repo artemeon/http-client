@@ -39,6 +39,12 @@ class MediaType
     /** @var string */
     public const GIF = "image/gif";
 
+    /** @var string  */
+    public const JPG = "image/jpeg";
+
+    /** @var string  */
+    public const PNG = "image/png";
+
     /** @var string */
     public const UNKNOWN = "application/octet-stream";
 
@@ -49,6 +55,8 @@ class MediaType
         'xml' => self::XML,
         'bmp' => self::BMP,
         'gif' => self::GIF,
+        'jpg' => self::JPG,
+        'png' => self::PNG,
     ];
 
     /**

@@ -151,7 +151,7 @@ class Stream implements AppendableStream
      */
     public function close()
     {
-        if (is_resource($this->resource)) {
+        if (!is_resource($this->resource)) {
             return;
         }
 

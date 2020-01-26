@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Artemeon\HttpClient\Http\Body\Encoder;
 
+use Artemeon\HttpClient\Exception\HttpClientException;
 use Psr\Http\Message\StreamInterface;
 
 /**
@@ -22,6 +23,8 @@ interface Encoder
 {
     /**
      * Encodes the body content
+     *
+     * @throws HttpClientException
      */
     public function encode(): StreamInterface;
 

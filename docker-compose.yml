@@ -8,13 +8,13 @@ services:
             - ./:/http-client
         networks:
             - http-client-network
-    nginx:
-        image: nginx:1-alpine
+    apache:
+        image: httpd:2.4-alpine
         ports:
             - 80:80
         volumes:
-            - ./:/http-client
-            - ./docker/nginx/site.conf:/etc/nginx/conf.d/default.conf
+            - ./tests/system:/usr/local/apache2/htdocs/
+            - ./docker/apache/httpd.conf:/usr/local/apache2/conf/httpd.conf
         networks:
             - http-client-network
 networks:

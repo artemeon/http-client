@@ -17,25 +17,31 @@ use Artemeon\HttpClient\Client\HttpClientFactory;
 use Artemeon\HttpClient\Exception\HttpClientException;
 use Artemeon\HttpClient\Http\Body\Body;
 use Artemeon\HttpClient\Http\Body\Encoder\MultipartFormDataEncoder;
-use Artemeon\HttpClient\Http\Header\Fields\Authorisation;
-use Artemeon\HttpClient\Http\Header\Headers;
 use Artemeon\HttpClient\Http\Request;
 use Artemeon\HttpClient\Http\Url;
+use Artemeon\HttpClient\Stream\Stream;
+use GuzzleHttp\MessageFormatter;
+
+require '../../vendor/autoload.php';
+
+$transactions = [];
+$formatter = new MessageFormatter('{request}');
 
 try {
     $request = Request::forPost(
-        Url::fromString('http://test.de'),
+        Url::fromString('http://apache/upload.php'),
         Body::fromEncoder(
             MultipartFormDataEncoder::create()
-                ->addFieldPart('test', 'dfgdfgd')
-                ->addFilePart('gdfdf', 'file.txt', 'sdfsdfsdfs')
-        ),
-        Headers::fromFields([Authorisation::forAuthBasic('John.Doe', 'geheim')])
+                ->addFieldPart('user', 'John.Doe')
+                ->addFieldPart('password', utf8_encode('gehüim'))
+                ->addFilePart('user_image', 'header_logo.png', Stream::fromFile('../fixtures/reader/header_logo.png'))
+        )
     );
 
-    $response = HttpClientFactory::create()->send($request);
-
-    print_r($response);
+    $response = HttpClientFactory::withMiddleware($transactions)->send($request);
+    echo $response->getBody()->__toString();
 } catch (HttpClientException $exception) {
     print_r($exception);
 }
+
+echo nl2br($formatter->format($transactions[0]['request']));

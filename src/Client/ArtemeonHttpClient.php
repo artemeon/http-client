@@ -36,6 +36,9 @@ use GuzzleHttp\Psr7\Request as GuzzleRequest;
 use Psr\Http\Message\ResponseInterface as GuzzleResponse;
 use RuntimeException;
 
+/**
+ * HttpClient implementation with guzzle
+ */
 class ArtemeonHttpClient implements HttpClient
 {
     /** @var GuzzleClient */

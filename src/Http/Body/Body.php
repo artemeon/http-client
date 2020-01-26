@@ -69,6 +69,7 @@ class Body
 
     /**
      * Named constructor to create an instance based on the given Reader
+     *
      * @throws HttpClientException
      */
     public static function fromReader(Reader $reader): self

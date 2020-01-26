@@ -32,7 +32,6 @@ class FileReader implements Reader
      * FileReader constructor.
      *
      * @param StreamInterface $stream
-     *
      * @throws HttpClientException
      */
     public function __construct(StreamInterface $stream, string $file)

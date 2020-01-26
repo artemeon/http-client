@@ -60,7 +60,6 @@ class Request extends Message implements RequestInterfaceSubset
      * @param Headers|null $headers
      * @param Body|null $body
      * @param string $version
-     *
      * @throws HttpClientException
      */
     private function __construct(
@@ -86,7 +85,6 @@ class Request extends Message implements RequestInterfaceSubset
      * @param Url $url The Url object
      * @param Headers|null $headers Optional: Headers collection or null
      * @param float $version Optional: http protocol version string
-     *
      * @throws HttpClientException
      */
     public static function forGet(Url $url, ?Headers $headers = null, string $version = '1.1'): self
@@ -106,7 +104,6 @@ class Request extends Message implements RequestInterfaceSubset
      * @param Url $url The Url object
      * @param Headers|null $headers Optional: Headers collection or null
      * @param float $version Optional: the http protocol version string
-     *
      * @throws HttpClientException
      */
     public static function forOptions(Url $url, ?Headers $headers = null, string $version = '1.1'): self
@@ -127,7 +124,6 @@ class Request extends Message implements RequestInterfaceSubset
      * @param Body $body The Body object
      * @param Headers|null $headers Optional: Headers collection or null
      * @param float $version Optional: the http protocol version string
-     *
      * @throws HttpClientException
      */
     public static function forPost(Url $url, Body $body, ?Headers $headers = null, string $version = '1.1'): self
@@ -150,7 +146,6 @@ class Request extends Message implements RequestInterfaceSubset
      * @param Body $body The Body object
      * @param Headers|null $headers Optional: Headers collection or null
      * @param float $version Optional: the http protocol version string
-     *
      * @throws HttpClientException
      */
     public static function forPut(Url $url, Body $body, ?Headers $headers = null, string $version = '1.1'): self
@@ -173,7 +168,6 @@ class Request extends Message implements RequestInterfaceSubset
      * @param Body $body The Body object
      * @param Headers|null $headers Optional: Headers collection or null
      * @param float $version Optional: the http protocol version string
-     *
      * @throws HttpClientException
      */
     public static function forPatch(Url $url, Body $body, ?Headers $headers = null, string $version = '1.1'): self
@@ -195,7 +189,6 @@ class Request extends Message implements RequestInterfaceSubset
      * @param Url $url The Url object
      * @param Headers|null $headers Optional: Headers collection or null
      * @param float $version Optional: http protocol version string
-     *
      * @throws HttpClientException
      */
     public static function forDelete(Url $url, ?Headers $headers = null, string $version = '1.1'): self
@@ -212,7 +205,6 @@ class Request extends Message implements RequestInterfaceSubset
     /**
      * @param Body $body
      * @param Headers|null $headers
-     *
      * @throws HttpClientException
      */
     public static function addHeaderFromBody(Body $body, ?Headers $headers): Headers

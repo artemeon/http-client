@@ -15,6 +15,7 @@ namespace Artemeon\HttpClient\Http\Body\Encoder;
 
 use Artemeon\HttpClient\Exception\HttpClientException;
 use Artemeon\HttpClient\Http\MediaType;
+use Artemeon\HttpClient\Stream\AppendableStream;
 use Artemeon\HttpClient\Stream\Stream;
 use Psr\Http\Message\StreamInterface;
 
@@ -26,8 +27,8 @@ class MultipartFormDataEncoder implements Encoder
     /** @var string */
     private $boundary;
 
-    /** @var string[] */
-    private $multiParts;
+    /** @var AppendableStream */
+    private $multiPartStream;
 
     /** @var string */
     private $crlf = "\r\n";
@@ -39,8 +40,8 @@ class MultipartFormDataEncoder implements Encoder
      */
     private function __construct(string $boundary)
     {
-        $this->boundary = $boundary;
-        $this->multiParts = [];
+        $this->boundary = trim($boundary);
+        $this->multiPartStream = Stream::fromFileMode('r+');
     }
 
     /**
@@ -48,7 +49,7 @@ class MultipartFormDataEncoder implements Encoder
      */
     public static function create(): self
     {
-        $boundary = uniqid('---------------------------');
+        $boundary = uniqid('');
         return new self($boundary);
     }
 
@@ -57,20 +58,19 @@ class MultipartFormDataEncoder implements Encoder
      *
      * @param string $fieldName Name of the form field
      * @param string $value Value of the form field
-     *
      * @throws HttpClientException
      */
     public function addFieldPart(string $fieldName, string $value): self
     {
         $encoding = $this->detectEncoding($value);
 
-        $part = $this->boundary . $this->crlf;
+        $part = '--' . $this->boundary . $this->crlf;
         $part .= sprintf('Content-Disposition: form-data; name="%s"', $fieldName) . $this->crlf;
         $part .= sprintf('Content-Type: text/plain; charset=%s', $encoding) . $this->crlf;
         $part .= $this->crlf;
         $part .= $value . $this->crlf;
 
-        $this->multiParts[] = $part;
+        $this->multiPartStream->appendStream(Stream::fromString($part));
 
         return $this;
     }
@@ -80,36 +80,32 @@ class MultipartFormDataEncoder implements Encoder
      *
      * @param string $name Name of the form field
      * @param string $fileName Name of the file, with a valid file extension
-     * @param string $fileContent Binary string of the file
+     * @param AppendableStream $fileContent Binary stream of the file
      */
-    public function addFilePart(string $name, string $fileName, string $fileContent): self
+    public function addFilePart(string $name, string $fileName, AppendableStream $fileContent): self
     {
         $fileExtension = preg_replace('/^.*\.([^.]+)$/', '$1', $fileName);
 
-        $part = $this->boundary . $this->crlf;
-        $part .= sprintf('Content-Disposition: form-data; name="%s"; filename="%s"', $name, $fileContent) . $this->crlf;
+        $part = '--' . $this->boundary . $this->crlf;
+        $part .= sprintf('Content-Disposition: form-data; name="%s"; filename="%s"', $name, $fileName) . $this->crlf;
         $part .= sprintf('Content-Type: %s', MediaType::mapFileExtensionToMimeType($fileExtension)) . $this->crlf;
         $part .= $this->crlf;
-        $part .= $fileContent . $this->crlf;
 
-        $this->multiParts[] = $part;
+        $this->multiPartStream->appendStream(Stream::fromString($part));
+        $this->multiPartStream->appendStream($fileContent);
+        $this->multiPartStream->appendStream(Stream::fromString($this->crlf));
 
         return $this;
     }
 
     /**
      * @inheritDoc
-     * @throws HttpClientException
      */
     public function encode(): StreamInterface
     {
-        $parts = '';
+        $this->multiPartStream->appendStream(Stream::fromString('--' . $this->boundary . '--' . $this->crlf));
 
-        foreach ($this->multiParts as $parts) {
-            $parts .= $parts;
-        }
-
-        return Stream::fromString($parts . $this->boundary . "--\r\n");
+        return $this->multiPartStream;
     }
 
     /**
@@ -117,7 +113,7 @@ class MultipartFormDataEncoder implements Encoder
      */
     public function getMimeType(): string
     {
-        return MediaType::MULTIPART_FORM_DATA . '; ' . $this->boundary;
+        return MediaType::MULTIPART_FORM_DATA . '; boundary="' . $this->boundary . '"';
     }
 
     /**
