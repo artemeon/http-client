@@ -28,8 +28,6 @@ class Headers implements Countable, IteratorAggregate
 
     /**
      * Headers constructor.
-     *
-     * @param Header[] $headers
      */
     private function __construct()
     {
@@ -40,7 +38,6 @@ class Headers implements Countable, IteratorAggregate
      * Named constructor to create an instance based on the given array of HeaderField objects
      *
      * @param HeaderField[] $headerFields
-     *
      * @throws HttpClientException
      */
     public static function fromFields(array $headerFields): self
@@ -78,7 +75,7 @@ class Headers implements Countable, IteratorAggregate
     /**
      * Checks case incentive for a specific header field
      */
-    public function hasHeader($headerField): bool
+    public function hasHeader(string $headerField): bool
     {
         foreach ($this->headers as $header) {
             if (strtolower($headerField) === strtolower($header->getFieldName())) {
