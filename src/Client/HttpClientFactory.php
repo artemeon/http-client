@@ -38,7 +38,7 @@ class HttpClientFactory
     /**
      * Named constructor to create an instance for production with a PSR 3 logger
      *
-     * @param LoggerInterface $logger @see https://www.php-fig.org/psr/psr-3/ Psr3 logger
+     * @param LoggerInterface $logger PSR-3 logger @see https://www.php-fig.org/psr/psr-3/
      * @param string $format @see \GuzzleHttp\MessageFormatter for all allowed options
      */
     public static function withLogger(LoggerInterface $logger, string $format='{request} - {ressponse}'): HttpClient

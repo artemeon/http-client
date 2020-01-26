@@ -23,26 +23,37 @@ use Artemeon\HttpClient\Http\Header\Fields\UserAgent;
 use Artemeon\HttpClient\Http\Header\Headers;
 use Artemeon\HttpClient\Http\Request;
 use Artemeon\HttpClient\Http\Url;
+use GuzzleHttp\MessageFormatter;
+
+require '../../vendor/autoload.php';
+
+$transactions = [];
+$formatter = new MessageFormatter('{request}');
 
 try {
     $request = Request::forPost(
-        Url::fromString('http://test.de'),
-        Body::fromEncoder(FormUrlEncoder::fromArray(["test" => 2342])),
-        Headers::fromFields(
-            [
-                Authorisation::forAuthBasic('John.Doe', 'geheim'),
-                UserAgent::fromString(),
-            ]
-        )
+        Url::fromString('http://apache/endpoints/upload.php'),
+        Body::fromEncoder(
+            FormUrlEncoder::fromArray([
+                "user" => 'John.Doe',
+                'password' =>'geheim',
+                'group' => 'admin'
+            ])
+        ),
+        Headers::fromFields([
+            Authorisation::forAuthBasic('John.Doe', 'geheim'),
+            UserAgent::fromString(),
+        ])
     );
 
     $clientOptions = ClientOptions::fromDefaults();
     $clientOptions->optDisableCertificateVerification();
     $clientOptions->optSetTimeout(15);
 
-    $response = HttpClientFactory::create()->send($request, $clientOptions);
+    $response = HttpClientFactory::withMiddleware($transactions)->send($request, $clientOptions);
 
-    print_r($response);
+    echo nl2br($formatter->format($transactions[0]['request']));
+    echo nl2br($response->getBody()->__toString());
 } catch (HttpClientException $exception) {
     print_r($exception);
 }

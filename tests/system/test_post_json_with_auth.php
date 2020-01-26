@@ -16,25 +16,29 @@ namespace Artemeon\HttpClient\Tests\System;
 use Artemeon\HttpClient\Client\HttpClientFactory;
 use Artemeon\HttpClient\Exception\HttpClientException;
 use Artemeon\HttpClient\Http\Body\Body;
-use Artemeon\HttpClient\Http\Body\Encoder\JsonEncoder;
 use Artemeon\HttpClient\Http\Body\Reader\FileReader;
 use Artemeon\HttpClient\Http\Header\Fields\Authorisation;
 use Artemeon\HttpClient\Http\Header\Headers;
 use Artemeon\HttpClient\Http\Request;
 use Artemeon\HttpClient\Http\Url;
+use GuzzleHttp\MessageFormatter;
 
 require '../../vendor/autoload.php';
 
+$transactions = [];
+$formatter = new MessageFormatter('{request}');
+
 try {
     $request = Request::forPost(
-        Url::fromString('http://test.de'),
-        Body::fromEncoder(JsonEncoder::fromReader(FileReader::fromFile('../fixtures/encoder/generated.json'))),
+        Url::fromString('http://apache/endpoints/upload.php'),
+        Body::fromReader(FileReader::fromFile('../fixtures/encoder/generated.json')),
         Headers::fromFields([Authorisation::forAuthBasic('John.Doe', 'geheim')])
     );
 
-    $response = HttpClientFactory::create()->send($request);
+    $response = HttpClientFactory::withMiddleware($transactions)->send($request);
 
-    print_r($response);
+    echo nl2br($formatter->format($transactions[0]['request']));
+    echo nl2br($response->getBody()->__toString());
 } catch (HttpClientException $exception) {
-    var_dump($exception);
+    print_r($exception);
 }

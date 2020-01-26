@@ -29,19 +29,20 @@ $formatter = new MessageFormatter('{request}');
 
 try {
     $request = Request::forPost(
-        Url::fromString('http://apache/upload.php'),
+        Url::fromString('http://apache/endpoints/upload.php'),
         Body::fromEncoder(
             MultipartFormDataEncoder::create()
                 ->addFieldPart('user', 'John.Doe')
-                ->addFieldPart('password', utf8_encode('gehüim'))
+                ->addFieldPart('password', utf8_encode('geheim'))
                 ->addFilePart('user_image', 'header_logo.png', Stream::fromFile('../fixtures/reader/header_logo.png'))
         )
     );
 
     $response = HttpClientFactory::withMiddleware($transactions)->send($request);
-    echo $response->getBody()->__toString();
+
+    echo nl2br($formatter->format($transactions[0]['request']));
+    echo nl2br($response->getBody()->__toString());
 } catch (HttpClientException $exception) {
     print_r($exception);
 }
 
-echo nl2br($formatter->format($transactions[0]['request']));

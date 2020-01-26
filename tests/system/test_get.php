@@ -17,14 +17,19 @@ use Artemeon\HttpClient\Client\HttpClientFactory;
 use Artemeon\HttpClient\Exception\HttpClientException;
 use Artemeon\HttpClient\Http\Request;
 use Artemeon\HttpClient\Http\Url;
+use GuzzleHttp\MessageFormatter;
 
 require '../../vendor/autoload.php';
 
-try {
-    $request = Request::forGet(Url::fromString('http://www.heise.de'));
-    $response = HttpClientFactory::create()->send($request);
+$transactions = [];
+$formatter = new MessageFormatter('{request}');
 
-    print_r($response->getBody()->getContents());
+try {
+    $request = Request::forGet(Url::fromString('http://apache/endpoints/test.json'));
+    $response = HttpClientFactory::withMiddleware($transactions)->send($request);
+
+    echo nl2br($formatter->format($transactions[0]['request']));
+    echo nl2br($response->getBody()->__toString());
 } catch (HttpClientException $exception) {
     print_r($exception);
 }

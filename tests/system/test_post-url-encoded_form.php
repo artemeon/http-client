@@ -21,19 +21,25 @@ use Artemeon\HttpClient\Http\Header\Fields\Authorisation;
 use Artemeon\HttpClient\Http\Header\Headers;
 use Artemeon\HttpClient\Http\Request;
 use Artemeon\HttpClient\Http\Url;
+use GuzzleHttp\MessageFormatter;
 
 require '../../vendor/autoload.php';
 
+$transactions = [];
+$formatter = new MessageFormatter('{request}');
+
 try {
     $request = Request::forPost(
-        Url::fromString('http://tgdfgd.de'),
-        Body::fromEncoder(FormUrlEncoder::fromArray(["test" => 2342])),
+        Url::fromString('http://apache/endpoints/upload.php'),
+        Body::fromEncoder(FormUrlEncoder::fromArray(["username" => 'john.doe'])),
         Headers::fromFields([Authorisation::forAuthBasic('john.doe', 'geheim')])
     );
 
-    $response = HttpClientFactory::create()->send($request);
+    $response = HttpClientFactory::withMiddleware($transactions)->send($request);
 
-    print_r($response);
+    echo nl2br($formatter->format($transactions[0]['request']));
+    echo nl2br($response->getBody()->__toString());
 } catch (HttpClientException $exception) {
     print_r($exception);
 }
+
