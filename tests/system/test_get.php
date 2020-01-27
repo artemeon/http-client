@@ -26,10 +26,11 @@ $formatter = new MessageFormatter('{request}');
 
 try {
     $request = Request::forGet(Url::fromString('http://apache/endpoints/test.json'));
-    $response = HttpClientFactory::withMiddleware($transactions)->send($request);
+    $response = HttpClientFactory::withTransactionMiddleware($transactions)->send($request);
 
     echo nl2br($formatter->format($transactions[0]['request']));
     echo nl2br($response->getBody()->__toString());
 } catch (HttpClientException $exception) {
-    print_r($exception);
+    //print_r($exception);
+    echo nl2br($formatter->format($transactions[0]['request']));
 }

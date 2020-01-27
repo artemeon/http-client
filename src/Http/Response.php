@@ -33,7 +33,7 @@ class Response extends Message implements ResponseInterfaceSubset
      *
      * @throws HttpClientException
      */
-    public function __construct(int $statusCode, string $version, StreamInterface $body, Headers $headers)
+    public function __construct(int $statusCode, string $version, StreamInterface $body = null, Headers $headers = null)
     {
         $this->statusCode = $statusCode;
         parent::__construct($headers, $body, $version);

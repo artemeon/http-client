@@ -37,7 +37,7 @@ class TransferException extends HttpClientException
      */
     public static function fromRequest(Request $request, string $message, Exception $previous = null): self
     {
-        return new self($request, $message, $previous);
+        return new static($request, $message, $previous);
     }
 
     /**

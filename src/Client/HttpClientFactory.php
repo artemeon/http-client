@@ -36,7 +36,8 @@ class HttpClientFactory
     }
 
     /**
-     * Named constructor to create an instance for production with a PSR 3 logger
+     * Named constructor to create an instance for production with a PSR 3 logger for
+     * request/response calls and all occurred exceptions
      *
      * @param LoggerInterface $logger PSR-3 logger @see https://www.php-fig.org/psr/psr-3/
      * @param string $format @see \GuzzleHttp\MessageFormatter for all allowed options
@@ -47,10 +48,12 @@ class HttpClientFactory
         $handlerStack = HandlerStack::create();
         $handlerStack->push(Middleware::log($logger, $formatter));
 
-        return new ArtemeonHttpClient(
+        $httpClient = new ArtemeonHttpClient(
             new GuzzleClient(['handler' => $handlerStack]),
             new ClientOptionsConverter()
         );
+
+        return new HttpClientLogDecorator($httpClient, $logger);
     }
 
     /**
@@ -64,9 +67,9 @@ class HttpClientFactory
      * print_r($transactions[0]['response']);
      * echo $transactions[0]['request']->getBody();
      */
-    public static function withMiddleware(array &$expectedTransactions): HttpClient
+    public static function withTransactionMiddleware(array &$transactions): HttpClient
     {
-        $history = Middleware::history($expectedTransactions);
+        $history = Middleware::history($transactions);
         $handlerStack = HandlerStack::create();
         $handlerStack->push($history);
 

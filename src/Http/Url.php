@@ -116,7 +116,7 @@ class Url implements UriInterfaceSubset
     /**
      * @inheritDoc
      */
-    public function getPort(): int
+    public function getPort(): ?int
     {
         return $this->port;
     }

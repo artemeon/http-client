@@ -23,7 +23,7 @@ use Prophecy\Argument;
 use Prophecy\Prophecy\ProphecyInterface;
 
 /**
- * Class StreamTest
+ * @covers \Artemeon\HttpClient\Stream\Stream
  */
 class StreamTest extends TestCase
 {
@@ -60,7 +60,105 @@ class StreamTest extends TestCase
     public function tearDown(): void
     {
         $this->globalProphet->checkPredictions();
-        $this->stream->close();
+        $this->stream = null;
+    }
+
+    /**
+     * @test
+     */
+    public function __construct_ResourceIsInvalid_ThrowsException()
+    {
+        $this->globalProphecy->fopen(Argument::any(), Argument::any())
+            ->shouldBeCalled()
+            ->willReturn(false);
+
+        $this->globalProphecy->reveal();
+        $this->expectException(HttpClientException::class);
+
+        $this->stream = Stream::fromFileMode('rw');
+    }
+
+    /**
+     * @test
+     */
+    public function appendStream_IsDetached_ThrowsException(): void
+    {
+        $this->stream = Stream::fromString('test');
+        $this->stream->detach();
+        $this->expectException(HttpClientException::class);
+        $this->expectErrorMessage('Stream is detached');
+
+        $this->stream->appendStream(Stream::fromString('append'));
+    }
+
+    /**
+     * @test
+     */
+    public function appendStream_IsNotWriteable_ThrowsException(): void
+    {
+        $this->stream = Stream::fromFileMode('r');
+        $this->expectException(HttpClientException::class);
+        $this->expectErrorMessage('Stream is not writeable');
+
+        $this->stream->appendStream(Stream::fromString('append'));
+    }
+
+    /**
+     * @test
+     */
+    public function appendStream_GivenStreamIsNotReadable_ThrowsException(): void
+    {
+        $this->stream = Stream::fromString('test');
+        $this->expectException(HttpClientException::class);
+        $this->expectErrorMessage("Can't append not readable stream");
+
+        $writeOnlyStream = Stream::fromFile($this->filesystem->url() . '/generated.json', 'w');
+        $this->stream->appendStream($writeOnlyStream);
+    }
+
+    /**
+     * @test
+     */
+    public function appendStream_CantCopyStream_ThrowsException(): void
+    {
+        $this->globalProphecy->stream_copy_to_stream(Argument::any(), Argument::any())
+            ->shouldBeCalled()
+            ->willReturn(false);
+
+        $this->globalProphecy->reveal();
+
+        $this->stream = Stream::fromString('test');
+        $this->expectException(HttpClientException::class);
+        $this->expectErrorMessage("Append failed");
+
+        $writeOnlyStream = Stream::fromFile($this->filesystem->url() . '/generated.json');
+        $this->stream->appendStream($writeOnlyStream);
+    }
+
+    /**
+     * @test
+     */
+    public function appendStream_ReturnsAppendedStream(): void
+    {
+        $this->stream = Stream::fromString('test');
+        $this->stream->appendStream(Stream::fromString('_appended'));
+
+        self::assertSame('test_appended', $this->stream->__toString());
+    }
+
+    /**
+     * @test
+     */
+    public function fromFile_ResourceIsInvalid_ThrowsException(): void
+    {
+        $this->globalProphecy->fopen(Argument::any(), Argument::any())
+            ->shouldBeCalled()
+            ->willReturn(false);
+
+        $this->globalProphecy->reveal();
+        $this->expectException(HttpClientException::class);
+
+        $this->stream = Stream::fromFile('/does/not/exists.txt');
     }
 
     /**
@@ -421,6 +519,24 @@ class StreamTest extends TestCase
 
     /**
      * @test
+     * @runInSeparateProcess
+     */
+    public function write_FWriteReturnFalse_ThrowsException(): void
+    {
+        $this->globalProphecy->fwrite(Argument::type('resource'), 'test')
+            ->willReturn(false)
+            ->shouldBeCalled();
+
+        $this->globalProphecy->reveal();
+        $this->stream = Stream::fromFileMode('r+');
+        $this->expectException(HttpClientException::class);
+        $this->expectErrorMessage("Cant't write to stream");
+
+        $this->stream->write('test');
+    }
+
+    /**
+     * @test
      */
     public function write_ReturnNumberOfBytesWritten(): void
     {
@@ -459,6 +575,25 @@ class StreamTest extends TestCase
 
     /**
      * @test
+     * @runInSeparateProcess
+     */
+    public function read_FReadReturnsFalse_ThrowsException(): void
+    {
+        $this->globalProphecy->fread(Argument::type('resource'), 100)
+            ->willReturn(false)
+            ->shouldBeCalled();
+
+        $this->globalProphecy->reveal();
+
+        $this->stream = Stream::fromFile($this->filesystem->url() . '/generated.json', 'r+');
+        $this->expectException(HttpClientException::class);
+        $this->expectErrorMessage("Can't read from stream");
+
+        $this->stream->read(100);
+    }
+
+    /**
+     * @test
      */
     public function read_ReturnValidNumberOfBytes(): void
     {
@@ -489,6 +624,66 @@ class StreamTest extends TestCase
         $this->expectErrorMessage('Stream is not readable');
 
         $this->stream->getContents();
+    }
+
+    /**
+     * @test
+     * @runInSeparateProcess
+     */
+    public function getContent_StreamReturnsFalse_ThrowsException(): void
+    {
+        $this->globalProphecy->stream_get_contents(Argument::type('resource'))
+            ->willReturn(false)
+            ->shouldBeCalled();
+
+        $this->globalProphecy->reveal();
+
+        $this->stream = Stream::fromFile($this->filesystem->url() . '/generated.json', 'r+');
+        $this->expectException(HttpClientException::class);
+        $this->expectErrorMessage("Can't read content from stream");
+
+        $this->stream->getContents();
+    }
+
+    /**
+     * @test
+     */
+    public function getMetadata_KeyIsNull_ReturnsCompleteArray(): void
+    {
+        $this->stream = Stream::fromFile($this->filesystem->url() . '/generated.json', 'r+');
+        $metaData = $this->stream->getMetadata();
+
+        self::assertArrayHasKey('timed_out', $metaData);
+        self::assertArrayHasKey('blocked', $metaData);
+        self::assertArrayHasKey('eof', $metaData);
+        self::assertArrayHasKey('wrapper_data', $metaData);
+        self::assertArrayHasKey('wrapper_type', $metaData);
+        self::assertArrayHasKey('stream_type', $metaData);
+        self::assertArrayHasKey('mode', $metaData);
+        self::assertArrayHasKey('unread_bytes', $metaData);
+        self::assertArrayHasKey('seekable', $metaData);
+        self::assertArrayHasKey('uri', $metaData);
+    }
+
+    /**
+     * @test
+     */
+    public function getMetadata_WithValidKey_ReturnsKeyValue(): void
+    {
+        $this->stream = Stream::fromFile($this->filesystem->url() . '/generated.json', 'r+');
+        $mode = $this->stream->getMetadata('mode');
+
+        self::assertSame('r+', $mode);
+    }
+
+    /**
+     * @test
+     */
+    public function getMetadata_WithNonExistentKey_ReturnsNull(): void
+    {
+        $this->stream = Stream::fromFile($this->filesystem->url() . '/generated.json', 'r+');
+
+        self::assertNull($this->stream->getMetadata('does_nit_exists'));
     }
 
     /**

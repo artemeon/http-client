@@ -38,10 +38,10 @@ class Stream implements AppendableStream
      * @param resource $resource
      * @throws HttpClientException
      */
-    public function __construct($resource)
+    private function __construct($resource)
     {
         if (!is_resource($resource)) {
-            throw new RuntimeException('Invalid resource');
+            throw new HttpClientException('Invalid resource');
         }
 
         $this->resource = $resource;
@@ -90,7 +90,7 @@ class Stream implements AppendableStream
      * @param string $mode Stream Modes: @see https://www.php.net/manual/de/function.fopen.php
      * @throws HttpClientException;
      */
-    public static function fromFile(string $file, $mode = 'r+'): self
+    public static function fromFile(string $file, string $mode = 'r+'): self
     {
         $resource = fopen($file, $mode);
 
@@ -290,7 +290,7 @@ class Stream implements AppendableStream
         $bytes = fwrite($this->resource, strval($string));
 
         if ($bytes === false) {
-            throw new RuntimeException("Cant't write to stream");
+            throw new HttpClientException("Cant't write to stream");
         }
 
         return $bytes;
@@ -339,7 +339,7 @@ class Stream implements AppendableStream
      * @inheritDoc
      * @throws HttpClientException
      *
-     * This function reads the complete stream fom the current! file pointer. If you
+     * This function reads the complete stream fom the CURRENT! file pointer. If you
      * want ensure to read the complete stream use __toString() instead.
      */
     public function getContents()

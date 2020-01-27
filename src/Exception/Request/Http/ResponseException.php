@@ -52,7 +52,7 @@ class ResponseException extends TransferException
         string $message,
         Exception $previous = null
     ): self {
-        return new self($response, $request, $message, $previous);
+        return new static($response, $request, $message, $previous);
     }
 
     /**

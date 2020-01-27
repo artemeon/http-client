@@ -17,6 +17,7 @@ use Artemeon\HttpClient\Exception\HttpClientException;
 use Artemeon\HttpClient\Http\Body\Body;
 use Artemeon\HttpClient\Http\Header\Fields\ContentLength;
 use Artemeon\HttpClient\Http\Header\Fields\ContentType;
+use Artemeon\HttpClient\Http\Header\Fields\Host;
 use Artemeon\HttpClient\Http\Header\Header;
 use Artemeon\HttpClient\Http\Header\Headers;
 use Artemeon\HttpClient\Psr7\RequestInterfaceSubset;
@@ -73,7 +74,7 @@ class Request extends Message implements RequestInterfaceSubset
         $this->url = $url;
 
         parent::__construct(
-            $headers,
+            $this->addHostHeader($url, $headers),
             $body,
             $version
         );
@@ -248,6 +249,23 @@ class Request extends Message implements RequestInterfaceSubset
         $headers = $headers ?? Headers::create();
         $headers->addHeader(Header::fromField(ContentType::fromString($body->getMimeType())));
         $headers->addHeader(Header::fromField(ContentLength::fromInt($body->getContentLength())));
+
+        return $headers;
+    }
+
+    /**
+     * Add the host header based on the given Url. If
+     *
+     * @param Url $url
+     * @param Headers|null $headers
+     */
+    private function addHostHeader(Url $url, ?Headers $headers): Headers
+    {
+        if ($headers instanceof Headers) {
+            $headers->addHeader(Header::fromField(Host::fromUrl($url)));
+        } else {
+            $headers = Headers::fromFields([Host::fromUrl($url)]);
+        }
 
         return $headers;
     }

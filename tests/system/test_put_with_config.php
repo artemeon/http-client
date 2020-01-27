@@ -50,7 +50,7 @@ try {
     $clientOptions->optDisableCertificateVerification();
     $clientOptions->optSetTimeout(15);
 
-    $response = HttpClientFactory::withMiddleware($transactions)->send($request, $clientOptions);
+    $response = HttpClientFactory::withTransactionMiddleware($transactions)->send($request, $clientOptions);
 
     echo nl2br($formatter->format($transactions[0]['request']));
     echo nl2br($response->getBody()->__toString());

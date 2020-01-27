@@ -35,7 +35,7 @@ try {
         Headers::fromFields([Authorisation::forAuthBasic('John.Doe', 'geheim')])
     );
 
-    $response = HttpClientFactory::withMiddleware($transactions)->send($request);
+    $response = HttpClientFactory::withTransactionMiddleware($transactions)->send($request);
 
     echo nl2br($formatter->format($transactions[0]['request']));
     echo nl2br($response->getBody()->__toString());

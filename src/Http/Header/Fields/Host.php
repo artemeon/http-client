@@ -14,31 +14,34 @@ declare(strict_types=1);
 namespace Artemeon\HttpClient\Http\Header\Fields;
 
 use Artemeon\HttpClient\Http\Header\HeaderField;
+use Artemeon\HttpClient\Http\Url;
 
 /**
- * Class to describe the header field 'Content-Type'
+ * Class to describe the header field 'Host'
  */
-class ContentType implements HeaderField
+class Host implements HeaderField
 {
     /** @var string */
-    private $mimeType;
+    private $host;
 
     /**
      * ContentType constructor.
      */
-    private function __construct(string $mimeType)
+    private function __construct(string $host)
     {
-        $this->mimeType = $mimeType;
+        $this->host = $host;
     }
 
     /**
-     * Named constructor to create an instance from the given string value
-     *
-     * @param string $mimeType MIME type string @see \Artemeon\HttpClient\Http\MediaType
+     * Named constructor to create an instance based on the given Url
      */
-    public static function fromString(string $mimeType): self
+    public static function fromUrl(Url $url): self
     {
-        return new self($mimeType);
+        if ($url->getPort() === null) {
+            return new self($url->getHost());
+        };
+
+        return new self($url->getHost() . ':' . $url->getPort());
     }
 
     /**
@@ -46,7 +49,7 @@ class ContentType implements HeaderField
      */
     public function getName(): string
     {
-        return HeaderField::CONTENT_TYPE;
+        return HeaderField::HOST;
     }
 
     /**
@@ -54,6 +57,6 @@ class ContentType implements HeaderField
      */
     public function getValue(): string
     {
-        return $this->mimeType;
+        return $this->host;
     }
 }
