@@ -39,7 +39,7 @@ class Host implements HeaderField
     {
         if ($url->getPort() === null) {
             return new self($url->getHost());
-        };
+        }
 
         return new self($url->getHost() . ':' . $url->getPort());
     }

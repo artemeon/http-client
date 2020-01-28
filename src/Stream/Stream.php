@@ -339,7 +339,7 @@ class Stream implements AppendableStream
      * @inheritDoc
      * @throws HttpClientException
      *
-     * This function reads the complete stream fom the CURRENT! file pointer. If you
+     * This function reads the complete stream from the CURRENT! file pointer. If you
      * want ensure to read the complete stream use __toString() instead.
      */
     public function getContents()

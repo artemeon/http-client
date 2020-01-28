@@ -14,7 +14,6 @@ declare(strict_types=1);
 namespace Artemeon\HttpClient\Http;
 
 use Artemeon\HttpClient\Exception\HttpClientException;
-use Artemeon\HttpClient\Http\Body\Body;
 use Artemeon\HttpClient\Http\Header\Header;
 use Artemeon\HttpClient\Http\Header\Headers;
 use Artemeon\HttpClient\Psr7\MessageInterfaceSubset;
@@ -41,8 +40,8 @@ abstract class Message implements MessageInterfaceSubset
      * Message constructor.
      *
      * @param Headers|null $headers Optional: Headers collection or null
-     * @param Body|null $body Optional: Body object or null
-     * @param float $version Optional: Http protocol version string
+     * @param StreamInterface|null $body Optional: Body object or null
+     * @param string $version Optional: Http protocol version string
      *
      * @throws HttpClientException
      */

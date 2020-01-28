@@ -21,6 +21,7 @@ use Psr\Log\LoggerInterface;
 
 /**
  * Static factory class
+ *
  * @codeCoverageIgnore
  */
 class HttpClientFactory
@@ -43,9 +44,9 @@ class HttpClientFactory
      * @param LoggerInterface $logger PSR-3 logger @see https://www.php-fig.org/psr/psr-3/
      * @param string $format @see \GuzzleHttp\MessageFormatter for all allowed options
      */
-    public static function withLogger(LoggerInterface $logger, string $format='{request} - {ressponse}'): HttpClient
+    public static function withLogger(LoggerInterface $logger, string $format = '{request} - {response}'): HttpClient
     {
-        $formatter =  new MessageFormatter($format);
+        $formatter = new MessageFormatter($format);
         $handlerStack = HandlerStack::create();
         $handlerStack->push(Middleware::log($logger, $formatter));
 

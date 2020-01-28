@@ -58,7 +58,7 @@ class JsonEncoder implements Encoder
      * ```
      *
      * @param array $value Array to encode, associative array always encoded as json object
-     * @param bool $options Bitmask of json constants: @see https://www.php.net/manual/en/function.json-encode.php
+     * @param int $options Bitmask of json constants: @see https://www.php.net/manual/en/function.json-encode.php
      */
     public static function fromArray(array $value, int $options = 0): self
     {

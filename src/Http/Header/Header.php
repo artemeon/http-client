@@ -37,7 +37,7 @@ class Header
      * Named constructor to create an instance based on the given string values
      *
      * @param string $name Name of the http header field
-     * @param string $values Value of the http header field
+     * @param string[] $values Value of the http header field
      */
     public static function fromString(string $name, array $values): self
     {
