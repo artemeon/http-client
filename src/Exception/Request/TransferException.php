@@ -20,24 +20,17 @@ use Exception;
 class TransferException extends HttpClientException
 {
     /** @var Request */
-    private $request;
-
-    /**
-     * HttpClientException constructor.
-     */
-    protected function __construct(Request $request, string $message, Exception $previous = null)
-    {
-        $this->request = $request;
-
-        parent::__construct($message, 0, $previous);
-    }
+    protected $request;
 
     /**
      * Named constructor to create an instance based on the given request object
      */
     public static function fromRequest(Request $request, string $message, Exception $previous = null): self
     {
-        return new static($request, $message, $previous);
+        $instance = new static($message, 0, $previous);
+        $instance->request = $request;
+
+        return $instance;
     }
 
     /**

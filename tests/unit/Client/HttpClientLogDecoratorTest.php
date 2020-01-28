@@ -16,7 +16,9 @@ namespace Artemeon\HttpClient\Tests\Client;
 use Artemeon\HttpClient\Client\ClientOptions;
 use Artemeon\HttpClient\Client\HttpClient;
 use Artemeon\HttpClient\Client\HttpClientLogDecorator;
+use Artemeon\HttpClient\Exception\HttpClientException;
 use Artemeon\HttpClient\Exception\Request\Http\ClientResponseException;
+use Artemeon\HttpClient\Exception\Request\Http\ServerResponseException;
 use Artemeon\HttpClient\Http\Request;
 use Artemeon\HttpClient\Http\Response;
 use Artemeon\HttpClient\Http\Url;
@@ -75,15 +77,46 @@ class HttpClientLogDecoratorTest extends TestCase
     /**
      * @test
      */
-    public function send_ClientThrowsException_ShouldBeLogged(): void
+    public function send_ClientThrowsClientResponseException_ShouldBeLogged(): void
     {
         $request = Request::forGet(Url::fromString('http://apache'));
-        $response = new Response(200, '1.1');
-        $exception = ClientResponseException::fromRequest($request, 'message');
+        $response = new Response(500, '1.1');
+        $exception = ClientResponseException::fromResponse($response, $request, 'message');
 
         $this->httpClient->send(Argument::any(), Argument::any())->willThrow($exception);
         $this->logger->error($exception->getMessage(), ['exception' => $exception])->shouldBeCalled();
         $this->expectException(ClientResponseException::class);
+
+        $this->httpClientLogDecorator->send($request, $this->clientOptions);
+    }
+
+    /**
+     * @test
+     */
+    public function send_ClientThrowsServerResponseException_ShouldBeLogged(): void
+    {
+        $request = Request::forGet(Url::fromString('http://apache'));
+        $response = new Response(500, '1.1');
+        $exception = ServerResponseException::fromResponse($response, $request, 'message');
+
+        $this->httpClient->send(Argument::any(), Argument::any())->willThrow($exception);
+        $this->logger->error($exception->getMessage(), ['exception' => $exception])->shouldBeCalled();
+        $this->expectException(ServerResponseException::class);
+
+        $this->httpClientLogDecorator->send($request, $this->clientOptions);
+    }
+
+    /**
+     * @test
+     */
+    public function send_ClientThrowsHttpClientException_ShouldBeLogged(): void
+    {
+        $request = Request::forGet(Url::fromString('http://apache'));
+        $exception = HttpClientException::forAlreadyRegisteredHeaderFields('Host');
+
+        $this->httpClient->send(Argument::any(), Argument::any())->willThrow($exception);
+        $this->logger->info($exception->getMessage(), ['exception' => $exception])->shouldBeCalled();
+        $this->expectException(HttpClientException::class);
 
         $this->httpClientLogDecorator->send($request, $this->clientOptions);
     }

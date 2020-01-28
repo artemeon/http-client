@@ -18,6 +18,4 @@ namespace Artemeon\HttpClient\Exception\Request\Http;
  */
 class ServerResponseException extends ResponseException
 {
-    /** @var string */
-    protected $supportedStatusCodes = "500:511";
 }

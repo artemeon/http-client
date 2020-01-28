@@ -18,6 +18,4 @@ namespace Artemeon\HttpClient\Exception\Request\Http;
  */
 class ClientResponseException extends ResponseException
 {
-    /** @var string */
-    protected $supportedStatusCodes = "400:450";
 }

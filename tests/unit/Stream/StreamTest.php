@@ -260,6 +260,7 @@ class StreamTest extends TestCase
 
     /**
      * @test
+     * @runInSeparateProcess 
      */
     public function getSize_ReturnExpectedValue(): void
     {

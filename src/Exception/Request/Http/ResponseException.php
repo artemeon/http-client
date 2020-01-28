@@ -24,24 +24,10 @@ use Exception;
 class ResponseException extends TransferException
 {
     /** @var Response */
-    private $response;
+    protected $response;
 
     /** @var int */
-    private $statusCode;
-
-    /** @var string */
-    protected $supportedStatusCodes = "100:530";
-
-    /**
-     * ResponseException constructor.
-     */
-    protected function __construct(Response $response, Request $request, string $message, Exception $previous = null)
-    {
-        $this->response = $response;
-        $this->statusCode = $response->getStatusCode();
-
-        parent::__construct($request, $message, $previous);
-    }
+    protected $statusCode;
 
     /**
      * Named constructor to create an instance based on the response of the failed request
@@ -52,15 +38,12 @@ class ResponseException extends TransferException
         string $message,
         Exception $previous = null
     ): self {
-        return new static($response, $request, $message, $previous);
-    }
+        $instance = new static($message, 0, $previous);
+        $instance->request = $request;
+        $instance->response = $response;
+        $instance->statusCode = $response->getStatusCode();
 
-    /**
-     * Returns the range of the supported http status codes
-     */
-    public function getSupportedStatusCodes(): string
-    {
-        return $this->supportedStatusCodes;
+        return $instance;
     }
 
     /**

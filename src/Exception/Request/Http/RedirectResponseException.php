@@ -18,6 +18,4 @@ namespace Artemeon\HttpClient\Exception\Request\Http;
  */
 class RedirectResponseException extends ResponseException
 {
-    /** @var string */
-    protected $supportedStatusCodes = "300:308";
 }
