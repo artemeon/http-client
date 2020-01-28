@@ -48,6 +48,13 @@ use RuntimeException;
 
 /**
  * @covers \Artemeon\HttpClient\Client\ArtemeonHttpClient
+ * @covers \Artemeon\HttpClient\Exception\HttpClientException
+ * @covers \Artemeon\HttpClient\Exception\Request\TransferException
+ * @covers \Artemeon\HttpClient\Exception\Request\Network\ConnectException
+ * @covers \Artemeon\HttpClient\Exception\Request\Http\ResponseException
+ * @covers \Artemeon\HttpClient\Exception\Request\Http\ServerResponseException
+ * @covers \Artemeon\HttpClient\Exception\Request\Http\ClientResponseException
+ * @covers \Artemeon\HttpClient\Exception\Request\Http\RedirectResponseException
  */
 class ArtemeonHttpClientTest extends TestCase
 {

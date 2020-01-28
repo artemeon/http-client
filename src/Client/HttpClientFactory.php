@@ -21,6 +21,7 @@ use Psr\Log\LoggerInterface;
 
 /**
  * Static factory class
+ * @codeCoverageIgnore
  */
 class HttpClientFactory
 {

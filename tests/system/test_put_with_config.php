@@ -47,7 +47,7 @@ try {
     );
 
     $clientOptions = ClientOptions::fromDefaults();
-    $clientOptions->optDisableCertificateVerification();
+    $clientOptions->optDisableSslVerification();
     $clientOptions->optSetTimeout(15);
 
     $response = HttpClientFactory::withTransactionMiddleware($transactions)->send($request, $clientOptions);

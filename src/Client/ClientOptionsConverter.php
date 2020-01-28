@@ -33,11 +33,11 @@ class ClientOptionsConverter
 
     /**
      * @see http://docs.guzzlephp.org/en/6.5/request-options.html#verify
-     * @return array|bool
+     * @return string|bool
      */
     private function createVerifyKey(ClientOptions $clientOptions)
     {
-        if ($clientOptions->isCertificateVerificationEnabled()) {
+        if ($clientOptions->isSslVerificationEnabled()) {
             if ($clientOptions->hasCustomCaBundlePath()) {
                 return $clientOptions->getCustomCaBundlePath();
             } else {
@@ -55,8 +55,8 @@ class ClientOptionsConverter
     {
         if ($clientOptions->isRedirectAllowed()) {
             return [
-                'max' => $clientOptions->getMaxRedirects(),
-                'referer' => $clientOptions->isRefererAllowed(),
+                'max' => $clientOptions->getMaxAllowedRedirects(),
+                'referer' => $clientOptions->isRefererForRedirectsEnabled(),
             ];
         }
         return false;

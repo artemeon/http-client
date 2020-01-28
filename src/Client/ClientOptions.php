@@ -46,18 +46,16 @@ class ClientOptions
         return $instance;
     }
 
-    public function optSetMaxAllowedRedirects(int $max): void
-    {
-        $this->maxRedirects = $max;
-    }
-
+    /**
+     * Option to disable redirects.
+     */
     public function optDisableRedirects(): void
     {
         $this->allowRedirects = false;
     }
 
     /**
-     * @return bool
+     * Is redirect allowed
      */
     public function isRedirectAllowed(): bool
     {
@@ -65,32 +63,32 @@ class ClientOptions
     }
 
     /**
-     * Disable SSL certificate verification
+     * Option to disable SSL certificate verification
      */
-    public function optDisableCertificateVerification(): void
+    public function optDisableSslVerification(): void
     {
         $this->verifySsl = false;
     }
 
     /**
-     * @return bool
+     * Is SSL certificate verification enabled
      */
-    public function isCertificateVerificationEnabled(): bool
+    public function isSslVerificationEnabled(): bool
     {
         return $this->verifySsl;
     }
 
     /**
-     * As default we use the CA bundle provided by operating system. Use this function to allows custom
-     * CA bundle certificates.
+     * Option to set a custom CA bundle certificates path. As default we use the CA bundle
+     * provided by the operating system.
      */
-    public function confSetCustomCaBundlePath(string $customCaBundlePath): void
+    public function optSetCustomCaBundlePath(string $customCaBundlePath): void
     {
         $this->customCaBundlePath = $customCaBundlePath;
     }
 
     /**
-     * @return string
+     * Returns the custom CA bundle path or an empty string (Default)
      */
     public function getCustomCaBundlePath(): string
     {
@@ -98,7 +96,7 @@ class ClientOptions
     }
 
     /**
-     * Set the timeout in seconds for requests
+     * Option to set the timeout in seconds for requests
      */
     public function optSetTimeout(int $timeout): void
     {
@@ -106,7 +104,7 @@ class ClientOptions
     }
 
     /**
-     * @return int
+     * Returns the connect timeout
      */
     public function getTimeout(): int
     {
@@ -114,7 +112,7 @@ class ClientOptions
     }
 
     /**
-     * @param int $maxRedirects
+     * Option to set the amount of maximal allowed redirects
      */
     public function optSetMaxRedirects(int $maxRedirects): void
     {
@@ -122,35 +120,34 @@ class ClientOptions
     }
 
     /**
-     * @return int
+     * Returns the amount of max allowed redirects
      */
-    public function getMaxRedirects(): int
+    public function getMaxAllowedRedirects(): int
     {
         return $this->maxRedirects;
     }
 
     /**
-     * @param bool $addReferer
+     * Option to disable the referer for redirects
      */
-    public function optDisableReferer(): void
+    public function optDisableRefererForRedirects(): void
     {
         $this->addReferer = false;
     }
 
     /**
-     * @return bool
+     * Is adding of a referee header for redirects enabled.
      */
-    public function isRefererAllowed(): bool
+    public function isRefererForRedirectsEnabled(): bool
     {
         return $this->addReferer;
     }
 
     /**
-     * @return bool
+     * Has a custom CA bundle path been set?
      */
     public function hasCustomCaBundlePath(): bool
     {
         return !empty($this->getCustomCaBundlePath());
     }
-
 }
