@@ -101,22 +101,6 @@ class Headers implements Countable, IteratorAggregate
     }
 
     /**
-     * Return an associative array with the header field name as a key and the header value as value
-     *
-     * @return string[] ['headerField' => 'headerValue']
-     */
-    public function toArray(): array
-    {
-        $result = [];
-
-        foreach ($this->headers as $header) {
-            $result[$header->getFieldName()] = $header->getValues();
-        }
-
-        return $result;
-    }
-
-    /**
      * @inheritDoc
      */
     public function getIterator(): ArrayIterator

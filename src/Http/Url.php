@@ -16,6 +16,11 @@ namespace Artemeon\HttpClient\Http;
 use Artemeon\HttpClient\Exception\HttpClientException;
 use Artemeon\HttpClient\Psr7\UriInterfaceSubset;
 
+use function parse_url;
+
+use const PHP_URL_PATH;
+use const PHP_URL_QUERY;
+
 class Url implements UriInterfaceSubset
 {
     /** @var string */
@@ -64,12 +69,16 @@ class Url implements UriInterfaceSubset
         }
 
         $this->url = $url;
+        $this->query = parse_url($url, PHP_URL_QUERY) ?? '';
         $this->scheme = parse_url($url, PHP_URL_SCHEME) ?? '';
         $this->host = parse_url($url, PHP_URL_HOST) ?? '';
         $this->port = parse_url($url, PHP_URL_PORT);
         $this->fragment = parse_url($url, PHP_URL_FRAGMENT) ?? '';
         $this->user = parse_url($url, PHP_URL_USER) ?? '';
         $this->password = parse_url($url, PHP_URL_PASS) ?? '';
+        $this->path = parse_url($url, PHP_URL_PATH) ?? '';
+
+
     }
 
     /**

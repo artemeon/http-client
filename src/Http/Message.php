@@ -102,10 +102,6 @@ abstract class Message implements MessageInterfaceSubset
      */
     public function getHeader($name): array
     {
-        if (!$this->headers->hasHeader(strval($name))) {
-            return [];
-        }
-
         try {
             return $this->headers->getHeader(strval($name))->getValues();
         } catch (HttpClientException $e) {
@@ -118,10 +114,6 @@ abstract class Message implements MessageInterfaceSubset
      */
     public function getHeaderLine($name): string
     {
-        if (!$this->headers->hasHeader(strval($name))) {
-            return '';
-        }
-
         try {
             return $this->headers->getHeader(strval($name))->getValue();
         } catch (HttpClientException $e) {

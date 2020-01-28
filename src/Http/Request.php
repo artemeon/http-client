@@ -124,7 +124,7 @@ class Request extends Message implements RequestInterfaceSubset
      * @param Url $url The Url object
      * @param Body $body The Body object
      * @param Headers|null $headers Optional: Headers collection or null
-     * @param float $version Optional: the http protocol version string
+     * @param string $version Optional: the http protocol version string
      * @throws HttpClientException
      */
     public static function forPost(Url $url, Body $body, ?Headers $headers = null, string $version = '1.1'): self
