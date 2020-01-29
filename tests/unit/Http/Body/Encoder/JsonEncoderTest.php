@@ -13,9 +13,12 @@ declare(strict_types=1);
 
 namespace Artemeon\HttpClient\Tests\Http\Body\Encoder;
 
+use Artemeon\HttpClient\Exception\HttpClientException;
 use Artemeon\HttpClient\Http\Body\Encoder\JsonEncoder;
 use Artemeon\HttpClient\Http\MediaType;
+use phpmock\prophecy\PHPProphet;
 use PHPUnit\Framework\TestCase;
+use Prophecy\Argument;
 use stdClass;
 
 /**
@@ -25,12 +28,35 @@ class JsonEncoderTest extends TestCase
 {
     /**
      * @test
+     * @runInSeparateProcess
      */
-    public function fromObject_returnExpectedValue(): void
+    public function fromArray_JsonEncodeFailsThrows_Exception()
+    {
+        $globalProphet = new PHPProphet();
+        $globalProphecy = $globalProphet->prophesize("\Artemeon\HttpClient\Http\Body\Encoder");
+
+        $globalProphecy->json_encode(Argument::any(), Argument::any())->willReturn(false);
+        $globalProphecy->reveal();
+
+        $this->expectException(HttpClientException::class);
+        $value = ['test' => 12];
+        $options = 0;
+
+        $encoder = JsonEncoder::fromArray($value, $options);
+        $encoder->encode();
+
+        $globalProphet->checkPredictions();
+    }
+
+    /**
+     * @test
+     */
+    public function fromObject_ReturnExpectedValue(): void
     {
         $class = new stdClass();
         $class->name = 'name';
         $class->password = 'password';
+
         $encoder = JsonEncoder::fromObject($class);
 
         self::assertSame('{"name":"name","password":"password"}', $encoder->encode()->__toString());
