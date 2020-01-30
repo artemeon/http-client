@@ -28,7 +28,7 @@ class HeaderTest extends TestCase
      */
     public function getValue_ReturnStringWithoutComma(): void
     {
-        $header = Header::fromString(HeaderField::REFERER, ['some-referer']);
+        $header = Header::fromString(HeaderField::REFERER, 'some-referer');
         self::assertSame('some-referer', $header->getValue());
     }
 
@@ -37,7 +37,7 @@ class HeaderTest extends TestCase
      */
     public function getValue_ReturnCommaSeparatedString(): void
     {
-        $header = Header::fromString(HeaderField::REFERER, ['some-referer', 'more-stuff']);
+        $header = Header::fromArray(HeaderField::REFERER, ['some-referer', 'more-stuff']);
         self::assertSame('some-referer, more-stuff', $header->getValue());
     }
 
@@ -46,7 +46,7 @@ class HeaderTest extends TestCase
      */
     public function addValue_AddToArray(): void
     {
-        $header = Header::fromString(HeaderField::REFERER, ['some-referer']);
+        $header = Header::fromString(HeaderField::REFERER, 'some-referer');
         $header->addValue('added-string');
         self::assertSame('some-referer, added-string', $header->getValue());
     }
@@ -56,7 +56,7 @@ class HeaderTest extends TestCase
      */
     public function getValues_ReturnsExceptedArray(): void
     {
-        $header = Header::fromString(HeaderField::REFERER, ['some-referer', 'more-stuff']);
+        $header = Header::fromArray(HeaderField::REFERER, ['some-referer', 'more-stuff']);
         self::assertSame('some-referer', $header->getValues()[0]);
         self::assertSame('more-stuff', $header->getValues()[1]);
     }

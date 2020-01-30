@@ -18,7 +18,7 @@ use Artemeon\HttpClient\Client\Options\ClientOptions;
 use Artemeon\HttpClient\Exception\HttpClientException;
 use Artemeon\HttpClient\Http\Body\Body;
 use Artemeon\HttpClient\Http\Body\Encoder\FormUrlEncoder;
-use Artemeon\HttpClient\Http\Header\Fields\Authorisation;
+use Artemeon\HttpClient\Http\Header\Fields\Authorization;
 use Artemeon\HttpClient\Http\Header\Fields\UserAgent;
 use Artemeon\HttpClient\Http\Header\Headers;
 use Artemeon\HttpClient\Http\Request;
@@ -28,7 +28,7 @@ use GuzzleHttp\MessageFormatter;
 require '../../vendor/autoload.php';
 
 $transactions = [];
-$formatter = new MessageFormatter('{request}');
+$formatter = new MessageFormatter(MessageFormatter::DEBUG);
 
 try {
     $request = Request::forPut(
@@ -41,7 +41,7 @@ try {
             ])
         ),
         Headers::fromFields([
-            Authorisation::forAuthBasic('John.Doe', 'geheim'),
+            Authorization::forAuthBasic('John.Doe', 'geheim'),
             UserAgent::fromString(),
         ])
     );
@@ -50,10 +50,9 @@ try {
     $clientOptions->optDisableSslVerification();
     $clientOptions->optSetTimeout(15);
 
-    $response = HttpClientFactory::withTransactionMiddleware($transactions)->send($request, $clientOptions);
+    HttpClientFactory::withTransactionMiddleware($transactions)->send($request, $clientOptions);
 
-    echo nl2br($formatter->format($transactions[0]['request']));
-    echo nl2br($response->getBody()->__toString());
+    echo nl2br($formatter->format($transactions[0]['request'], $transactions[0]['response']));
 } catch (HttpClientException $exception) {
     print_r($exception);
 }

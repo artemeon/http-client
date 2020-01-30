@@ -14,7 +14,7 @@ declare(strict_types=1);
 namespace Artemeon\HttpClient\Tests\Http\Header;
 
 use Artemeon\HttpClient\Exception\HttpClientException;
-use Artemeon\HttpClient\Http\Header\Fields\Authorisation;
+use Artemeon\HttpClient\Http\Header\Fields\Authorization;
 use Artemeon\HttpClient\Http\Header\Fields\UserAgent;
 use Artemeon\HttpClient\Http\Header\Header;
 use Artemeon\HttpClient\Http\Header\HeaderField;
@@ -79,10 +79,10 @@ class HeadersTest extends TestCase
      */
     public function getHeader_Exists_ReturnsValue(): void
     {
-        $expected = Header::fromField(Authorisation::forAuthBasic('john.doe', 'geheim'));
+        $expected = Header::fromField(Authorization::forAuthBasic('john.doe', 'geheim'));
         $this->headers->addHeader($expected);
 
-        self::assertSame($expected, $this->headers->getHeader(HeaderField::AUTHORISATION));
+        self::assertSame($expected, $this->headers->getHeader(HeaderField::AUTHORIZATION));
     }
 
     /**
@@ -90,7 +90,7 @@ class HeadersTest extends TestCase
      */
     public function addHeader_Exists_ThrowsException(): void
     {
-        $header = Header::fromField(Authorisation::forAuthBasic('john.doe', 'geheim'));
+        $header = Header::fromField(Authorization::forAuthBasic('john.doe', 'geheim'));
 
         $this->expectException(HttpClientException::class);
         $this->headers->addHeader($header);
@@ -102,7 +102,7 @@ class HeadersTest extends TestCase
      */
     public function getIterator_ReturnsArrayIterator(): void
     {
-        $expected = Header::fromField(Authorisation::forAuthBasic('john.doe', 'geheim'));
+        $expected = Header::fromField(Authorization::forAuthBasic('john.doe', 'geheim'));
         $this->headers->addHeader($expected);
 
         self::assertCount(1, $this->headers->getIterator());

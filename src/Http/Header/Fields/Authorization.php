@@ -18,7 +18,7 @@ use Artemeon\HttpClient\Http\Header\HeaderField;
 /**
  * Class to describe the header field 'Authorisation'
  */
-class Authorisation implements HeaderField
+class Authorization implements HeaderField
 {
     /** @var string */
     private $type;
@@ -71,7 +71,7 @@ class Authorisation implements HeaderField
      */
     public function getName(): string
     {
-        return self::AUTHORISATION;
+        return self::AUTHORIZATION;
     }
 
     /**
@@ -79,6 +79,6 @@ class Authorisation implements HeaderField
      */
     public function getValue(): string
     {
-        return $this->type . ': ' . $this->credentials;
+        return $this->type . ' ' . $this->credentials;
     }
 }

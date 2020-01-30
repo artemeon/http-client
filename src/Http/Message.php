@@ -20,6 +20,8 @@ use Artemeon\HttpClient\Psr7\MessageInterfaceSubset;
 use Artemeon\HttpClient\Stream\Stream;
 use Psr\Http\Message\StreamInterface;
 
+use function is_array;
+
 /**
  * Abstract class to describe a http message
  *
@@ -116,5 +118,21 @@ abstract class Message implements MessageInterfaceSubset
         } catch (HttpClientException $e) {
             return '';
         }
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function withHeader($name, $value): self
+    {
+        $cloned = clone $this;
+
+        if (is_array($value)) {
+            $cloned->headers->replaceHeader(Header::fromArray($name, $value));
+        } else {
+            $cloned->headers->replaceHeader(Header::fromString($name, $value));
+        }
+
+        return $cloned;
     }
 }

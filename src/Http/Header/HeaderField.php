@@ -19,7 +19,7 @@ namespace Artemeon\HttpClient\Http\Header;
 interface HeaderField
 {
     /** @var string */
-    public const AUTHORISATION = 'Authorization';
+    public const AUTHORIZATION = 'Authorization';
 
     /** @var string */
     public const REFERER = "Referer";

@@ -22,7 +22,9 @@ use Artemeon\HttpClient\Exception\Request\Http\ResponseException;
 use Artemeon\HttpClient\Exception\Request\Http\ServerResponseException;
 use Artemeon\HttpClient\Exception\Request\Network\ConnectException;
 use Artemeon\HttpClient\Exception\Request\TransferException;
+use Artemeon\HttpClient\Http\Header\Fields\UserAgent;
 use Artemeon\HttpClient\Http\Header\Header;
+use Artemeon\HttpClient\Http\Header\HeaderField;
 use Artemeon\HttpClient\Http\Header\Headers;
 use Artemeon\HttpClient\Http\Request;
 use Artemeon\HttpClient\Http\Response;
@@ -69,6 +71,12 @@ class ArtemeonHttpClient implements HttpClient
             $guzzleOptions = $this->clientOptionsConverter->toGuzzleOptionsArray($clientOptions);
         } else {
             $guzzleOptions = [];
+        }
+
+        // Add Artemeon default user agent
+        if (!$request->hasHeader(HeaderField::USER_AGENT)) {
+            $userAgent = UserAgent::fromString();
+            $request = $request->withHeader($userAgent->getName(), [$userAgent->getValue()]);
         }
 
         return $this->doSend($request, $guzzleOptions);
@@ -162,7 +170,7 @@ class ArtemeonHttpClient implements HttpClient
         $headers = Headers::create();
 
         foreach (array_keys($guzzleResponse->getHeaders()) as $headerField) {
-            $headers->addHeader(Header::fromString($headerField, $guzzleResponse->getHeader($headerField)));
+            $headers->addHeader(Header::fromArray($headerField, $guzzleResponse->getHeader($headerField)));
         }
 
         return new Response(

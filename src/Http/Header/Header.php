@@ -34,12 +34,23 @@ class Header
     }
 
     /**
-     * Named constructor to create an instance based on the given string values
+     * Named constructor to create an instance based on the given string value
      *
      * @param string $name Name of the http header field
-     * @param string[] $values Value of the http header field
+     * @param string $value Value of the http header field
      */
-    public static function fromString(string $name, array $values): self
+    public static function fromString(string $name, string $value): self
+    {
+        return new self($name, [$value]);
+    }
+
+    /**
+     * Named constructor to create an instance based on the given string[] values
+     *
+     * @param string $name Name of the http header field
+     * @param string[] $value Values of the http header field
+     */
+    public static function fromArray(string $name, array $values)
     {
         return new self($name, $values);
     }

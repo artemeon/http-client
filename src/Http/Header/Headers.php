@@ -57,7 +57,7 @@ class Headers implements Countable, IteratorAggregate
     }
 
     /**
-     * Adds a header to the collection
+     * Adds a header to the collection, throws an exception if the header already exists
      *
      * @throws HttpClientException
      */
@@ -65,10 +65,19 @@ class Headers implements Countable, IteratorAggregate
     {
         $fieldName = $header->getFieldName();
 
-        if (isset($this->headers[$fieldName])) {
+        if ($this->hasHeader($fieldName)) {
             throw HttpClientException::forAlreadyRegisteredHeaderFields($fieldName);
         }
 
+        $this->headers[$fieldName] = $header;
+    }
+
+    /**
+     * Adds a header to the collection or replaces an already existing header
+     */
+    public function replaceHeader(Header $header): void
+    {
+        $fieldName = $header->getFieldName();
         $this->headers[$fieldName] = $header;
     }
 

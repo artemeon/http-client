@@ -25,7 +25,7 @@ use GuzzleHttp\MessageFormatter;
 require '../../vendor/autoload.php';
 
 $transactions = [];
-$formatter = new MessageFormatter('{request}');
+$formatter = new MessageFormatter(MessageFormatter::DEBUG);
 
 try {
     $request = Request::forPost(
@@ -38,10 +38,9 @@ try {
         )
     );
 
-    $response = HttpClientFactory::withTransactionMiddleware($transactions)->send($request);
+    HttpClientFactory::withTransactionMiddleware($transactions)->send($request);
 
-    echo nl2br($formatter->format($transactions[0]['request']));
-    echo nl2br($response->getBody()->__toString());
+    echo nl2br($formatter->format($transactions[0]['request'], $transactions[0]['response']));
 } catch (HttpClientException $exception) {
     print_r($exception);
 }

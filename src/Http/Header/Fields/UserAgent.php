@@ -24,7 +24,7 @@ class UserAgent implements HeaderField
     private $userAgent;
 
     /** @var string */
-    public const default = "Artemeon/Http-Client";
+    public const default = "Artemeon/HttpClient/Guzzle6";
 
     /**
      * UserAgent constructor.

@@ -17,7 +17,7 @@ use Artemeon\HttpClient\Client\HttpClientFactory;
 use Artemeon\HttpClient\Exception\HttpClientException;
 use Artemeon\HttpClient\Http\Body\Body;
 use Artemeon\HttpClient\Http\Body\Encoder\FormUrlEncoder;
-use Artemeon\HttpClient\Http\Header\Fields\Authorisation;
+use Artemeon\HttpClient\Http\Header\Fields\Authorization;
 use Artemeon\HttpClient\Http\Header\Headers;
 use Artemeon\HttpClient\Http\Request;
 use Artemeon\HttpClient\Http\Url;
@@ -26,19 +26,18 @@ use GuzzleHttp\MessageFormatter;
 require '../../vendor/autoload.php';
 
 $transactions = [];
-$formatter = new MessageFormatter('{request}');
+$formatter = new MessageFormatter(MessageFormatter::DEBUG);
 
 try {
     $request = Request::forPost(
         Url::fromString('http://apache/endpoints/upload.php'),
         Body::fromEncoder(FormUrlEncoder::fromArray(["username" => 'john.doe'])),
-        Headers::fromFields([Authorisation::forAuthBasic('john.doe', 'geheim')])
+        Headers::fromFields([Authorization::forAuthBasic('john.doe', 'geheim')])
     );
 
-    $response = HttpClientFactory::withTransactionMiddleware($transactions)->send($request);
+    HttpClientFactory::withTransactionMiddleware($transactions)->send($request);
 
-    echo nl2br($formatter->format($transactions[0]['request']));
-    echo nl2br($response->getBody()->__toString());
+    echo nl2br($formatter->format($transactions[0]['request'], $transactions[0]['response']));
 } catch (HttpClientException $exception) {
     print_r($exception);
 }

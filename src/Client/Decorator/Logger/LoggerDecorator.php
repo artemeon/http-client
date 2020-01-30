@@ -11,8 +11,9 @@
 
 declare(strict_types=1);
 
-namespace Artemeon\HttpClient\Client\Decorator;
+namespace Artemeon\HttpClient\Client\Decorator\Logger;
 
+use Artemeon\HttpClient\Client\Decorator\HttpClientDecorator;
 use Artemeon\HttpClient\Client\HttpClient;
 use Artemeon\HttpClient\Client\Options\ClientOptions;
 use Artemeon\HttpClient\Exception\HttpClientException;
@@ -23,15 +24,12 @@ use Artemeon\HttpClient\Http\Response;
 use Psr\Log\LoggerInterface;
 
 /**
- * Decorator class to add logging to the httpClient
+ * Decorator class to add Psr logging to the httpClient
  */
-class HttpClientLogDecorator implements HttpClient
+class LoggerDecorator extends HttpClientDecorator
 {
     /** @var LoggerInterface */
     private $logger;
-
-    /** @var HttpClient */
-    private $httpClient;
 
     /**
      * HttpClientLogDecorator constructor.
@@ -41,8 +39,8 @@ class HttpClientLogDecorator implements HttpClient
      */
     public function __construct(HttpClient $httpClient, LoggerInterface $logger)
     {
-        $this->httpClient = $httpClient;
         $this->logger = $logger;
+        parent::__construct($httpClient);
     }
 
     /**
