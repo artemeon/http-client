@@ -13,9 +13,9 @@ declare(strict_types=1);
 
 namespace Artemeon\HttpClient\Tests\Client;
 
-use Artemeon\HttpClient\Client\ClientOptions;
+use Artemeon\HttpClient\Client\Decorator\HttpClientLogDecorator;
 use Artemeon\HttpClient\Client\HttpClient;
-use Artemeon\HttpClient\Client\HttpClientLogDecorator;
+use Artemeon\HttpClient\Client\Options\ClientOptions;
 use Artemeon\HttpClient\Exception\HttpClientException;
 use Artemeon\HttpClient\Exception\Request\Http\ClientResponseException;
 use Artemeon\HttpClient\Exception\Request\Http\ServerResponseException;
@@ -27,7 +27,7 @@ use Prophecy\Argument;
 use Psr\Log\LoggerInterface;
 
 /**
- * @covers \Artemeon\HttpClient\Client\HttpClientLogDecorator
+ * @covers \Artemeon\HttpClient\Client\Decorator\HttpClientLogDecorator
  */
 class HttpClientLogDecoratorTest extends TestCase
 {
@@ -37,10 +37,10 @@ class HttpClientLogDecoratorTest extends TestCase
     /** @var HttpClient */
     private $httpClient;
 
-    /** @var HttpClientLogDecorator */
+    /** @var \Artemeon\HttpClient\Client\Decorator\HttpClientLogDecorator */
     private $httpClientLogDecorator;
 
-    /** @var ClientOptions */
+    /** @var \Artemeon\HttpClient\Client\Options\ClientOptions */
     private $clientOptions;
 
     /**
@@ -50,7 +50,7 @@ class HttpClientLogDecoratorTest extends TestCase
     {
         $this->logger = $this->prophesize(LoggerInterface::class);
         $this->httpClient = $this->prophesize(HttpClient::class);
-        $this->clientOptions = ClientOptions::fromDefaults();
+        $this->clientOptions = \Artemeon\HttpClient\Client\Options\ClientOptions::fromDefaults();
 
         $this->httpClientLogDecorator = new HttpClientLogDecorator(
             $this->httpClient->reveal(),

@@ -13,15 +13,15 @@ declare(strict_types=1);
 
 namespace Artemeon\HttpClient\Tests\Client;
 
-use Artemeon\HttpClient\Client\ClientOptions;
+use Artemeon\HttpClient\Client\Options\ClientOptions;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @covers \Artemeon\HttpClient\Client\ClientOptions
+ * @covers \Artemeon\HttpClient\Client\Options\ClientOptions
  */
 class ClientOptionsTest extends TestCase
 {
-    /** @var ClientOptions */
+    /** @var \Artemeon\HttpClient\Client\Options\ClientOptions */
     private $clientOptions;
 
     /**
@@ -29,7 +29,7 @@ class ClientOptionsTest extends TestCase
      */
     public function setUp(): void
     {
-        $this->clientOptions = ClientOptions::fromDefaults();
+        $this->clientOptions = \Artemeon\HttpClient\Client\Options\ClientOptions::fromDefaults();
     }
 
     /**

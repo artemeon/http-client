@@ -13,6 +13,8 @@ declare(strict_types=1);
 
 namespace Artemeon\HttpClient\Client;
 
+use Artemeon\HttpClient\Client\Decorator\HttpClientLogDecorator;
+use Artemeon\HttpClient\Client\Options\ClientOptionsConverter;
 use Artemeon\HttpClient\Exception\HttpClientException;
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\HandlerStack;

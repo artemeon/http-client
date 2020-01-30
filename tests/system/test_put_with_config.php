@@ -13,8 +13,8 @@ declare(strict_types=1);
 
 namespace Artemeon\HttpClient\Tests\System;
 
-use Artemeon\HttpClient\Client\ClientOptions;
 use Artemeon\HttpClient\Client\HttpClientFactory;
+use Artemeon\HttpClient\Client\Options\ClientOptions;
 use Artemeon\HttpClient\Exception\HttpClientException;
 use Artemeon\HttpClient\Http\Body\Body;
 use Artemeon\HttpClient\Http\Body\Encoder\FormUrlEncoder;

@@ -11,7 +11,7 @@
 
 declare(strict_types=1);
 
-namespace Artemeon\HttpClient\Client;
+namespace Artemeon\HttpClient\Client\Options;
 
 use GuzzleHttp\RequestOptions as GuzzleRequestOptions;
 

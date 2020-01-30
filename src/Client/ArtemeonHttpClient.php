@@ -13,6 +13,8 @@ declare(strict_types=1);
 
 namespace Artemeon\HttpClient\Client;
 
+use Artemeon\HttpClient\Client\Options\ClientOptions;
+use Artemeon\HttpClient\Client\Options\ClientOptionsConverter;
 use Artemeon\HttpClient\Exception\HttpClientException;
 use Artemeon\HttpClient\Exception\Request\Http\ClientResponseException;
 use Artemeon\HttpClient\Exception\Request\Http\RedirectResponseException;

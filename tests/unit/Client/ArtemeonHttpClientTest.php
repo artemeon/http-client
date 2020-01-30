@@ -14,8 +14,7 @@ declare(strict_types=1);
 namespace Artemeon\HttpClient\Tests\Client;
 
 use Artemeon\HttpClient\Client\ArtemeonHttpClient;
-use Artemeon\HttpClient\Client\ClientOptions;
-use Artemeon\HttpClient\Client\ClientOptionsConverter;
+use Artemeon\HttpClient\Client\Options\ClientOptions;
 use Artemeon\HttpClient\Exception\HttpClientException;
 use Artemeon\HttpClient\Exception\Request\Http\ClientResponseException;
 use Artemeon\HttpClient\Exception\Request\Http\RedirectResponseException;
@@ -70,7 +69,7 @@ class ArtemeonHttpClientTest extends TestCase
     /** @var ClientOptions */
     private $clientOptions;
 
-    /** @var ClientOptionsConverter */
+    /** @var \Artemeon\HttpClient\Client\Options\ClientOptionsConverter */
     private $clientOptionsConverter;
 
     /**
@@ -80,7 +79,7 @@ class ArtemeonHttpClientTest extends TestCase
     {
         $this->mockHandler = new MockHandler();
         $this->guzzleClient = new GuzzleClient(['handler' => HandlerStack::create($this->mockHandler)]);
-        $this->clientOptionsConverter = $this->prophesize(ClientOptionsConverter::class);
+        $this->clientOptionsConverter = $this->prophesize(\Artemeon\HttpClient\Client\Options\ClientOptionsConverter::class);
         $this->clientOptions = ClientOptions::fromDefaults();
 
         $this->httpClient = new ArtemeonHttpClient(

@@ -11,8 +11,10 @@
 
 declare(strict_types=1);
 
-namespace Artemeon\HttpClient\Client;
+namespace Artemeon\HttpClient\Client\Decorator;
 
+use Artemeon\HttpClient\Client\HttpClient;
+use Artemeon\HttpClient\Client\Options\ClientOptions;
 use Artemeon\HttpClient\Exception\HttpClientException;
 use Artemeon\HttpClient\Exception\Request\Http\ClientResponseException;
 use Artemeon\HttpClient\Exception\Request\Http\ServerResponseException;
