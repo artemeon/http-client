@@ -61,6 +61,7 @@ class Body
      * Named constructor to create an instance based on the given Encoder
      *
      * @param Encoder $encoder Body Encoder implementation
+     * @throws HttpClientException
      */
     public static function fromEncoder(Encoder $encoder): self
     {
@@ -69,8 +70,6 @@ class Body
 
     /**
      * Named constructor to create an instance based on the given Reader
-     *
-     * @throws HttpClientException
      */
     public static function fromReader(Reader $reader): self
     {

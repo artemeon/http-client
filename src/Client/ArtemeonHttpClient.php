@@ -33,6 +33,7 @@ use GuzzleHttp\Exception\ServerException as GuzzleServerException;
 use GuzzleHttp\Exception\TooManyRedirectsException as GuzzleTooManyRedirectsException;
 use GuzzleHttp\Exception\TransferException as GuzzleTransferException;
 use GuzzleHttp\Psr7\Request as GuzzleRequest;
+use InvalidArgumentException;
 use Psr\Http\Message\ResponseInterface as GuzzleResponse;
 use RuntimeException;
 
@@ -73,10 +74,6 @@ class ArtemeonHttpClient implements HttpClient
 
     /**
      * Send request and transform Guzzle exception to Artemeon exceptions
-     *
-     * @param Request $request
-     * @param array $guzzleOptions
-     *
      * Map Guzzle exceptions -> HttpClient exceptions:
      *
      * ```
@@ -90,6 +87,10 @@ class ArtemeonHttpClient implements HttpClient
      *              2. ConnectException -> ConnectException
      *              3. TooManyRedirectsException -> RedirectResponseException
      * ```
+     *
+     * @param Request $request
+     * @param array $guzzleOptions
+     * @throws HttpClientException
      */
     private function doSend(Request $request, array $guzzleOptions): Response
     {
@@ -136,13 +137,17 @@ class ArtemeonHttpClient implements HttpClient
      */
     private function convertToGuzzleRequest(Request $request): GuzzleRequest
     {
-        return new GuzzleRequest(
-            $request->getMethod(),
-            $request->getUrl(),
-            $request->getHeaders(),
-            $request->getBody(),
-            $request->getProtocolVersion()
-        );
+        try {
+            return new GuzzleRequest(
+                $request->getMethod(),
+                $request->getUrl(),
+                $request->getHeaders(),
+                $request->getBody(),
+                $request->getProtocolVersion()
+            );
+        } catch (InvalidArgumentException $exception) {
+            throw HttpClientException::fromGuzzleException($exception);
+        }
     }
 
     /**

@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Artemeon\HttpClient\Exception;
 
+use Exception;
 use RuntimeException;
 
 /**
@@ -40,7 +41,7 @@ class HttpClientException extends RuntimeException
         return new self("Header field '$fieldName' does not exists");
     }
 
-    public static function fromGuzzleException(RuntimeException $exception): self
+    public static function fromGuzzleException(Exception $exception): self
     {
         return new self($exception->getMessage(), 0, $exception);
     }

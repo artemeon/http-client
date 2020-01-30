@@ -65,9 +65,13 @@ class Stream implements AppendableStream
      */
     public static function fromString(string $string, string $mode = 'r+'): self
     {
-        $resource = fopen("php://temp", $mode);
-        $instance = new self($resource);
-        $instance->write($string);
+        try {
+            $resource = fopen("php://temp", $mode);
+            $instance = new self($resource);
+            $instance->write($string);
+        } catch (RuntimeException $exception) {
+            throw HttpClientException::fromGuzzleException($exception);
+        }
 
         return $instance;
     }
@@ -76,6 +80,7 @@ class Stream implements AppendableStream
      * Named constructor to create an instance based on the given file mode
      *
      * @param string $mode Stream Modes: @see https://www.php.net/manual/de/function.fopen.php
+     * @throws HttpClientException
      */
     public static function fromFileMode(string $mode): self
     {
@@ -109,7 +114,7 @@ class Stream implements AppendableStream
         try {
             $this->rewind();
             $content = $this->getContents();
-        } catch (HttpClientException $exception) {
+        } catch (RuntimeException $exception) {
             $content = '';
         }
 
@@ -135,7 +140,7 @@ class Stream implements AppendableStream
             throw new HttpClientException("Append failed");
         }
 
-        return  $bytes;
+        return $bytes;
     }
 
     /**
@@ -244,7 +249,6 @@ class Stream implements AppendableStream
 
     /**
      * @inheritDoc
-     * @throws RuntimeException
      */
     public function rewind()
     {
@@ -259,7 +263,6 @@ class Stream implements AppendableStream
 
     /**
      * @inheritDoc
-     * @throws RuntimeException
      */
     public function isWritable()
     {
@@ -280,7 +283,6 @@ class Stream implements AppendableStream
 
     /**
      * @inheritDoc
-     * @throws HttpClientException
      */
     public function write($string)
     {
@@ -298,7 +300,6 @@ class Stream implements AppendableStream
 
     /**
      * @inheritDoc
-     * @throws HttpClientException
      */
     public function isReadable()
     {
@@ -319,7 +320,6 @@ class Stream implements AppendableStream
 
     /**
      * @inheritDoc
-     * @throws HttpClientException
      */
     public function read($length)
     {
@@ -337,7 +337,6 @@ class Stream implements AppendableStream
 
     /**
      * @inheritDoc
-     * @throws HttpClientException
      *
      * This function reads the complete stream from the CURRENT! file pointer. If you
      * want ensure to read the complete stream use __toString() instead.

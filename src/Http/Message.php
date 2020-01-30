@@ -42,8 +42,6 @@ abstract class Message implements MessageInterfaceSubset
      * @param Headers|null $headers Optional: Headers collection or null
      * @param StreamInterface|null $body Optional: Body object or null
      * @param string $version Optional: Http protocol version string
-     *
-     * @throws HttpClientException
      */
     protected function __construct(?Headers $headers = null, StreamInterface $body = null, string $version = '1.1')
     {

@@ -13,16 +13,16 @@ declare(strict_types=1);
 
 namespace Artemeon\HttpClient\Client;
 
+use Artemeon\HttpClient\Exception\HttpClientException;
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\MessageFormatter;
 use GuzzleHttp\Middleware;
+use InvalidArgumentException;
 use Psr\Log\LoggerInterface;
 
 /**
  * Static factory class
- *
- * @codeCoverageIgnore
  */
 class HttpClientFactory
 {
@@ -43,17 +43,21 @@ class HttpClientFactory
      *
      * @param LoggerInterface $logger PSR-3 logger @see https://www.php-fig.org/psr/psr-3/
      * @param string $format @see \GuzzleHttp\MessageFormatter for all allowed options
+     * @throws HttpClientException
      */
     public static function withLogger(LoggerInterface $logger, string $format = '{request} - {response}'): HttpClient
     {
-        $formatter = new MessageFormatter($format);
-        $handlerStack = HandlerStack::create();
-        $handlerStack->push(Middleware::log($logger, $formatter));
-
-        $httpClient = new ArtemeonHttpClient(
-            new GuzzleClient(['handler' => $handlerStack]),
-            new ClientOptionsConverter()
-        );
+        try {
+            $formatter = new MessageFormatter($format);
+            $handlerStack = HandlerStack::create();
+            $handlerStack->push(Middleware::log($logger, $formatter));
+            $httpClient = new ArtemeonHttpClient(
+                new GuzzleClient(['handler' => $handlerStack]),
+                new ClientOptionsConverter()
+            );
+        } catch (InvalidArgumentException $exception) {
+            throw HttpClientException::fromGuzzleException($exception);
+        }
 
         return new HttpClientLogDecorator($httpClient, $logger);
     }
@@ -68,16 +72,22 @@ class HttpClientFactory
      * print_r($transactions[0]['request']);
      * print_r($transactions[0]['response']);
      * echo $transactions[0]['request']->getBody();
+     *
+     * @throws HttpClientException
      */
     public static function withTransactionMiddleware(array &$transactions): HttpClient
     {
-        $history = Middleware::history($transactions);
-        $handlerStack = HandlerStack::create();
-        $handlerStack->push($history);
+        try {
+            $history = Middleware::history($transactions);
+            $handlerStack = HandlerStack::create();
+            $handlerStack->push($history);
 
-        return new ArtemeonHttpClient(
-            new GuzzleClient(['handler' => $handlerStack]),
-            new ClientOptionsConverter()
-        );
+            return new ArtemeonHttpClient(
+                new GuzzleClient(['handler' => $handlerStack]),
+                new ClientOptionsConverter()
+            );
+        } catch (InvalidArgumentException $exception) {
+            throw HttpClientException::fromGuzzleException($exception);
+        }
     }
 }

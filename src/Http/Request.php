@@ -258,6 +258,7 @@ class Request extends Message implements RequestInterfaceSubset
      *
      * @param Url $url
      * @param Headers|null $headers
+     * @throws HttpClientException
      */
     private function addHostHeader(Url $url, ?Headers $headers): Headers
     {

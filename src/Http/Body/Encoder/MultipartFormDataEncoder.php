@@ -18,6 +18,7 @@ use Artemeon\HttpClient\Http\MediaType;
 use Artemeon\HttpClient\Stream\AppendableStream;
 use Artemeon\HttpClient\Stream\Stream;
 use Psr\Http\Message\StreamInterface;
+use RuntimeException;
 
 /**
  * Encoder for "multipart/form-data" encoded body content
@@ -37,6 +38,7 @@ class MultipartFormDataEncoder implements Encoder
      * MultipartFormDataEncoder constructor.
      *
      * @param string $boundary Boundary string 7bit US-ASCII
+     * @throws HttpClientException
      */
     private function __construct(string $boundary)
     {
@@ -46,6 +48,8 @@ class MultipartFormDataEncoder implements Encoder
 
     /**
      * Named constructor to create an instance
+     *
+     * @throws HttpClientException
      */
     public static function create(): self
     {
@@ -70,7 +74,11 @@ class MultipartFormDataEncoder implements Encoder
         $part .= $this->crlf;
         $part .= $value . $this->crlf;
 
-        $this->multiPartStream->appendStream(Stream::fromString($part));
+        try {
+            $this->multiPartStream->appendStream(Stream::fromString($part));
+        } catch (RuntimeException $exception) {
+            throw HttpClientException::fromGuzzleException($exception);
+        }
 
         return $this;
     }
@@ -81,6 +89,7 @@ class MultipartFormDataEncoder implements Encoder
      * @param string $name Name of the form field
      * @param string $fileName Name of the file, with a valid file extension
      * @param AppendableStream $fileContent Binary stream of the file
+     * @throws HttpClientException
      */
     public function addFilePart(string $name, string $fileName, AppendableStream $fileContent): self
     {
@@ -91,9 +100,13 @@ class MultipartFormDataEncoder implements Encoder
         $part .= sprintf('Content-Type: %s', MediaType::mapFileExtensionToMimeType($fileExtension)) . $this->crlf;
         $part .= $this->crlf;
 
-        $this->multiPartStream->appendStream(Stream::fromString($part));
-        $this->multiPartStream->appendStream($fileContent);
-        $this->multiPartStream->appendStream(Stream::fromString($this->crlf));
+        try {
+            $this->multiPartStream->appendStream(Stream::fromString($part));
+            $this->multiPartStream->appendStream($fileContent);
+            $this->multiPartStream->appendStream(Stream::fromString($this->crlf));
+        } catch (RuntimeException $exception) {
+            throw HttpClientException::fromGuzzleException($exception);
+        }
 
         return $this;
     }
@@ -103,7 +116,11 @@ class MultipartFormDataEncoder implements Encoder
      */
     public function encode(): StreamInterface
     {
-        $this->multiPartStream->appendStream(Stream::fromString('--' . $this->boundary . '--' . $this->crlf));
+        try {
+            $this->multiPartStream->appendStream(Stream::fromString('--' . $this->boundary . '--' . $this->crlf));
+        } catch (RuntimeException $exception) {
+            throw HttpClientException::fromGuzzleException($exception);
+        }
 
         return $this->multiPartStream;
     }
