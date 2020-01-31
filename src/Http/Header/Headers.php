@@ -69,7 +69,12 @@ class Headers implements Countable, IteratorAggregate
             throw HttpClientException::forAlreadyRegisteredHeaderFields($fieldName);
         }
 
-        $this->headers[$fieldName] = $header;
+        // A user agent SHOULD generate Host as the first header field
+        if (strtolower($fieldName) === strtolower(HeaderField::HOST)) {
+            $this->headers = [$fieldName => $header] + $this->headers;
+        } else {
+            $this->headers[$fieldName] = $header;
+        }
     }
 
     /**
@@ -78,7 +83,13 @@ class Headers implements Countable, IteratorAggregate
     public function replaceHeader(Header $header): void
     {
         $fieldName = $header->getFieldName();
-        $this->headers[$fieldName] = $header;
+
+        // A user agent SHOULD generate Host as the first header field
+        if (strtolower($fieldName) === strtolower(HeaderField::HOST) && !isset($this->headers[$fieldName])) {
+            $this->headers = [$fieldName => $header] + $this->headers;
+        } else {
+            $this->headers[$fieldName] = $header;
+        }
     }
 
     /**

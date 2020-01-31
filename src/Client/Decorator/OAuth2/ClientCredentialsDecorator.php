@@ -54,6 +54,8 @@ class ClientCredentialsDecorator extends HttpClientDecorator
 
     /**
      * Named constructor to create an instance based on the given ClientCredentials
+     *
+     * @throws HttpClientException
      */
     public static function fromClientCredentials(
         Url $url,
@@ -68,6 +70,7 @@ class ClientCredentialsDecorator extends HttpClientDecorator
 
     /**
      * @inheritDoc
+     * @throws \InvalidArgumentException
      */
     public function send(Request $request, ClientOptions $clientOptions = null): Response
     {

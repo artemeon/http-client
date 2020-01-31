@@ -38,7 +38,7 @@ class ClientCredentials
      */
     private function __construct(string $clientID, string $clientSecret, string $scope = '')
     {
-        // Arccording to the rfc https://tools.ietf.org/html/rfc6749#page-43 encoding must UTF-8
+        // According to the rfc https://tools.ietf.org/html/rfc6749#page-43 encoding must UTF-8
         $this->clientId = utf8_encode($clientID);
         $this->clientSecret = utf8_encode($clientSecret);
         $this->scope = utf8_encode($scope);
@@ -67,6 +67,6 @@ class ClientCredentials
             $requestData['scope'] = $this->scope;
         }
 
-        return  $requestData;
-   }
+        return $requestData;
+    }
 }

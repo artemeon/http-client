@@ -57,6 +57,8 @@ class AccessToken
 
     /**
      * Named constructor to create an instance based on the given json encoded body string
+     *
+     * @throws HttpClientException
      */
     public static function fromJsonString(string $json): self
     {
