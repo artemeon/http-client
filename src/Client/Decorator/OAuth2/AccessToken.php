@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Artemeon\HttpClient\Client\Decorator\OAuth2;
 
-use Artemeon\HttpClient\Exception\HttpClientException;
+use Artemeon\HttpClient\Exception\RuntimeException;
 
 /**
  * Class to describe a OAuth2 access token
@@ -39,12 +39,12 @@ class AccessToken
      * @param string $expires
      * @param string $type
      * @param string $scope
-     * @throws HttpClientException
+     * @throws RuntimeException
      */
     private function __construct(string $token, int $expires, string $type, string $scope = '')
     {
         if (empty($token) || empty($expires) || empty($type)) {
-            throw new HttpClientException(
+            throw new RuntimeException(
                 "Access token fields: 'access_token', 'expires_in', 'token_type' are mandatory"
             );
         }
@@ -58,7 +58,7 @@ class AccessToken
     /**
      * Named constructor to create an instance based on the given json encoded body string
      *
-     * @throws HttpClientException
+     * @throws RuntimeException
      */
     public static function fromJsonString(string $json): self
     {

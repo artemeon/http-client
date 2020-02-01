@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Artemeon\HttpClient\Stream;
 
+use Artemeon\HttpClient\Exception\RuntimeException;
 use Psr\Http\Message\StreamInterface;
-use RuntimeException;
 
 /**
  * Interface for appendable streams

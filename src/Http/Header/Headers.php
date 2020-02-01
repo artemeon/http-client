@@ -14,7 +14,7 @@ declare(strict_types=1);
 namespace Artemeon\HttpClient\Http\Header;
 
 use ArrayIterator;
-use Artemeon\HttpClient\Exception\HttpClientException;
+use Artemeon\HttpClient\Exception\InvalidArgumentException;
 use Countable;
 use IteratorAggregate;
 
@@ -38,7 +38,7 @@ class Headers implements Countable, IteratorAggregate
      * Named constructor to create an instance based on the given array of HeaderField objects
      *
      * @param HeaderField[] $headerFields
-     * @throws HttpClientException
+     * @throws InvalidArgumentException
      */
     public static function fromFields(array $headerFields): self
     {
@@ -59,18 +59,18 @@ class Headers implements Countable, IteratorAggregate
     /**
      * Adds a header to the collection, throws an exception if the header already exists
      *
-     * @throws HttpClientException
+     * @throws InvalidArgumentException
      */
     public function addHeader(Header $header): void
     {
-        $fieldName = $header->getFieldName();
+        $fieldName = strtolower($header->getFieldName());
 
         if ($this->hasHeader($fieldName)) {
-            throw HttpClientException::forAlreadyRegisteredHeaderFields($fieldName);
+            throw InvalidArgumentException::forAlreadyRegisteredHeaderFields($fieldName);
         }
 
-        // A user agent SHOULD generate Host as the first header field
-        if (strtolower($fieldName) === strtolower(HeaderField::HOST)) {
+        // RFC: A user agent SHOULD generate Host as the first header field
+        if ($fieldName === strtolower(HeaderField::HOST)) {
             $this->headers = [$fieldName => $header] + $this->headers;
         } else {
             $this->headers[$fieldName] = $header;
@@ -82,10 +82,10 @@ class Headers implements Countable, IteratorAggregate
      */
     public function replaceHeader(Header $header): void
     {
-        $fieldName = $header->getFieldName();
+        $fieldName = strtolower($header->getFieldName());
 
-        // A user agent SHOULD generate Host as the first header field
-        if (strtolower($fieldName) === strtolower(HeaderField::HOST) && !isset($this->headers[$fieldName])) {
+        // RFC:: A user agent SHOULD generate Host as the first header field
+        if ($fieldName === strtolower(HeaderField::HOST) && !isset($this->headers[$fieldName])) {
             $this->headers = [$fieldName => $header] + $this->headers;
         } else {
             $this->headers[$fieldName] = $header;
@@ -97,24 +97,49 @@ class Headers implements Countable, IteratorAggregate
      */
     public function hasHeader(string $headerField): bool
     {
-        foreach ($this->headers as $header) {
-            if (strtolower($headerField) === strtolower($header->getFieldName())) {
-                return true;
-            }
+        $headerField = strtolower($headerField);
+        return isset($this->headers[$headerField]);
+    }
+
+    /**
+     * Checks if the header with given headerField contains an empty value string
+     *
+     * @param string $headerField
+     */
+    public function isEmpty(string $headerField): bool
+    {
+        try {
+            return empty($this->getHeader($headerField)->getValue());
+        } catch (InvalidArgumentException $e) {
+            return false;
+        }
+    }
+
+    /**
+     * Removes the header with the given header field name
+     */
+    public function removeHeader(string $headerField): void
+    {
+        $headerField = strtolower($headerField);
+
+        if (!$this->hasHeader($headerField)) {
+            return;
         }
 
-        return false;
+        unset($this->headers[$headerField]);
     }
 
     /**
      * Return a Header object for the given header field name
      *
-     * @throws HttpClientException
+     * @throws InvalidArgumentException
      */
     public function getHeader($headerField): Header
     {
+        $headerField = strtolower($headerField);
+
         if (!$this->hasHeader($headerField)) {
-            throw HttpClientException::forNonExistentHeaderFields($headerField);
+            throw InvalidArgumentException::forNonExistentHeaderFields($headerField);
         }
 
         return $this->headers[$headerField];

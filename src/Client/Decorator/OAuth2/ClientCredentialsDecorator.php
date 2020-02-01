@@ -17,7 +17,7 @@ use Artemeon\HttpClient\Client\Decorator\HttpClientDecorator;
 use Artemeon\HttpClient\Client\HttpClient;
 use Artemeon\HttpClient\Client\Options\ClientOptions;
 use Artemeon\HttpClient\Exception\HttpClientException;
-use Artemeon\HttpClient\Exception\Request\Http\ResponseException;
+use Artemeon\HttpClient\Exception\RuntimeException;
 use Artemeon\HttpClient\Http\Body\Body;
 use Artemeon\HttpClient\Http\Body\Encoder\FormUrlEncoder;
 use Artemeon\HttpClient\Http\Header\Fields\Authorization;
@@ -25,7 +25,7 @@ use Artemeon\HttpClient\Http\Header\HeaderField;
 use Artemeon\HttpClient\Http\MediaType;
 use Artemeon\HttpClient\Http\Request;
 use Artemeon\HttpClient\Http\Response;
-use Artemeon\HttpClient\Http\Url;
+use Artemeon\HttpClient\Http\Uri;
 
 /**
  * Http client decorator to add transparent access tokens to requests. Fetches the 'Access Token' from
@@ -58,7 +58,7 @@ class ClientCredentialsDecorator extends HttpClientDecorator
      * @throws HttpClientException
      */
     public static function fromClientCredentials(
-        Url $url,
+        Uri $url,
         ClientCredentials $clientCredentials,
         HttpClient $httpClient
     ): self {
@@ -70,7 +70,6 @@ class ClientCredentialsDecorator extends HttpClientDecorator
 
     /**
      * @inheritDoc
-     * @throws \InvalidArgumentException
      */
     public function send(Request $request, ClientOptions $clientOptions = null): Response
     {
@@ -87,14 +86,14 @@ class ClientCredentialsDecorator extends HttpClientDecorator
     /**
      * Fetches the access token
      *
-     * @throws HttpClientException
+     * @throws RuntimeException
      */
     private function requestAccessToken(ClientOptions $clientOptions = null): AccessToken
     {
         try {
             $response = $this->httpClient->send($this->accessTokenRequest, $clientOptions);
-        } catch (ResponseException $exception) {
-            throw new HttpClientException("Cant request access token", 0, $exception);
+        } catch (HttpClientException $exception) {
+            throw new RuntimeException("Cant request access token", 0, $exception);
         }
 
         $this->assertIsValidJsonResponse($response);
@@ -105,12 +104,12 @@ class ClientCredentialsDecorator extends HttpClientDecorator
     /**
      * Checks for a valid access token response with json body
      *
-     * @throws HttpClientException
+     * @throws RuntimeException
      */
     private function assertIsValidJsonResponse(Response $response): void
     {
         if ($response->getStatusCode() !== 200) {
-            throw new HttpClientException(
+            throw new RuntimeException(
                 sprintf(
                     "Invalid status code: s% for access token request, Body: %s",
                     $response->getStatusCode(),
@@ -124,7 +123,7 @@ class ClientCredentialsDecorator extends HttpClientDecorator
         $contentType = array_map('strtolower', $contentType);
 
         if (!in_array(MediaType::JSON, $contentType)) {
-            throw new HttpClientException('Content type should be: ' . MediaType::JSON);
+            throw new RuntimeException('Content type should be: ' . MediaType::JSON);
         }
     }
 }

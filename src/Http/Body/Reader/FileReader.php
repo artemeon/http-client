@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Artemeon\HttpClient\Http\Body\Reader;
 
-use Artemeon\HttpClient\Exception\HttpClientException;
+use Artemeon\HttpClient\Exception\RuntimeException;
 use Artemeon\HttpClient\Stream\Stream;
 use Psr\Http\Message\StreamInterface;
 
@@ -32,12 +32,12 @@ class FileReader implements Reader
      * FileReader constructor.
      *
      * @param StreamInterface $stream
-     * @throws HttpClientException
+     * @throws RuntimeException
      */
     public function __construct(StreamInterface $stream, string $file)
     {
         if (!$stream->isReadable()) {
-            throw new HttpClientException('Stream is nor readable');
+            throw new RuntimeException('Stream is nor readable');
         }
 
         $this->stream = $stream;
@@ -48,7 +48,7 @@ class FileReader implements Reader
      * Named construct to create an instance based on the given file and optional stream context options
      *
      * @param string $file Filename inclusive path
-     * @throws HttpClientException
+     * @throws RuntimeException
      */
     public static function fromFile(string $file): self
     {

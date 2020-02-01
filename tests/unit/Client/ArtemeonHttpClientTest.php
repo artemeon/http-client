@@ -15,20 +15,21 @@ namespace Artemeon\HttpClient\Tests\Client;
 
 use Artemeon\HttpClient\Client\ArtemeonHttpClient;
 use Artemeon\HttpClient\Client\Options\ClientOptions;
-use Artemeon\HttpClient\Exception\HttpClientException;
+use Artemeon\HttpClient\Client\Options\ClientOptionsConverter;
 use Artemeon\HttpClient\Exception\Request\Http\ClientResponseException;
 use Artemeon\HttpClient\Exception\Request\Http\RedirectResponseException;
 use Artemeon\HttpClient\Exception\Request\Http\ResponseException;
 use Artemeon\HttpClient\Exception\Request\Http\ServerResponseException;
 use Artemeon\HttpClient\Exception\Request\Network\ConnectException;
 use Artemeon\HttpClient\Exception\Request\TransferException;
+use Artemeon\HttpClient\Exception\RuntimeException;
 use Artemeon\HttpClient\Http\Body\Body;
 use Artemeon\HttpClient\Http\Body\Encoder\FormUrlEncoder;
 use Artemeon\HttpClient\Http\Header\Fields\UserAgent;
 use Artemeon\HttpClient\Http\Header\Headers;
 use Artemeon\HttpClient\Http\Request;
 use Artemeon\HttpClient\Http\Response;
-use Artemeon\HttpClient\Http\Url;
+use Artemeon\HttpClient\Http\Uri;
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Exception\BadResponseException as GuzzleBadResponseException;
 use GuzzleHttp\Exception\ClientException as GuzzleClientException;
@@ -43,11 +44,10 @@ use GuzzleHttp\Psr7\Request as GuzzleRequest;
 use GuzzleHttp\Psr7\Response as GuzzleResponse;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
-use RuntimeException;
 
 /**
  * @covers \Artemeon\HttpClient\Client\ArtemeonHttpClient
- * @covers \Artemeon\HttpClient\Exception\HttpClientException
+ * @covers \Artemeon\HttpClient\Exception\RuntimeException
  * @covers \Artemeon\HttpClient\Exception\Request\TransferException
  * @covers \Artemeon\HttpClient\Exception\Request\Network\ConnectException
  * @covers \Artemeon\HttpClient\Exception\Request\Http\ResponseException
@@ -69,7 +69,7 @@ class ArtemeonHttpClientTest extends TestCase
     /** @var ClientOptions */
     private $clientOptions;
 
-    /** @var \Artemeon\HttpClient\Client\Options\ClientOptionsConverter */
+    /** @var ClientOptionsConverter */
     private $clientOptionsConverter;
 
     /**
@@ -79,7 +79,7 @@ class ArtemeonHttpClientTest extends TestCase
     {
         $this->mockHandler = new MockHandler();
         $this->guzzleClient = new GuzzleClient(['handler' => HandlerStack::create($this->mockHandler)]);
-        $this->clientOptionsConverter = $this->prophesize(\Artemeon\HttpClient\Client\Options\ClientOptionsConverter::class);
+        $this->clientOptionsConverter = $this->prophesize(ClientOptionsConverter::class);
         $this->clientOptions = ClientOptions::fromDefaults();
 
         $this->httpClient = new ArtemeonHttpClient(
@@ -96,7 +96,7 @@ class ArtemeonHttpClientTest extends TestCase
         $this->mockHandler->append(new GuzzleResponse(200, [], 'Some body content'));
         $this->clientOptionsConverter->toGuzzleOptionsArray(Argument::any())->shouldNotBeCalled();
 
-        $request = Request::forGet(Url::fromString('http://apache/'));
+        $request = Request::forGet(Uri::fromString('http://apache/'));
         $response = $this->httpClient->send($request);
 
         self::assertInstanceOf(Response::class, $response);
@@ -112,7 +112,7 @@ class ArtemeonHttpClientTest extends TestCase
             ->shouldBeCalled()
             ->willReturn([]);
 
-        $request = Request::forGet(Url::fromString('http://apache/'));
+        $request = Request::forGet(Uri::fromString('http://apache/'));
         $response = $this->httpClient->send($request, $this->clientOptions);
 
         self::assertInstanceOf(Response::class, $response);
@@ -121,31 +121,9 @@ class ArtemeonHttpClientTest extends TestCase
     /**
      * @test
      */
-    public function send_ConvertsRequestToValidGuzzleRequest(): void
-    {
-        $request = Request::forPost(
-            Url::fromString('http://apache/endpoints/upload.php'),
-            Body::fromEncoder(FormUrlEncoder::fromArray(["username" => 'john.doe'])),
-            Headers::fromFields([UserAgent::fromString()])
-        );
-
-        $this->mockHandler->append(new GuzzleResponse(200, [], 'Some body content'));
-        $this->httpClient->send($request);
-        $guzzleRequest = $this->mockHandler->getLastRequest();
-
-        self::assertSame($request->getMethod(), $guzzleRequest->getMethod());
-        self::assertSame($request->getUrl()->__toString(), $guzzleRequest->getUri()->__toString());
-        self::assertSame($request->getHeaders(), $guzzleRequest->getHeaders());
-        self::assertSame($request->getBody()->__toString(), $guzzleRequest->getBody()->__toString());
-        self::assertSame($request->getProtocolVersion(), $guzzleRequest->getProtocolVersion());
-    }
-
-    /**
-     * @test
-     */
     public function send_ConvertsGuzzleResponseToValidResponse(): void
     {
-        $request = Request::forGet(Url::fromString('http://apache/endpoints/upload.php'));
+        $request = Request::forGet(Uri::fromString('http://apache/endpoints/upload.php'));
         $expectedContent = 'Some body content';
         $expectedHeaders = ['Content-Type' => ['text/plain']];
         $expectedStatusCode = 200;
@@ -162,11 +140,11 @@ class ArtemeonHttpClientTest extends TestCase
      * @dataProvider provideExceptionMappings
      */
     public function send_GuzzleThrowsException_MappedToHttpClientException(
-        RuntimeException $guzzleException,
+        \RuntimeException $guzzleException,
         string $httpClientException
     ) {
         $this->mockHandler->append($guzzleException);
-        $request = Request::forGet(Url::fromString('http://apache/endpoints/upload.php'));
+        $request = Request::forGet(Uri::fromString('http://apache/endpoints/upload.php'));
 
         $this->expectException($httpClientException);
         $this->httpClient->send($request);
@@ -183,35 +161,35 @@ class ArtemeonHttpClientTest extends TestCase
         return [
             [
                 new GuzzleClientException('Shit happens', $fakeRequest, $fakeResponse),
-                ClientResponseException::class
+                ClientResponseException::class,
             ],
             [
                 new GuzzleServerException('Shit happens', $fakeRequest, $fakeResponse),
-                ServerResponseException::class
+                ServerResponseException::class,
             ],
             [
                 new GuzzleBadResponseException('Shit happens', $fakeRequest, $fakeResponse),
-                ResponseException::class
+                ResponseException::class,
             ],
             [
                 new GuzzleConnectException('Shit happens', $fakeRequest),
-                ConnectException::class
+                ConnectException::class,
             ],
             [
                 new GuzzleTooManyRedirectsException('Shit happens', $fakeRequest, $fakeResponse),
-                RedirectResponseException::class
+                RedirectResponseException::class,
             ],
             [
                 new GuzzleRequestException('Shit happens', $fakeRequest, $fakeResponse),
-                ResponseException::class
+                ResponseException::class,
             ],
             [
                 new GuzzleTransferException('Shit happens'),
-                TransferException::class
+                TransferException::class,
             ],
             [
-                new RuntimeException('Shit happens'),
-                HttpClientException::class
+                new \RuntimeException('Shit happens'),
+                RuntimeException::class,
             ],
         ];
     }

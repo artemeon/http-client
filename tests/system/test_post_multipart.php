@@ -18,7 +18,7 @@ use Artemeon\HttpClient\Exception\HttpClientException;
 use Artemeon\HttpClient\Http\Body\Body;
 use Artemeon\HttpClient\Http\Body\Encoder\MultipartFormDataEncoder;
 use Artemeon\HttpClient\Http\Request;
-use Artemeon\HttpClient\Http\Url;
+use Artemeon\HttpClient\Http\Uri;
 use Artemeon\HttpClient\Stream\Stream;
 use GuzzleHttp\MessageFormatter;
 
@@ -29,7 +29,7 @@ $formatter = new MessageFormatter(MessageFormatter::DEBUG);
 
 try {
     $request = Request::forPost(
-        Url::fromString('http://apache/endpoints/upload.php'),
+        Uri::fromString('http://apache/endpoints/upload.php'),
         Body::fromEncoder(
             MultipartFormDataEncoder::create()
                 ->addFieldPart('user', 'John.Doe')

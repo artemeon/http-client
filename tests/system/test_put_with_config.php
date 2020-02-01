@@ -22,7 +22,7 @@ use Artemeon\HttpClient\Http\Header\Fields\Authorization;
 use Artemeon\HttpClient\Http\Header\Fields\UserAgent;
 use Artemeon\HttpClient\Http\Header\Headers;
 use Artemeon\HttpClient\Http\Request;
-use Artemeon\HttpClient\Http\Url;
+use Artemeon\HttpClient\Http\Uri;
 use GuzzleHttp\MessageFormatter;
 
 require '../../vendor/autoload.php';
@@ -32,18 +32,22 @@ $formatter = new MessageFormatter(MessageFormatter::DEBUG);
 
 try {
     $request = Request::forPut(
-        Url::fromString('http://apache/endpoints/upload.php'),
+        Uri::fromString('http://apache/endpoints/upload.php'),
         Body::fromEncoder(
-            FormUrlEncoder::fromArray([
-                "user" => 'John.Doe',
-                'password' =>'geheim',
-                'group' => 'admin'
-            ])
+            FormUrlEncoder::fromArray(
+                [
+                    "user" => 'John.Doe',
+                    'password' => 'geheim',
+                    'group' => 'admin',
+                ]
+            )
         ),
-        Headers::fromFields([
-            Authorization::forAuthBasic('John.Doe', 'geheim'),
-            UserAgent::fromString(),
-        ])
+        Headers::fromFields(
+            [
+                Authorization::forAuthBasic('John.Doe', 'geheim'),
+                UserAgent::fromString(),
+            ]
+        )
     );
 
     $clientOptions = ClientOptions::fromDefaults();

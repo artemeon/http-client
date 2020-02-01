@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Artemeon\HttpClient\Tests\Http\Header;
 
-use Artemeon\HttpClient\Exception\HttpClientException;
+use Artemeon\HttpClient\Exception\InvalidArgumentException;
 use Artemeon\HttpClient\Http\Header\Fields\Authorization;
 use Artemeon\HttpClient\Http\Header\Fields\UserAgent;
 use Artemeon\HttpClient\Http\Header\Header;
@@ -70,7 +70,7 @@ class HeadersTest extends TestCase
      */
     public function getHeader_NotExists_ThrowsException(): void
     {
-        $this->expectException(HttpClientException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->headers->getHeader('not-exists');
     }
 
@@ -88,11 +88,22 @@ class HeadersTest extends TestCase
     /**
      * @test
      */
+    public function getHeader_ExistsCaseIncentive_ReturnsValue(): void
+    {
+        $expected = Header::fromField(Authorization::forAuthBasic('john.doe', 'geheim'));
+        $this->headers->addHeader($expected);
+
+        self::assertSame($expected, $this->headers->getHeader('AUTHORIZATION'));
+    }
+
+    /**
+     * @test
+     */
     public function addHeader_Exists_ThrowsException(): void
     {
         $header = Header::fromField(Authorization::forAuthBasic('john.doe', 'geheim'));
 
-        $this->expectException(HttpClientException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->headers->addHeader($header);
         $this->headers->addHeader($header);
     }

@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Artemeon\HttpClient\Tests\Http\Body\Encoder;
 
-use Artemeon\HttpClient\Exception\HttpClientException;
+use Artemeon\HttpClient\Exception\RuntimeException;
 use Artemeon\HttpClient\Http\Body\Encoder\JsonEncoder;
 use Artemeon\HttpClient\Http\MediaType;
 use phpmock\prophecy\PHPProphet;
@@ -38,7 +38,7 @@ class JsonEncoderTest extends TestCase
         $globalProphecy->json_encode(Argument::any(), Argument::any())->willReturn(false);
         $globalProphecy->reveal();
 
-        $this->expectException(HttpClientException::class);
+        $this->expectException(RuntimeException::class);
         $value = ['test' => 12];
         $options = 0;
 

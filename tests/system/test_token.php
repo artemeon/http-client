@@ -18,7 +18,7 @@ use Artemeon\HttpClient\Client\Decorator\OAuth2\ClientCredentialsDecorator;
 use Artemeon\HttpClient\Client\HttpClientFactory;
 use Artemeon\HttpClient\Exception\HttpClientException;
 use Artemeon\HttpClient\Http\Request;
-use Artemeon\HttpClient\Http\Url;
+use Artemeon\HttpClient\Http\Uri;
 use GuzzleHttp\MessageFormatter;
 
 require '../../vendor/autoload.php';
@@ -28,7 +28,7 @@ $formatter = new MessageFormatter(MessageFormatter::DEBUG);
 
 try {
     $apiClient = ClientCredentialsDecorator::fromClientCredentials(
-        Url::fromString('https://api.lbbw-test.prospeum.com/o/token/'),
+        Uri::fromString('https://api.lbbw-test.prospeum.com/o/token/'),
         ClientCredentials::fromClientId(
             'yoour_client_id',
             'your_client_secret',
@@ -37,7 +37,7 @@ try {
         HttpClientFactory::withTransactionMiddleware($transactions)
     );
 
-    $apiClient->send(Request::forGet(Url::fromString('https://api.lbbw-test.prospeum.com/api/v01/supplier/search/')));
+    $apiClient->send(Request::forGet(Uri::fromString('https://api.lbbw-test.prospeum.com/api/v01/supplier/search/')));
 
     foreach ($transactions as $transaction) {
         echo nl2br($formatter->format($transaction['request'], $transaction['response']));

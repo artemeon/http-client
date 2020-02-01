@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Artemeon\HttpClient\Http\Body;
 
-use Artemeon\HttpClient\Exception\HttpClientException;
+use Artemeon\HttpClient\Exception\RuntimeException;
 use Artemeon\HttpClient\Http\Body\Encoder\Encoder;
 use Artemeon\HttpClient\Http\Body\Reader\Reader;
 use Artemeon\HttpClient\Http\MediaType;
@@ -49,8 +49,7 @@ class Body
      *
      * @param string $mimeType MIME-Type of the content
      * @param string $value String to set the content
-     *
-     * @throws HttpClientException
+     * @throws RuntimeException
      */
     public static function fromString(string $mimeType, string $value): self
     {
@@ -61,7 +60,7 @@ class Body
      * Named constructor to create an instance based on the given Encoder
      *
      * @param Encoder $encoder Body Encoder implementation
-     * @throws HttpClientException
+     * @throws RuntimeException
      */
     public static function fromEncoder(Encoder $encoder): self
     {

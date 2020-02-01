@@ -22,6 +22,7 @@ use Artemeon\HttpClient\Exception\Request\Http\ResponseException;
 use Artemeon\HttpClient\Exception\Request\Http\ServerResponseException;
 use Artemeon\HttpClient\Exception\Request\Network\ConnectException;
 use Artemeon\HttpClient\Exception\Request\TransferException;
+use Artemeon\HttpClient\Exception\RuntimeException;
 use Artemeon\HttpClient\Http\Header\Fields\UserAgent;
 use Artemeon\HttpClient\Http\Header\Header;
 use Artemeon\HttpClient\Http\Header\HeaderField;
@@ -36,10 +37,7 @@ use GuzzleHttp\Exception\RequestException as GuzzleRequestException;
 use GuzzleHttp\Exception\ServerException as GuzzleServerException;
 use GuzzleHttp\Exception\TooManyRedirectsException as GuzzleTooManyRedirectsException;
 use GuzzleHttp\Exception\TransferException as GuzzleTransferException;
-use GuzzleHttp\Psr7\Request as GuzzleRequest;
-use InvalidArgumentException;
 use Psr\Http\Message\ResponseInterface as GuzzleResponse;
-use RuntimeException;
 
 /**
  * HttpClient implementation with guzzle
@@ -88,8 +86,7 @@ class ArtemeonHttpClient implements HttpClient
      *
      * ```
      *  1. RuntimeException -> HttpClientException)
-     *      1. SeekException -> HttpClientException
-     *      2. TransferException -> TransferException
+     *      1. TransferException -> TransferException
      *          1. RequestException ->  ResponseException
      *              1. BadResponseException -> ResponseException
      *                  1. ServerException -> ServerResponseException
@@ -104,60 +101,32 @@ class ArtemeonHttpClient implements HttpClient
      */
     private function doSend(Request $request, array $guzzleOptions): Response
     {
-        $guzzleRequest = $this->convertToGuzzleRequest($request);
-
         try {
-            $response = $this->guzzleClient->send($guzzleRequest, $guzzleOptions);
+            $response = $this->guzzleClient->send($request, $guzzleOptions);
         } catch (GuzzleClientException $previous) {
-            // (guzzle) ClientException -> ClientResponseException
             $response = $this->convertFromGuzzleResponse($previous->getResponse());
             throw ClientResponseException::fromResponse($response, $request, $previous->getMessage(), $previous);
         } catch (GuzzleServerException $previous) {
-            // (guzzle) ServerException -> ServerResponseException
             $response = $this->convertFromGuzzleResponse($previous->getResponse());
             throw ServerResponseException::fromResponse($response, $request, $previous->getMessage(), $previous);
         } catch (GuzzleBadResponseException $previous) {
-            // (guzzle) BadResponseException -> ResponseException
             $response = $this->convertFromGuzzleResponse($previous->getResponse());
             throw ResponseException::fromResponse($response, $request, $previous->getMessage(), $previous);
         } catch (GuzzleConnectException $previous) {
-            // (guzzle) ConnectException -> ConnectException
             throw ConnectException::fromRequest($request, $previous->getMessage(), $previous);
         } catch (GuzzleTooManyRedirectsException $previous) {
             $response = $this->convertFromGuzzleResponse($previous->getResponse());
             throw RedirectResponseException::fromResponse($response, $request, $previous->getMessage(), $previous);
         } catch (GuzzleRequestException  $previous) {
-            // (guzzle) RequestException ->  ResponseException
             $response = $this->convertFromGuzzleResponse($previous->getResponse());
             throw ResponseException::fromResponse($response, $request, $previous->getMessage(), $previous);
         } catch (GuzzleTransferException $previous) {
-            // (guzzle) TransferException -> TransferException
             throw TransferException::fromRequest($request, $previous->getMessage(), $previous);
-        } catch (RuntimeException $previous) {
-            throw HttpClientException::fromGuzzleException($previous);
+        } catch (\RuntimeException $previous) {
+            throw RuntimeException::fromGuzzleException($previous);
         }
 
         return $this->convertFromGuzzleResponse($response);
-    }
-
-    /**
-     * Converts our Request object to a GuzzleRequest
-     *
-     * @throws HttpClientException
-     */
-    private function convertToGuzzleRequest(Request $request): GuzzleRequest
-    {
-        try {
-            return new GuzzleRequest(
-                $request->getMethod(),
-                $request->getUrl(),
-                $request->getHeaders(),
-                $request->getBody(),
-                $request->getProtocolVersion()
-            );
-        } catch (InvalidArgumentException $exception) {
-            throw HttpClientException::fromGuzzleException($exception);
-        }
     }
 
     /**
@@ -177,7 +146,8 @@ class ArtemeonHttpClient implements HttpClient
             $guzzleResponse->getStatusCode(),
             $guzzleResponse->getProtocolVersion(),
             $guzzleResponse->getBody(),
-            $headers
+            $headers,
+            $guzzleResponse->getReasonPhrase()
         );
     }
 }

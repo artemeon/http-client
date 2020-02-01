@@ -13,21 +13,19 @@ declare(strict_types=1);
 
 namespace Artemeon\HttpClient\Http;
 
-use Artemeon\HttpClient\Exception\HttpClientException;
+use Artemeon\HttpClient\Exception\InvalidArgumentException;
 use Artemeon\HttpClient\Http\Header\Header;
 use Artemeon\HttpClient\Http\Header\Headers;
-use Artemeon\HttpClient\Psr7\MessageInterfaceSubset;
 use Artemeon\HttpClient\Stream\Stream;
+use Psr\Http\Message\MessageInterface;
 use Psr\Http\Message\StreamInterface;
-
-use function is_array;
 
 /**
  * Abstract class to describe a http message
  *
  * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Messages
  */
-abstract class Message implements MessageInterfaceSubset
+abstract class Message implements MessageInterface
 {
     /** @var Headers */
     protected $headers;
@@ -69,12 +67,11 @@ abstract class Message implements MessageInterfaceSubset
 
     /**
      * @inheritDoc
-     * @throws HttpClientException
      */
     public function getBody(): StreamInterface
     {
         if (!$this->body instanceof StreamInterface) {
-            return Stream::fromString('');
+            return Stream::fromFileMode('r+');
         }
 
         return $this->body;
@@ -103,7 +100,7 @@ abstract class Message implements MessageInterfaceSubset
     {
         try {
             return $this->headers->getHeader(strval($name))->getValues();
-        } catch (HttpClientException $e) {
+        } catch (InvalidArgumentException $e) {
             return [];
         }
     }
@@ -115,13 +112,13 @@ abstract class Message implements MessageInterfaceSubset
     {
         try {
             return $this->headers->getHeader(strval($name))->getValue();
-        } catch (HttpClientException $e) {
+        } catch (InvalidArgumentException $e) {
             return '';
         }
     }
 
     /**
-     * @inheritDoc
+     * @inheritDo
      */
     public function withHeader($name, $value): self
     {
@@ -132,6 +129,60 @@ abstract class Message implements MessageInterfaceSubset
         } else {
             $cloned->headers->replaceHeader(Header::fromString($name, $value));
         }
+
+        return $cloned;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function withProtocolVersion($version): self
+    {
+        $cloned = clone $this;
+        $cloned->version = strval($version);
+
+        return $cloned;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function withAddedHeader($name, $value): self
+    {
+        $cloned = clone $this;
+
+        if ($cloned->headers->hasHeader($name)) {
+            $cloned->headers->getHeader($name)->addValue($value);
+        } else {
+            $header = is_array($value) ? Header::fromArray($name, $value) : Header::fromString($name, $value);
+            $cloned->headers->addHeader($header);
+        }
+
+        return $cloned;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function withoutHeader($name)
+    {
+        $cloned = clone $this;
+        $cloned->headers->removeHeader($name);
+
+        return $cloned;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function withBody(StreamInterface $body)
+    {
+        if ($body->isReadable()) {
+            throw new InvalidArgumentException('Body stream must be readable');
+        }
+
+        $cloned = clone $this;
+        $cloned->body = $body;
 
         return $cloned;
     }

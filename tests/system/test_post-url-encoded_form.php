@@ -20,7 +20,7 @@ use Artemeon\HttpClient\Http\Body\Encoder\FormUrlEncoder;
 use Artemeon\HttpClient\Http\Header\Fields\Authorization;
 use Artemeon\HttpClient\Http\Header\Headers;
 use Artemeon\HttpClient\Http\Request;
-use Artemeon\HttpClient\Http\Url;
+use Artemeon\HttpClient\Http\Uri;
 use GuzzleHttp\MessageFormatter;
 
 require '../../vendor/autoload.php';
@@ -30,7 +30,7 @@ $formatter = new MessageFormatter(MessageFormatter::DEBUG);
 
 try {
     $request = Request::forPost(
-        Url::fromString('http://apache/endpoints/upload.php'),
+        Uri::fromString('http://apache/endpoints/upload.php'),
         Body::fromEncoder(FormUrlEncoder::fromArray(["username" => 'john.doe'])),
         Headers::fromFields([Authorization::forAuthBasic('john.doe', 'geheim')])
     );

@@ -13,27 +13,31 @@ declare(strict_types=1);
 
 namespace Artemeon\HttpClient\Http;
 
-use Artemeon\HttpClient\Exception\HttpClientException;
+use Artemeon\HttpClient\Exception\InvalidArgumentException;
 use Artemeon\HttpClient\Http\Body\Body;
 use Artemeon\HttpClient\Http\Header\Fields\ContentLength;
 use Artemeon\HttpClient\Http\Header\Fields\ContentType;
 use Artemeon\HttpClient\Http\Header\Fields\Host;
 use Artemeon\HttpClient\Http\Header\Header;
+use Artemeon\HttpClient\Http\Header\HeaderField;
 use Artemeon\HttpClient\Http\Header\Headers;
-use Artemeon\HttpClient\Psr7\RequestInterfaceSubset;
-use Artemeon\HttpClient\Psr7\UriInterfaceSubset;
+use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\StreamInterface;
+use Psr\Http\Message\UriInterface;
 
 /**
- * Partial implementation of the psr7 RequestInterface
+ * Implementation of the psr7 RequestInterface
  */
-class Request extends Message implements RequestInterfaceSubset
+class Request extends Message implements RequestInterface
 {
     /** @var string */
     private $method;
 
-    /** @var Url */
+    /** @var Uri */
     private $url;
+
+    /** @var string */
+    private $requestTarget;
 
     /** @var string */
     public const METHOD_POST = 'POST';
@@ -57,21 +61,23 @@ class Request extends Message implements RequestInterfaceSubset
      * Request constructor.
      *
      * @param string $method
-     * @param Url $url
+     * @param Uri $url
      * @param Headers|null $headers
      * @param StreamInterface|null $body
      * @param string $version
-     * @throws HttpClientException
+     * @throws InvalidArgumentException
      */
     private function __construct(
         string $method,
-        Url $url,
+        Uri $url,
         ?Headers $headers = null,
         ?StreamInterface $body = null,
         string $version = '1.1'
     ) {
-        $this->method = $method;
         $this->url = $url;
+        $this->requestTarget = $this->parseRequestTarget($url);
+        $this->assertValidMethod($method);
+        $this->method = $method;
 
         parent::__construct(
             $this->addHostHeader($url, $headers),
@@ -83,12 +89,12 @@ class Request extends Message implements RequestInterfaceSubset
     /**
      * Named constructor to create an instance for post requests
      *
-     * @param Url $url The Url object
+     * @param Uri $url The Url object
      * @param Headers|null $headers Optional: Headers collection or null
      * @param string $version Optional: http protocol version string
-     * @throws HttpClientException
+     * @throws InvalidArgumentException
      */
-    public static function forGet(Url $url, ?Headers $headers = null, string $version = '1.1'): self
+    public static function forGet(Uri $url, ?Headers $headers = null, string $version = '1.1'): self
     {
         return new self(
             self::METHOD_GET,
@@ -102,12 +108,12 @@ class Request extends Message implements RequestInterfaceSubset
     /**
      * Named constructor to create an instance for OPTIONS requests
      *
-     * @param Url $url The Url object
+     * @param Uri $url The Url object
      * @param Headers|null $headers Optional: Headers collection or null
      * @param string $version Optional: the http protocol version string
-     * @throws HttpClientException
+     * @throws InvalidArgumentException
      */
-    public static function forOptions(Url $url, ?Headers $headers = null, string $version = '1.1'): self
+    public static function forOptions(Uri $url, ?Headers $headers = null, string $version = '1.1'): self
     {
         return new self(
             self::METHOD_OPTIONS,
@@ -121,13 +127,13 @@ class Request extends Message implements RequestInterfaceSubset
     /**
      * Named constructor to create an instance for POST requests
      *
-     * @param Url $url The Url object
+     * @param Uri $url The Url object
      * @param Body $body The Body object
      * @param Headers|null $headers Optional: Headers collection or null
      * @param string $version Optional: the http protocol version string
-     * @throws HttpClientException
+     * @throws InvalidArgumentException
      */
-    public static function forPost(Url $url, Body $body, ?Headers $headers = null, string $version = '1.1'): self
+    public static function forPost(Uri $url, Body $body, ?Headers $headers = null, string $version = '1.1'): self
     {
         $headers = self::addHeaderFromBody($body, $headers);
 
@@ -143,13 +149,13 @@ class Request extends Message implements RequestInterfaceSubset
     /**
      * Named constructor to create an instance for PUT requests
      *
-     * @param Url $url The Url object
+     * @param Uri $url The Url object
      * @param Body $body The Body object
      * @param Headers|null $headers Optional: Headers collection or null
      * @param string $version Optional: the http protocol version string
-     * @throws HttpClientException
+     * @throws InvalidArgumentException
      */
-    public static function forPut(Url $url, Body $body, ?Headers $headers = null, string $version = '1.1'): self
+    public static function forPut(Uri $url, Body $body, ?Headers $headers = null, string $version = '1.1'): self
     {
         $headers = self::addHeaderFromBody($body, $headers);
 
@@ -165,13 +171,13 @@ class Request extends Message implements RequestInterfaceSubset
     /**
      * Named constructor to create an instance for PATCH requests
      *
-     * @param Url $url The Url object
+     * @param Uri $url The Url object
      * @param Body $body The Body object
      * @param Headers|null $headers Optional: Headers collection or null
      * @param string $version Optional: the http protocol version string
-     * @throws HttpClientException
+     * @throws InvalidArgumentException
      */
-    public static function forPatch(Url $url, Body $body, ?Headers $headers = null, string $version = '1.1'): self
+    public static function forPatch(Uri $url, Body $body, ?Headers $headers = null, string $version = '1.1'): self
     {
         $headers = self::addHeaderFromBody($body, $headers);
 
@@ -187,12 +193,12 @@ class Request extends Message implements RequestInterfaceSubset
     /**
      * Named constructor to create an instance for DELETE requests
      *
-     * @param Url $url The Url object
+     * @param Uri $url The Url object
      * @param Headers|null $headers Optional: Headers collection or null
      * @param string $version Optional: http protocol version string
-     * @throws HttpClientException
+     * @throws InvalidArgumentException
      */
-    public static function forDelete(Url $url, ?Headers $headers = null, string $version = '1.1'): self
+    public static function forDelete(Uri $url, ?Headers $headers = null, string $version = '1.1'): self
     {
         return new self(
             self::METHOD_DELETE,
@@ -214,7 +220,24 @@ class Request extends Message implements RequestInterfaceSubset
     /**
      * @inheritDoc
      */
-    public function getUrl(): UriInterfaceSubset
+    public function withMethod($method): self
+    {
+        if (!is_string($method)) {
+            throw new InvalidArgumentException('method must be a string value');
+        }
+
+        $this->assertValidMethod($method);
+
+        $cloned = clone $this;
+        $cloned->method = $method;
+
+        return $cloned;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getUri(): UriInterface
     {
         return $this->url;
     }
@@ -222,19 +245,43 @@ class Request extends Message implements RequestInterfaceSubset
     /**
      * @inheritDoc
      */
+    public function withUri(UriInterface $uri, $preserveHost = false): self
+    {
+        $cloned = clone $this;
+        $cloned->url = $uri;
+
+        $newHost = Header::fromString(HeaderField::HOST, $uri->getHost());
+
+        if ($preserveHost === true) {
+            // Update only if the Host header is missing or empty, and the new URI contains a host component
+            if ($cloned->headers->isEmpty(HeaderField::HOST) || !empty($uri->getHost())) {
+                $cloned->headers->replaceHeader($newHost);
+            }
+        } elseif (!empty($uri->getHost())) {
+            // Default: Update the Host header if the URI contains a host component
+            $cloned->headers->replaceHeader($newHost);
+        }
+
+        return $cloned;
+    }
+
+    /**
+     * @inheritDoc
+     */
     public function getRequestTarget(): string
     {
-        $target = $this->url->getPath();
+        return $this->requestTarget;
+    }
 
-        if ($target == '') {
-            $target = '/';
-        }
+    /**
+     * @inheritDoc
+     */
+    public function withRequestTarget($requestTarget): self
+    {
+        $cloned = clone $this;
+        $cloned->requestTarget = trim(strval($requestTarget));
 
-        if ($this->url->getQuery() != '') {
-            $target .= '?' . $this->url->getQuery();
-        }
-
-        return $target;
+        return $cloned;
     }
 
     /**
@@ -242,7 +289,7 @@ class Request extends Message implements RequestInterfaceSubset
      *
      * @param Body $body
      * @param Headers|null $headers
-     * @throws HttpClientException
+     * @throws InvalidArgumentException
      */
     private static function addHeaderFromBody(Body $body, ?Headers $headers): Headers
     {
@@ -256,18 +303,58 @@ class Request extends Message implements RequestInterfaceSubset
     /**
      * Add the host header based on the given Url
      *
-     * @param Url $url
+     * @param Uri $uri
      * @param Headers|null $headers
-     * @throws HttpClientException
+     * @throws InvalidArgumentException
      */
-    private function addHostHeader(Url $url, ?Headers $headers): Headers
+    private function addHostHeader(Uri $uri, ?Headers $headers): Headers
     {
         if ($headers instanceof Headers) {
-            $headers->addHeader(Header::fromField(Host::fromUrl($url)));
+            $headers->addHeader(Header::fromField(Host::fromUri($uri)));
         } else {
-            $headers = Headers::fromFields([Host::fromUrl($url)]);
+            $headers = Headers::fromFields([Host::fromUri($uri)]);
         }
 
         return $headers;
+    }
+
+    /**
+     * Checks request method is valid
+     *
+     * @param string $method
+     * @throws InvalidArgumentException
+     */
+    private function assertValidMethod(string $method): void
+    {
+        $validMethods = [
+            self::METHOD_DELETE,
+            self::METHOD_GET,
+            self::METHOD_OPTIONS,
+            self::METHOD_PATCH,
+            self::METHOD_POST,
+            self::METHOD_PUT,
+        ];
+
+        if (!in_array($method, $validMethods)) {
+            throw new InvalidArgumentException("method: $method is invalid");
+        }
+    }
+
+    /**
+     * @return string
+     */
+    private function parseRequestTarget(UriInterface $uri): string
+    {
+        $target = $uri->getPath();
+
+        if (empty($target)) {
+            $target = '/';
+        }
+
+        if ($uri->getQuery() != '') {
+            $target .= '?' . $uri->getQuery();
+        }
+
+        return $target;
     }
 }

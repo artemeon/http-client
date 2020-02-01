@@ -13,11 +13,11 @@ declare(strict_types=1);
 
 namespace Artemeon\HttpClient\Exception\Request;
 
-use Artemeon\HttpClient\Exception\HttpClientException;
+use Artemeon\HttpClient\Exception\RuntimeException;
 use Artemeon\HttpClient\Http\Request;
 use Exception;
 
-class TransferException extends HttpClientException
+class TransferException extends RuntimeException
 {
     /** @var Request */
     protected $request;

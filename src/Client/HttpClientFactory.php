@@ -15,7 +15,7 @@ namespace Artemeon\HttpClient\Client;
 
 use Artemeon\HttpClient\Client\Decorator\Logger\LoggerDecorator;
 use Artemeon\HttpClient\Client\Options\ClientOptionsConverter;
-use Artemeon\HttpClient\Exception\HttpClientException;
+use Artemeon\HttpClient\Exception\RuntimeException;
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\MessageFormatter;
@@ -45,7 +45,7 @@ class HttpClientFactory
      *
      * @param LoggerInterface $logger PSR-3 logger @see https://www.php-fig.org/psr/psr-3/
      * @param string $format @see \GuzzleHttp\MessageFormatter for all allowed options
-     * @throws HttpClientException
+     * @throws RuntimeException
      */
     public static function withLogger(LoggerInterface $logger, string $format = '{request} - {response}'): HttpClient
     {
@@ -58,7 +58,7 @@ class HttpClientFactory
                 new ClientOptionsConverter()
             );
         } catch (InvalidArgumentException $exception) {
-            throw HttpClientException::fromGuzzleException($exception);
+            throw RuntimeException::fromGuzzleException($exception);
         }
 
         return new LoggerDecorator($httpClient, $logger);
@@ -75,7 +75,7 @@ class HttpClientFactory
      * print_r($transactions[0]['response']);
      * echo $transactions[0]['request']->getBody();
      *
-     * @throws HttpClientException
+     * @throws RuntimeException
      */
     public static function withTransactionMiddleware(array &$transactions): HttpClient
     {
@@ -89,7 +89,7 @@ class HttpClientFactory
                 new ClientOptionsConverter()
             );
         } catch (InvalidArgumentException $exception) {
-            throw HttpClientException::fromGuzzleException($exception);
+            throw RuntimeException::fromGuzzleException($exception);
         }
     }
 }

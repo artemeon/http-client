@@ -15,6 +15,7 @@ namespace Artemeon\HttpClient\Client;
 
 use Artemeon\HttpClient\Client\Options\ClientOptions;
 use Artemeon\HttpClient\Exception\HttpClientException;
+use Artemeon\HttpClient\Exception\RuntimeException;
 use Artemeon\HttpClient\Exception\Request\Http\ClientResponseException;
 use Artemeon\HttpClient\Exception\Request\Http\RedirectResponseException;
 use Artemeon\HttpClient\Exception\Request\Http\ResponseException;
@@ -30,6 +31,7 @@ interface HttpClient
      * Sends the request
      *
      * @throws HttpClientException
+     * @throws RuntimeException
      * @throws TransferException
      * @throws ConnectException
      * @throws ResponseException

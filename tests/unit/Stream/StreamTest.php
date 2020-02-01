@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Artemeon\HttpClient\Tests\Stream;
 
-use Artemeon\HttpClient\Exception\HttpClientException;
+use Artemeon\HttpClient\Exception\RuntimeException;
 use Artemeon\HttpClient\Stream\Stream;
 use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamDirectory;
@@ -73,7 +73,7 @@ class StreamTest extends TestCase
             ->willReturn(false);
 
         $this->globalProphecy->reveal();
-        $this->expectException(HttpClientException::class);
+        $this->expectException(RuntimeException::class);
 
         $this->stream = Stream::fromFileMode('rw');
     }
@@ -85,7 +85,7 @@ class StreamTest extends TestCase
     {
         $this->stream = Stream::fromString('test');
         $this->stream->detach();
-        $this->expectException(HttpClientException::class);
+        $this->expectException(RuntimeException::class);
         $this->expectErrorMessage('Stream is detached');
 
         $this->stream->appendStream(Stream::fromString('append'));
@@ -97,7 +97,7 @@ class StreamTest extends TestCase
     public function appendStream_IsNotWriteable_ThrowsException(): void
     {
         $this->stream = Stream::fromFileMode('r');
-        $this->expectException(HttpClientException::class);
+        $this->expectException(RuntimeException::class);
         $this->expectErrorMessage('Stream is not writeable');
 
         $this->stream->appendStream(Stream::fromString('append'));
@@ -109,7 +109,7 @@ class StreamTest extends TestCase
     public function appendStream_GivenStreamIsNotReadable_ThrowsException(): void
     {
         $this->stream = Stream::fromString('test');
-        $this->expectException(HttpClientException::class);
+        $this->expectException(RuntimeException::class);
         $this->expectErrorMessage("Can't append not readable stream");
 
         $writeOnlyStream = Stream::fromFile($this->filesystem->url() . '/generated.json', 'w');
@@ -128,7 +128,7 @@ class StreamTest extends TestCase
         $this->globalProphecy->reveal();
 
         $this->stream = Stream::fromString('test');
-        $this->expectException(HttpClientException::class);
+        $this->expectException(RuntimeException::class);
         $this->expectErrorMessage("Append failed");
 
         $writeOnlyStream = Stream::fromFile($this->filesystem->url() . '/generated.json');
@@ -156,7 +156,7 @@ class StreamTest extends TestCase
             ->willReturn(false);
 
         $this->globalProphecy->reveal();
-        $this->expectException(HttpClientException::class);
+        $this->expectException(RuntimeException::class);
 
         $this->stream = Stream::fromFile('/does/not/exists.txt');
     }
@@ -294,7 +294,7 @@ class StreamTest extends TestCase
     {
         $this->stream = Stream::fromString('content');
         $this->stream->detach();
-        $this->expectException(HttpClientException::class);
+        $this->expectException(RuntimeException::class);
 
         $this->stream->tell();
     }
@@ -308,7 +308,7 @@ class StreamTest extends TestCase
         $this->globalProphecy->reveal();
 
         $this->stream = Stream::fromString('content');
-        $this->expectException(HttpClientException::class);
+        $this->expectException(RuntimeException::class);
 
         $this->stream->tell();
     }
@@ -386,7 +386,7 @@ class StreamTest extends TestCase
     {
         $this->stream = Stream::fromString('content');
         $this->stream->detach();
-        $this->expectException(HttpClientException::class);
+        $this->expectException(RuntimeException::class);
 
         $this->stream->seek(7);
     }
@@ -397,7 +397,7 @@ class StreamTest extends TestCase
     public function seek_FseekFails_ThrowsException(): void
     {
         $this->stream = Stream::fromString('content');
-        $this->expectException(HttpClientException::class);
+        $this->expectException(RuntimeException::class);
 
         $this->stream->seek(456);
     }
@@ -420,7 +420,7 @@ class StreamTest extends TestCase
     {
         $this->stream = Stream::fromString('content');
         $this->stream->detach();
-        $this->expectException(HttpClientException::class);
+        $this->expectException(RuntimeException::class);
 
         $this->stream->rewind();
     }
@@ -431,7 +431,7 @@ class StreamTest extends TestCase
     public function rewind_IsNotSeekable_ThrowsException(): void
     {
         $this->stream = Stream::fromFile($this->filesystem->url() . '/generated.json', 'a');
-        $this->expectException(HttpClientException::class);
+        $this->expectException(RuntimeException::class);
 
         $this->stream->rewind();
     }
@@ -501,7 +501,7 @@ class StreamTest extends TestCase
     {
         $this->stream = Stream::fromFileMode('r+');
         $this->stream->detach();
-        $this->expectException(HttpClientException::class);
+        $this->expectException(RuntimeException::class);
 
         $this->stream->write('test');
     }
@@ -512,7 +512,7 @@ class StreamTest extends TestCase
     public function write_IsNotWriteable_ThrowsException(): void
     {
         $this->stream = Stream::fromFileMode('r');
-        $this->expectException(HttpClientException::class);
+        $this->expectException(RuntimeException::class);
         $this->expectErrorMessage('Stream is not writeable');
 
         $this->stream->write('test');
@@ -530,7 +530,7 @@ class StreamTest extends TestCase
 
         $this->globalProphecy->reveal();
         $this->stream = Stream::fromFileMode('r+');
-        $this->expectException(HttpClientException::class);
+        $this->expectException(RuntimeException::class);
         $this->expectErrorMessage("Cant't write to stream");
 
         $this->stream->write('test');
@@ -556,7 +556,7 @@ class StreamTest extends TestCase
     {
         $this->stream = Stream::fromFile($this->filesystem->url() . '/generated.json');
         $this->stream->detach();
-        $this->expectException(HttpClientException::class);
+        $this->expectException(RuntimeException::class);
         $this->expectErrorMessage('Stream is detached');
 
         $this->stream->read(100);
@@ -568,7 +568,7 @@ class StreamTest extends TestCase
     public function read_IsNotReadable_ThrowsException(): void
     {
         $this->stream = Stream::fromFile($this->filesystem->url() . '/generated.json', 'w');
-        $this->expectException(HttpClientException::class);
+        $this->expectException(RuntimeException::class);
         $this->expectErrorMessage('Stream is not readable');
 
         $this->stream->read(100);
@@ -587,7 +587,7 @@ class StreamTest extends TestCase
         $this->globalProphecy->reveal();
 
         $this->stream = Stream::fromFile($this->filesystem->url() . '/generated.json', 'r+');
-        $this->expectException(HttpClientException::class);
+        $this->expectException(RuntimeException::class);
         $this->expectErrorMessage("Can't read from stream");
 
         $this->stream->read(100);
@@ -609,7 +609,7 @@ class StreamTest extends TestCase
     {
         $this->stream = Stream::fromFile($this->filesystem->url() . '/generated.json');
         $this->stream->detach();
-        $this->expectException(HttpClientException::class);
+        $this->expectException(RuntimeException::class);
         $this->expectErrorMessage('Stream is detached');
 
         $this->stream->getContents();
@@ -621,7 +621,7 @@ class StreamTest extends TestCase
     public function getContent_IsNotReadable_ThrowsException(): void
     {
         $this->stream = Stream::fromFile($this->filesystem->url() . '/generated.json', 'w');
-        $this->expectException(HttpClientException::class);
+        $this->expectException(RuntimeException::class);
         $this->expectErrorMessage('Stream is not readable');
 
         $this->stream->getContents();
@@ -640,7 +640,7 @@ class StreamTest extends TestCase
         $this->globalProphecy->reveal();
 
         $this->stream = Stream::fromFile($this->filesystem->url() . '/generated.json', 'r+');
-        $this->expectException(HttpClientException::class);
+        $this->expectException(RuntimeException::class);
         $this->expectErrorMessage("Can't read content from stream");
 
         $this->stream->getContents();

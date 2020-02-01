@@ -26,10 +26,13 @@ class Header
 
     /**
      * Header constructor.
+     *
+     * @param string $name Name of the http header field
+     * @param string[] $values Array of header values
      */
     private function __construct(string $name, array $values)
     {
-        $this->name = $name;
+        $this->name = trim($name);
         $this->values = $values;
     }
 
@@ -48,10 +51,14 @@ class Header
      * Named constructor to create an instance based on the given string[] values
      *
      * @param string $name Name of the http header field
-     * @param string[] $value Values of the http header field
+     * @param array $values Array of header values
      */
     public static function fromArray(string $name, array $values)
     {
+        foreach ($values as &$value) {
+            $value = trim(strval($value));
+        }
+
         return new self($name, $values);
     }
 

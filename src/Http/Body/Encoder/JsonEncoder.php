@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Artemeon\HttpClient\Http\Body\Encoder;
 
-use Artemeon\HttpClient\Exception\HttpClientException;
+use Artemeon\HttpClient\Exception\RuntimeException;
 use Artemeon\HttpClient\Http\MediaType;
 use Artemeon\HttpClient\Stream\Stream;
 use Psr\Http\Message\StreamInterface;
@@ -79,7 +79,7 @@ class JsonEncoder implements Encoder
 
     /**
      * @inheritDoc
-     * @throws HttpClientException
+     * @throws RuntimeException
      */
     public function encode(): StreamInterface
     {
@@ -87,7 +87,7 @@ class JsonEncoder implements Encoder
 
         if ($json === false) {
             $error = json_last_error_msg();
-            throw new HttpClientException("Can't encode to json: $error");
+            throw new RuntimeException("Can't encode to json: $error");
         }
 
         return Stream::fromString($json);

@@ -13,8 +13,8 @@ declare(strict_types=1);
 
 namespace Artemeon\HttpClient\Tests\Http;
 
-use Artemeon\HttpClient\Exception\HttpClientException;
-use Artemeon\HttpClient\Http\Url;
+use Artemeon\HttpClient\Exception\InvalidArgumentException;
+use Artemeon\HttpClient\Http\Uri;
 use PHPUnit\Framework\TestCase;
 
 class UrlTest extends TestCase
@@ -25,7 +25,7 @@ class UrlTest extends TestCase
     public function fromString_SetValidValues(): void
     {
         $expected = 'http://www.artemeon.de';
-        $url = Url::fromString($expected);
+        $url = Uri::fromString($expected);
         self::assertSame($expected, $url->__toString());
     }
 
@@ -34,8 +34,8 @@ class UrlTest extends TestCase
      */
     public function fromString_UrlIsInvalid_ThrowsException(): void
     {
-        $this->expectException(HttpClientException::class);
-        Url::fromString('dfg;docs//invalid');
+        $this->expectException(InvalidArgumentException::class);
+        Uri::fromString('dfg;docs//invalid');
     }
 
     /**
@@ -44,7 +44,7 @@ class UrlTest extends TestCase
     public function getQuery_ReturnExpectedValue(): void
     {
         $expected = 'user=john.doe';
-        $url = Url::withQueryParams('http://www.artemeon.de', ['user' => 'john.doe']);
+        $url = Uri::fromQueryParams('http://www.artemeon.de', ['user' => 'john.doe']);
         self::assertSame($expected, $url->getQuery());
     }
 
@@ -54,7 +54,7 @@ class UrlTest extends TestCase
     public function getFragment_ReturnExpectedValue(): void
     {
         $expected = 'anker';
-        $url = Url::fromString('http://www.artemeon.de/pfad/test.html#' . $expected);
+        $url = Uri::fromString('http://www.artemeon.de/pfad/test.html#' . $expected);
         self::assertSame($expected, $url->getFragment());
     }
 
@@ -63,7 +63,7 @@ class UrlTest extends TestCase
      */
     public function getFragment_ReturnsEmptyString(): void
     {
-        $url = Url::fromString('http://www.artemeon.de/pfad/test.html');
+        $url = Uri::fromString('http://www.artemeon.de/pfad/test.html');
         self::assertSame('', $url->getFragment());
     }
 
@@ -72,7 +72,7 @@ class UrlTest extends TestCase
      */
     public function getUserInfo_ReturnUserPassword(): void
     {
-        $url = Url::fromString('https://dsi:topsecret@www.artemeon.de');
+        $url = Uri::fromString('https://dsi:topsecret@www.artemeon.de');
         self::assertSame('dsi:topsecret', $url->getUserInfo());
     }
 
@@ -81,7 +81,7 @@ class UrlTest extends TestCase
      */
     public function getUserInfo_ReturnOnlyUser(): void
     {
-        $url = Url::fromString('https://dsi@www.artemeon.de');
+        $url = Uri::fromString('https://dsi@www.artemeon.de');
         self::assertSame('dsi', $url->getUserInfo());
     }
 
@@ -90,7 +90,7 @@ class UrlTest extends TestCase
      */
     public function getUserInfo_ReturnEmptyString(): void
     {
-        $url = Url::fromString('https://www.artemeon.de');
+        $url = Uri::fromString('https://www.artemeon.de');
         self::assertSame('', $url->getUserInfo());
     }
 
@@ -99,7 +99,7 @@ class UrlTest extends TestCase
      */
     public function getScheme_ReturnExpectedValue(): void
     {
-        $url = Url::fromString('ftp://dsi:topsecret@www.artemeon.de');
+        $url = Uri::fromString('ftp://dsi:topsecret@www.artemeon.de');
         self::assertSame('ftp', $url->getScheme());
     }
 
@@ -108,7 +108,7 @@ class UrlTest extends TestCase
      */
     public function getHost_ReturnExpectedValue(): void
     {
-        $url = Url::fromString('http://www.artemeon.de:8080/path/to/file.html');
+        $url = Uri::fromString('http://www.artemeon.de:8080/path/to/file.html');
         self::assertSame('www.artemeon.de', $url->getHost());
     }
 
@@ -117,7 +117,7 @@ class UrlTest extends TestCase
      */
     public function getPort_ReturnExpectedNull(): void
     {
-        $url = Url::fromString('http://www.artemeon.de/path/to/file.html');
+        $url = Uri::fromString('http://www.artemeon.de/path/to/file.html');
         self::assertNull($url->getPort());
     }
 
@@ -126,7 +126,7 @@ class UrlTest extends TestCase
      */
     public function getPort_ReturnExpectedInt(): void
     {
-        $url = Url::fromString('http://www.artemeon.de:8080/path/to/file.html');
+        $url = Uri::fromString('http://www.artemeon.de:8080/path/to/file.html');
         self::assertSame(8080, $url->getPort());
     }
 
@@ -135,7 +135,7 @@ class UrlTest extends TestCase
      */
     public function getPath_ReturnExpectedString(): void
     {
-        $url = Url::fromString('http://www.artemeon.de:8080/path/to/file.html');
+        $url = Uri::fromString('http://www.artemeon.de:8080/path/to/file.html');
         self::assertSame('/path/to/file.html', $url->getPath());
     }
 
@@ -144,7 +144,7 @@ class UrlTest extends TestCase
      */
     public function getPath_ReturnExpectedEmptyString(): void
     {
-        $url = Url::fromString('http://www.artemeon.de:8080');
+        $url = Uri::fromString('http://www.artemeon.de:8080');
         self::assertSame('', $url->getPath());
     }
 }

@@ -13,12 +13,11 @@ declare(strict_types=1);
 
 namespace Artemeon\HttpClient\Http\Body\Encoder;
 
-use Artemeon\HttpClient\Exception\HttpClientException;
+use Artemeon\HttpClient\Exception\RuntimeException;
 use Artemeon\HttpClient\Http\MediaType;
 use Artemeon\HttpClient\Stream\AppendableStream;
 use Artemeon\HttpClient\Stream\Stream;
 use Psr\Http\Message\StreamInterface;
-use RuntimeException;
 
 /**
  * Encoder for "multipart/form-data" encoded body content
@@ -38,7 +37,7 @@ class MultipartFormDataEncoder implements Encoder
      * MultipartFormDataEncoder constructor.
      *
      * @param string $boundary Boundary string 7bit US-ASCII
-     * @throws HttpClientException
+     * @throws RuntimeException
      */
     private function __construct(string $boundary)
     {
@@ -49,7 +48,7 @@ class MultipartFormDataEncoder implements Encoder
     /**
      * Named constructor to create an instance
      *
-     * @throws HttpClientException
+     * @throws RuntimeException
      */
     public static function create(): self
     {
@@ -62,7 +61,7 @@ class MultipartFormDataEncoder implements Encoder
      *
      * @param string $fieldName Name of the form field
      * @param string $value Value of the form field
-     * @throws HttpClientException
+     * @throws RuntimeException
      */
     public function addFieldPart(string $fieldName, string $value): self
     {
@@ -74,11 +73,7 @@ class MultipartFormDataEncoder implements Encoder
         $part .= $this->crlf;
         $part .= $value . $this->crlf;
 
-        try {
-            $this->multiPartStream->appendStream(Stream::fromString($part));
-        } catch (RuntimeException $exception) {
-            throw HttpClientException::fromGuzzleException($exception);
-        }
+        $this->multiPartStream->appendStream(Stream::fromString($part));
 
         return $this;
     }
@@ -89,7 +84,7 @@ class MultipartFormDataEncoder implements Encoder
      * @param string $name Name of the form field
      * @param string $fileName Name of the file, with a valid file extension
      * @param AppendableStream $fileContent Binary stream of the file
-     * @throws HttpClientException
+     * @throws RuntimeException
      */
     public function addFilePart(string $name, string $fileName, AppendableStream $fileContent): self
     {
@@ -100,13 +95,9 @@ class MultipartFormDataEncoder implements Encoder
         $part .= sprintf('Content-Type: %s', MediaType::mapFileExtensionToMimeType($fileExtension)) . $this->crlf;
         $part .= $this->crlf;
 
-        try {
-            $this->multiPartStream->appendStream(Stream::fromString($part));
-            $this->multiPartStream->appendStream($fileContent);
-            $this->multiPartStream->appendStream(Stream::fromString($this->crlf));
-        } catch (RuntimeException $exception) {
-            throw HttpClientException::fromGuzzleException($exception);
-        }
+        $this->multiPartStream->appendStream(Stream::fromString($part));
+        $this->multiPartStream->appendStream($fileContent);
+        $this->multiPartStream->appendStream(Stream::fromString($this->crlf));
 
         return $this;
     }
@@ -116,11 +107,8 @@ class MultipartFormDataEncoder implements Encoder
      */
     public function encode(): StreamInterface
     {
-        try {
-            $this->multiPartStream->appendStream(Stream::fromString('--' . $this->boundary . '--' . $this->crlf));
-        } catch (RuntimeException $exception) {
-            throw HttpClientException::fromGuzzleException($exception);
-        }
+        // Add the end boundary
+        $this->multiPartStream->appendStream(Stream::fromString('--' . $this->boundary . '--' . $this->crlf));
 
         return $this->multiPartStream;
     }
@@ -136,14 +124,14 @@ class MultipartFormDataEncoder implements Encoder
     /**
      * Detects the encoding of the given string
      *
-     * @throws HttpClientException
+     * @throws RuntimeException
      */
     private function detectEncoding(string $value): string
     {
         $encoding = mb_detect_encoding($value);
 
         if ($encoding === false) {
-            throw new HttpClientException("Cant't detect encoding for multipart");
+            throw new RuntimeException("Cant't detect encoding for multipart");
         }
 
         return $encoding;
