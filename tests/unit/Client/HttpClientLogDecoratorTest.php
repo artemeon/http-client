@@ -15,6 +15,9 @@ namespace Artemeon\HttpClient\Tests\Client;
 
 use Artemeon\HttpClient\Client\Decorator\Logger\LoggerDecorator;
 use Artemeon\HttpClient\Client\HttpClient;
+use Artemeon\HttpClient\Client\Options\ClientOptions;
+use Artemeon\HttpClient\Exception\HttpClientException;
+use Artemeon\HttpClient\Exception\InvalidArgumentException;
 use Artemeon\HttpClient\Exception\RuntimeException;
 use Artemeon\HttpClient\Exception\Request\Http\ClientResponseException;
 use Artemeon\HttpClient\Exception\Request\Http\ServerResponseException;
@@ -36,10 +39,10 @@ class HttpClientLogDecoratorTest extends TestCase
     /** @var HttpClient */
     private $httpClient;
 
-    /** @var \Artemeon\HttpClient\Client\Decorator\Logger\LoggerDecorator */
+    /** @var LoggerDecorator */
     private $httpClientLogDecorator;
 
-    /** @var \Artemeon\HttpClient\Client\Options\ClientOptions */
+    /** @var ClientOptions */
     private $clientOptions;
 
     /**
@@ -49,7 +52,7 @@ class HttpClientLogDecoratorTest extends TestCase
     {
         $this->logger = $this->prophesize(LoggerInterface::class);
         $this->httpClient = $this->prophesize(HttpClient::class);
-        $this->clientOptions = \Artemeon\HttpClient\Client\Options\ClientOptions::fromDefaults();
+        $this->clientOptions = ClientOptions::fromDefaults();
 
         $this->httpClientLogDecorator = new LoggerDecorator(
             $this->httpClient->reveal(),
@@ -111,11 +114,11 @@ class HttpClientLogDecoratorTest extends TestCase
     public function send_ClientThrowsHttpClientException_ShouldBeLogged(): void
     {
         $request = Request::forGet(Uri::fromString('http://apache'));
-        $exception = RuntimeException::forAlreadyRegisteredHeaderFields('Host');
+        $exception = InvalidArgumentException::forAlreadyRegisteredHeaderFields('Host');
 
         $this->httpClient->send(Argument::any(), Argument::any())->willThrow($exception);
         $this->logger->info($exception->getMessage(), ['exception' => $exception])->shouldBeCalled();
-        $this->expectException(RuntimeException::class);
+        $this->expectException(HttpClientException::class);
 
         $this->httpClientLogDecorator->send($request, $this->clientOptions);
     }

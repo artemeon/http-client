@@ -16,7 +16,7 @@ namespace Artemeon\HttpClient\Exception;
 use Exception;
 
 /**
- * Base class to catch all possible exceptions related to the http client
+ * Base class to catch all possible runtime exceptions
  *
  * ```
  * 1. RuntimeException (All possible exceptions inclusive during instantiation)
@@ -30,11 +30,9 @@ use Exception;
  */
 class RuntimeException extends \RuntimeException implements HttpClientException
 {
-    public static function forAlreadyRegisteredHeaderFields(string $fieldName): self
-    {
-        return new self("Header field '$fieldName' is already registered");
-    }
-
+    /**
+     * @param Exception $exception Previous guzzle exception
+     */
     public static function fromGuzzleException(Exception $exception): self
     {
         return new self($exception->getMessage(), 0, $exception);

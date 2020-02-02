@@ -17,6 +17,9 @@ use Artemeon\HttpClient\Exception\RuntimeException;
 use Artemeon\HttpClient\Http\Request;
 use Exception;
 
+/**
+ * Class for all runtime exceptions during the request/response transfers
+ */
 class TransferException extends RuntimeException
 {
     /** @var Request */
@@ -24,6 +27,10 @@ class TransferException extends RuntimeException
 
     /**
      * Named constructor to create an instance based on the given request object
+     *
+     * @param Request $request The failed request object
+     * @param string $message The error message
+     * @param Exception|null $previous The precious third party exception
      */
     public static function fromRequest(Request $request, string $message, Exception $previous = null): self
     {

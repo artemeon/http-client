@@ -22,9 +22,6 @@ use Psr\Http\Message\UriInterface;
 class Uri implements UriInterface
 {
     /** @var string */
-    private $url;
-
-    /** @var string */
     private $query = '';
 
     /** @var string */
@@ -51,20 +48,19 @@ class Uri implements UriInterface
     /**
      * Url constructor.
      *
-     * @param string $url Url string with protocol
+     * @param string $uri Url string with protocol
      * @throws InvalidArgumentException
      */
-    private function __construct(string $url)
+    private function __construct(string $uri)
     {
-        $this->url = $url;
-        $this->query = parse_url($url, PHP_URL_QUERY) ?? '';
-        $this->scheme = strtolower(parse_url($url, PHP_URL_SCHEME) ?? '');
-        $this->host = parse_url($url, PHP_URL_HOST) ?? '';
-        $this->port = parse_url($url, PHP_URL_PORT);
-        $this->fragment = parse_url($url, PHP_URL_FRAGMENT) ?? '';
-        $this->user = parse_url($url, PHP_URL_USER) ?? '';
-        $this->password = parse_url($url, PHP_URL_PASS) ?? '';
-        $this->path = parse_url($url, PHP_URL_PATH) ?? '';
+        $this->query = parse_url($uri, PHP_URL_QUERY) ?? '';
+        $this->scheme = strtolower(parse_url($uri, PHP_URL_SCHEME) ?? '');
+        $this->host = parse_url($uri, PHP_URL_HOST) ?? '';
+        $this->port = parse_url($uri, PHP_URL_PORT);
+        $this->fragment = parse_url($uri, PHP_URL_FRAGMENT) ?? '';
+        $this->user = parse_url($uri, PHP_URL_USER) ?? '';
+        $this->password = parse_url($uri, PHP_URL_PASS) ?? '';
+        $this->path = parse_url($uri, PHP_URL_PATH) ?? '';
 
         $this->assertIsValid();
     }
@@ -72,28 +68,28 @@ class Uri implements UriInterface
     /**
      * Named constructor to create an instance based on the given url and query params
      *
-     * @param string $url Url string with protocol
+     * @param string $uri Url string with protocol
      * @param array $queryParams Query params array: ["varName" => value]
      * @throws InvalidArgumentException
      */
-    public static function fromQueryParams(string $url, array $queryParams): self
+    public static function fromQueryParams(string $uri, array $queryParams): self
     {
         if (count($queryParams) > 0) {
-            $url .= '?' . http_build_query($queryParams);
+            $uri .= '?' . http_build_query($queryParams);
         }
 
-        return new self($url);
+        return new self($uri);
     }
 
     /**
      * Named constructor to create an instance based on the given url string.
      *
-     * @param string $url Url string with protocol
+     * @param string $uri Url string with protocol
      * @throws InvalidArgumentException
      */
-    public static function fromString(string $url): self
+    public static function fromString(string $uri): self
     {
-        return new self($url);
+        return new self($uri);
     }
 
     /**
@@ -320,10 +316,10 @@ class Uri implements UriInterface
      */
     private function assertIsValid(): void
     {
-        $url = $this->__toString();
+        $uri = $this->__toString();
 
-        if (!filter_var($url, FILTER_VALIDATE_URL)) {
-            throw new InvalidArgumentException('Url is invalid: ' . $url);
+        if (!filter_var($uri, FILTER_VALIDATE_URL)) {
+            throw new InvalidArgumentException('Url is invalid: ' . $uri);
         }
     }
 }

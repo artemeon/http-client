@@ -14,7 +14,7 @@ declare(strict_types=1);
 namespace Artemeon\HttpClient\Http\Header\Fields;
 
 use Artemeon\HttpClient\Http\Header\HeaderField;
-use Artemeon\HttpClient\Http\Uri;
+use Psr\Http\Message\UriInterface;
 
 /**
  * Class to describe the header field 'Host'
@@ -26,6 +26,8 @@ class Host implements HeaderField
 
     /**
      * ContentType constructor.
+     *
+     * @param string $host The host string
      */
     private function __construct(string $host)
     {
@@ -34,14 +36,16 @@ class Host implements HeaderField
 
     /**
      * Named constructor to create an instance based on the given Url
+     *
+     * @param UriInterface $uri
      */
-    public static function fromUri(Uri $url): self
+    public static function fromUri(UriInterface $uri): self
     {
-        if ($url->getPort() === null) {
-            return new self($url->getHost());
+        if ($uri->getPort() === null) {
+            return new self($uri->getHost());
         }
 
-        return new self($url->getHost() . ':' . $url->getPort());
+        return new self($uri->getHost() . ':' . $uri->getPort());
     }
 
     /**

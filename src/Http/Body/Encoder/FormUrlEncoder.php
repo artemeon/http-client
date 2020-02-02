@@ -13,7 +13,6 @@ declare(strict_types=1);
 
 namespace Artemeon\HttpClient\Http\Body\Encoder;
 
-use Artemeon\HttpClient\Exception\RuntimeException;
 use Artemeon\HttpClient\Http\MediaType;
 use Artemeon\HttpClient\Stream\Stream;
 use Psr\Http\Message\StreamInterface;
@@ -28,6 +27,8 @@ class FormUrlEncoder implements Encoder
 
     /**
      * FormUrlEncoder constructor.
+     *
+     * @param array $formValues Array with the form values to encode: ['formFieldName' = 'value'],
      */
     private function __construct(array $formValues)
     {
@@ -51,7 +52,6 @@ class FormUrlEncoder implements Encoder
 
     /**
      * @inheritDoc
-     * @throws RuntimeException
      */
     public function encode(): StreamInterface
     {

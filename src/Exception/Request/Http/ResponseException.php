@@ -31,6 +31,12 @@ class ResponseException extends TransferException
 
     /**
      * Named constructor to create an instance based on the response of the failed request
+     *
+     * @param Response $response The failed response
+     * @param Request $request The failed request
+     * @param string $message The error message
+     * @param Exception|null $previous The previous exception
+     * @return ResponseException
      */
     public static function fromResponse(
         Response $response,

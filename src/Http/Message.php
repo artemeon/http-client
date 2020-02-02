@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Artemeon\HttpClient\Http;
 
+use Artemeon\HttpClient\Exception\HttpClientException;
 use Artemeon\HttpClient\Exception\InvalidArgumentException;
 use Artemeon\HttpClient\Http\Header\Header;
 use Artemeon\HttpClient\Http\Header\Headers;
@@ -90,7 +91,7 @@ abstract class Message implements MessageInterface
      */
     public function hasHeader($name): bool
     {
-        return $this->headers->hasHeader(strval($name));
+        return $this->headers->has(strval($name));
     }
 
     /**
@@ -99,7 +100,7 @@ abstract class Message implements MessageInterface
     public function getHeader($name): array
     {
         try {
-            return $this->headers->getHeader(strval($name))->getValues();
+            return $this->headers->get(strval($name))->getValues();
         } catch (InvalidArgumentException $e) {
             return [];
         }
@@ -111,23 +112,40 @@ abstract class Message implements MessageInterface
     public function getHeaderLine($name): string
     {
         try {
-            return $this->headers->getHeader(strval($name))->getValue();
+            return $this->headers->get(strval($name))->getValue();
         } catch (InvalidArgumentException $e) {
             return '';
         }
     }
 
     /**
-     * @inheritDo
+     * @inheritDoc
+     * @throws HttpClientException
      */
     public function withHeader($name, $value): self
     {
+        if (!is_string($name)) {
+            throw new InvalidArgumentException('name must be string value');
+        }
+
         $cloned = clone $this;
 
         if (is_array($value)) {
-            $cloned->headers->replaceHeader(Header::fromArray($name, $value));
+            foreach ($value as &$val) {
+                $val = trim($val);
+
+                if (!is_string($value)) {
+                    throw new InvalidArgumentException('value must be an array of strings');
+                }
+            }
+
+            $cloned->headers->replace(Header::fromArray($name, $value));
         } else {
-            $cloned->headers->replaceHeader(Header::fromString($name, $value));
+            if (!is_string($value)) {
+                throw new InvalidArgumentException('value must be an string');
+            }
+
+            $cloned->headers->replace(Header::fromString($name, $value));
         }
 
         return $cloned;
@@ -151,11 +169,12 @@ abstract class Message implements MessageInterface
     {
         $cloned = clone $this;
 
-        if ($cloned->headers->hasHeader($name)) {
-            $cloned->headers->getHeader($name)->addValue($value);
+        if ($cloned->headers->has($name)) {
+            $cloned->headers->get($name)->addValue($value);
         } else {
+            // Field does not exists, create new header
             $header = is_array($value) ? Header::fromArray($name, $value) : Header::fromString($name, $value);
-            $cloned->headers->addHeader($header);
+            $cloned->headers->add($header);
         }
 
         return $cloned;
@@ -167,7 +186,7 @@ abstract class Message implements MessageInterface
     public function withoutHeader($name)
     {
         $cloned = clone $this;
-        $cloned->headers->removeHeader($name);
+        $cloned->headers->remove($name);
 
         return $cloned;
     }
@@ -177,7 +196,7 @@ abstract class Message implements MessageInterface
      */
     public function withBody(StreamInterface $body)
     {
-        if ($body->isReadable()) {
+        if (!$body->isReadable()) {
             throw new InvalidArgumentException('Body stream must be readable');
         }
 

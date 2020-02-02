@@ -32,9 +32,9 @@ class ClientCredentials
     /**
      * ClientCredentials constructor.
      *
-     * @param string $clientID
-     * @param string $clientSecret
-     * @param string $scope
+     * @param string $clientID The 'client_id'
+     * @param string $clientSecret The 'client_secret'
+     * @param string $scope The 'scope'
      */
     private function __construct(string $clientID, string $clientSecret, string $scope = '')
     {
@@ -46,8 +46,12 @@ class ClientCredentials
 
     /**
      * Named constructor to create an instance based on the given credentials
+     *
+     * @param string $clientId  The 'client_id'
+     * @param string $clientSecret The 'client_secret'
+     * @param string $scope The scope
      */
-    public static function fromClientId(string $clientId, string $clientSecret, string $scope = ''): self
+    public static function fromHeaderAuthorization(string $clientId, string $clientSecret, string $scope = ''): self
     {
         return new self($clientId, $clientSecret, $scope);
     }

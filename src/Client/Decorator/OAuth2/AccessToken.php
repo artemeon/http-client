@@ -35,11 +35,10 @@ class AccessToken
     /**
      * AccessToken constructor.
      *
-     * @param string $token
-     * @param string $expires
-     * @param string $type
-     * @param string $scope
-     * @throws RuntimeException
+     * @param string $token The OAuth2 access token
+     * @param int $expires The expires in integer
+     * @param string $type The type of authorization
+     * @param string $scope The scope of the authorization
      */
     private function __construct(string $token, int $expires, string $type, string $scope = '')
     {
@@ -58,7 +57,7 @@ class AccessToken
     /**
      * Named constructor to create an instance based on the given json encoded body string
      *
-     * @throws RuntimeException
+     * @param string $json Json encoded response string
      */
     public static function fromJsonString(string $json): self
     {
@@ -73,7 +72,7 @@ class AccessToken
     }
 
     /**
-     * @return string
+     * Returns the access token string
      */
     public function getToken(): string
     {
@@ -81,7 +80,7 @@ class AccessToken
     }
 
     /**
-     * @return int
+     * Returns the expires in integer value
      */
     public function getExpires(): int
     {
@@ -89,7 +88,7 @@ class AccessToken
     }
 
     /**
-     * @return string
+     * Return the type of the authorization
      */
     public function getType(): string
     {
@@ -97,7 +96,7 @@ class AccessToken
     }
 
     /**
-     * @return string
+     * Return the scope of the authorization
      */
     public function getScope(): string
     {

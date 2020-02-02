@@ -13,6 +13,9 @@ declare(strict_types=1);
 
 namespace Artemeon\HttpClient\Client\Options;
 
+/**
+ * Class with all possible client configuration options on the network layer
+ */
 class ClientOptions
 {
     /** @var bool */
@@ -33,6 +36,9 @@ class ClientOptions
     /** @var bool */
     private $addReferer;
 
+    /**
+     * Named constructor to create an instance based on the default values
+     */
     public static function fromDefaults(): self
     {
         $instance = new self();
@@ -81,6 +87,8 @@ class ClientOptions
     /**
      * Option to set a custom CA bundle certificates path. As default we use the CA bundle
      * provided by the operating system.
+     *
+     * @param string $customCaBundlePath
      */
     public function optSetCustomCaBundlePath(string $customCaBundlePath): void
     {
@@ -97,6 +105,8 @@ class ClientOptions
 
     /**
      * Option to set the timeout in seconds for requests
+     *
+     * @param int $timeout
      */
     public function optSetTimeout(int $timeout): void
     {
@@ -113,6 +123,8 @@ class ClientOptions
 
     /**
      * Option to set the amount of maximal allowed redirects
+     *
+     * @param int $maxRedirects
      */
     public function optSetMaxRedirects(int $maxRedirects): void
     {

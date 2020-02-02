@@ -36,6 +36,9 @@ class Body
 
     /**
      * Body constructor.
+     *
+     * @param string $mimeType The mime type of the body content stream
+     * @param StreamInterface $stream The body content stream
      */
     private function __construct(string $mimeType, StreamInterface $stream)
     {
@@ -69,6 +72,8 @@ class Body
 
     /**
      * Named constructor to create an instance based on the given Reader
+     *
+     * @param Reader $reader
      */
     public static function fromReader(Reader $reader): self
     {

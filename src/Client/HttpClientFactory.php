@@ -75,7 +75,7 @@ class HttpClientFactory
      * print_r($transactions[0]['response']);
      * echo $transactions[0]['request']->getBody();
      *
-     * @throws RuntimeException
+     * @param array $transactions Empty array to 'record' all request and responses
      */
     public static function withTransactionMiddleware(array &$transactions): HttpClient
     {

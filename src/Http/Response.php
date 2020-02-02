@@ -18,6 +18,9 @@ use Artemeon\HttpClient\Http\Header\Headers;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
 
+/**
+ * PSR-7 Response class
+ */
 class Response extends Message implements ResponseInterface
 {
     /** @var int */
@@ -29,10 +32,11 @@ class Response extends Message implements ResponseInterface
     /**
      * Response constructor.
      *
-     * @param int $statusCode
-     * @param string $version
-     * @param StreamInterface $body
-     * @param Headers $headers
+     * @param int $statusCode The http status code
+     * @param string $version The http version number without http prefix
+     * @param StreamInterface $body The body content stream
+     * @param Headers $headers The Headers collection class
+     * @param string $reasonPhrase The http response reason phrase
      */
     public function __construct(
         int $statusCode,

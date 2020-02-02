@@ -29,7 +29,7 @@ $formatter = new MessageFormatter(MessageFormatter::DEBUG);
 try {
     $apiClient = ClientCredentialsDecorator::fromClientCredentials(
         Uri::fromString('https://api.lbbw-test.prospeum.com/o/token/'),
-        ClientCredentials::fromClientId(
+        ClientCredentials::fromHeaderAuthorization(
             'yoour_client_id',
             'your_client_secret',
             'read_suppliers'

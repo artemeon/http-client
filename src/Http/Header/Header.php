@@ -82,6 +82,8 @@ class Header
 
     /**
      * Add a value to the header
+     *
+     * @param string $value The string value to add
      */
     public function addValue(string $value): void
     {

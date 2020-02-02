@@ -20,6 +20,11 @@ use GuzzleHttp\RequestOptions as GuzzleRequestOptions;
  */
 class ClientOptionsConverter
 {
+    /**
+     * Converts the given ClientOptions to the guzzle options array format
+     *
+     * @param ClientOptions $clientOptions
+     */
     public function toGuzzleOptionsArray(ClientOptions $clientOptions): array
     {
         $options = [];
@@ -33,6 +38,7 @@ class ClientOptionsConverter
 
     /**
      * @see http://docs.guzzlephp.org/en/6.5/request-options.html#verify
+     * @param ClientOptions $clientOptions
      * @return string|bool
      */
     private function createVerifyKey(ClientOptions $clientOptions)
@@ -49,6 +55,7 @@ class ClientOptionsConverter
 
     /**
      * @see http://docs.guzzlephp.org/en/6.5/request-options.html#allow-redirects
+     * @param ClientOptions $clientOptions
      * @return array|bool
      */
     private function createAllowRedirectsKey(ClientOptions $clientOptions)

@@ -25,6 +25,8 @@ class ContentType implements HeaderField
 
     /**
      * ContentType constructor.
+     *
+     * @param string $mimeType
      */
     private function __construct(string $mimeType)
     {

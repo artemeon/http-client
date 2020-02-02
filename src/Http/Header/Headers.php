@@ -45,12 +45,15 @@ class Headers implements Countable, IteratorAggregate
         $instance = new self();
 
         foreach ($headerFields as $field) {
-            $instance->addHeader(Header::fromField($field));
+            $instance->add(Header::fromField($field));
         }
 
         return $instance;
     }
 
+    /**
+     * Named constructor to create an empty collection instance
+     */
     public static function create(): self
     {
         return new self();
@@ -59,13 +62,14 @@ class Headers implements Countable, IteratorAggregate
     /**
      * Adds a header to the collection, throws an exception if the header already exists
      *
+     * @param Header $header The Header to add
      * @throws InvalidArgumentException
      */
-    public function addHeader(Header $header): void
+    public function add(Header $header): void
     {
         $fieldName = strtolower($header->getFieldName());
 
-        if ($this->hasHeader($fieldName)) {
+        if ($this->has($fieldName)) {
             throw InvalidArgumentException::forAlreadyRegisteredHeaderFields($fieldName);
         }
 
@@ -79,8 +83,10 @@ class Headers implements Countable, IteratorAggregate
 
     /**
      * Adds a header to the collection or replaces an already existing header
+     *
+     * @param Header $header The header to replace
      */
-    public function replaceHeader(Header $header): void
+    public function replace(Header $header): void
     {
         $fieldName = strtolower($header->getFieldName());
 
@@ -94,8 +100,10 @@ class Headers implements Countable, IteratorAggregate
 
     /**
      * Checks case incentive for a specific header field
+     *
+     * @param string $headerField The header field to check
      */
-    public function hasHeader(string $headerField): bool
+    public function has(string $headerField): bool
     {
         $headerField = strtolower($headerField);
         return isset($this->headers[$headerField]);
@@ -104,12 +112,12 @@ class Headers implements Countable, IteratorAggregate
     /**
      * Checks if the header with given headerField contains an empty value string
      *
-     * @param string $headerField
+     * @param string $headerField The header field to check
      */
     public function isEmpty(string $headerField): bool
     {
         try {
-            return empty($this->getHeader($headerField)->getValue());
+            return empty($this->get($headerField)->getValue());
         } catch (InvalidArgumentException $e) {
             return false;
         }
@@ -117,12 +125,14 @@ class Headers implements Countable, IteratorAggregate
 
     /**
      * Removes the header with the given header field name
+     *
+     * @param string $headerField The header field to remove
      */
-    public function removeHeader(string $headerField): void
+    public function remove(string $headerField): void
     {
         $headerField = strtolower($headerField);
 
-        if (!$this->hasHeader($headerField)) {
+        if (!$this->has($headerField)) {
             return;
         }
 
@@ -132,13 +142,14 @@ class Headers implements Countable, IteratorAggregate
     /**
      * Return a Header object for the given header field name
      *
+     * @param string $headerField The header to get
      * @throws InvalidArgumentException
      */
-    public function getHeader($headerField): Header
+    public function get(string $headerField): Header
     {
         $headerField = strtolower($headerField);
 
-        if (!$this->hasHeader($headerField)) {
+        if (!$this->has($headerField)) {
             throw InvalidArgumentException::forNonExistentHeaderFields($headerField);
         }
 

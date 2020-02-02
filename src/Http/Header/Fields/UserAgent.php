@@ -28,6 +28,8 @@ class UserAgent implements HeaderField
 
     /**
      * UserAgent constructor.
+     *
+     * @param string $userAgent The user agent string
      */
     public function __construct(string $userAgent)
     {

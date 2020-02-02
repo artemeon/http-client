@@ -17,6 +17,7 @@ use Artemeon\HttpClient\Client\Decorator\HttpClientDecorator;
 use Artemeon\HttpClient\Client\HttpClient;
 use Artemeon\HttpClient\Client\Options\ClientOptions;
 use Artemeon\HttpClient\Exception\HttpClientException;
+use Artemeon\HttpClient\Exception\InvalidArgumentException;
 use Artemeon\HttpClient\Exception\RuntimeException;
 use Artemeon\HttpClient\Http\Body\Body;
 use Artemeon\HttpClient\Http\Body\Encoder\FormUrlEncoder;
@@ -42,7 +43,8 @@ class ClientCredentialsDecorator extends HttpClientDecorator
     /**
      * ClientCredentialsDecorator constructor.
      *
-     * @param Request $request
+     * @param HttpClient $httpClient The http client to decorate
+     * @param Request $request The http request object
      */
     public function __construct(HttpClient $httpClient, Request $request)
     {
@@ -55,15 +57,18 @@ class ClientCredentialsDecorator extends HttpClientDecorator
     /**
      * Named constructor to create an instance based on the given ClientCredentials
      *
-     * @throws HttpClientException
+     * @param Uri $uri The Uri object
+     * @param ClientCredentials $clientCredentials The OAuth2 client credential object
+     * @param HttpClient $httpClient The http client to decorate
+     * @throws InvalidArgumentException
      */
     public static function fromClientCredentials(
-        Uri $url,
+        Uri $uri,
         ClientCredentials $clientCredentials,
         HttpClient $httpClient
     ): self {
         $body = Body::fromEncoder(FormUrlEncoder::fromArray($clientCredentials->toArray()));
-        $request = Request::forPost($url, $body);
+        $request = Request::forPost($uri, $body);
 
         return new self($httpClient, $request);
     }
@@ -86,7 +91,7 @@ class ClientCredentialsDecorator extends HttpClientDecorator
     /**
      * Fetches the access token
      *
-     * @throws RuntimeException
+     * @param ClientOptions|null $clientOptions
      */
     private function requestAccessToken(ClientOptions $clientOptions = null): AccessToken
     {
@@ -102,9 +107,9 @@ class ClientCredentialsDecorator extends HttpClientDecorator
     }
 
     /**
-     * Checks for a valid access token response with json body
+     * Checks for a valid access token response with valid json body
      *
-     * @throws RuntimeException
+     * @param Response $response
      */
     private function assertIsValidJsonResponse(Response $response): void
     {

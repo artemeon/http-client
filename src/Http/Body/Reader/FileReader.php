@@ -31,8 +31,8 @@ class FileReader implements Reader
     /**
      * FileReader constructor.
      *
-     * @param StreamInterface $stream
-     * @throws RuntimeException
+     * @param StreamInterface $stream The content stream
+     * @param string $file The file path with file extension
      */
     public function __construct(StreamInterface $stream, string $file)
     {
@@ -45,9 +45,9 @@ class FileReader implements Reader
     }
 
     /**
-     * Named construct to create an instance based on the given file and optional stream context options
+     * Named construct to create an instance based on the given file path string
      *
-     * @param string $file Filename inclusive path
+     * @param string $file Filename inclusive path and extension
      * @throws RuntimeException
      */
     public static function fromFile(string $file): self

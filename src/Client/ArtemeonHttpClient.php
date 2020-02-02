@@ -16,6 +16,7 @@ namespace Artemeon\HttpClient\Client;
 use Artemeon\HttpClient\Client\Options\ClientOptions;
 use Artemeon\HttpClient\Client\Options\ClientOptionsConverter;
 use Artemeon\HttpClient\Exception\HttpClientException;
+use Artemeon\HttpClient\Exception\InvalidArgumentException;
 use Artemeon\HttpClient\Exception\Request\Http\ClientResponseException;
 use Artemeon\HttpClient\Exception\Request\Http\RedirectResponseException;
 use Artemeon\HttpClient\Exception\Request\Http\ResponseException;
@@ -52,6 +53,9 @@ class ArtemeonHttpClient implements HttpClient
 
     /**
      * GuzzleHttpClient constructor.
+     *
+     * @param GuzzleClient $guzzleClient
+     * @param ClientOptionsConverter $clientOptionsConverter
      */
     public function __construct(GuzzleClient $guzzleClient, ClientOptionsConverter $clientOptionsConverter)
     {
@@ -61,7 +65,6 @@ class ArtemeonHttpClient implements HttpClient
 
     /**
      * @inheritDoc
-     * @throws HttpClientException
      */
     final public function send(Request $request, ClientOptions $clientOptions = null): Response
     {
@@ -83,7 +86,6 @@ class ArtemeonHttpClient implements HttpClient
     /**
      * Send request and transform Guzzle exception to Artemeon exceptions
      * Map Guzzle exceptions -> HttpClient exceptions:
-     *
      * ```
      *  1. RuntimeException -> HttpClientException)
      *      1. TransferException -> TransferException
@@ -94,7 +96,6 @@ class ArtemeonHttpClient implements HttpClient
      *              2. ConnectException -> ConnectException
      *              3. TooManyRedirectsException -> RedirectResponseException
      * ```
-     *
      * @param Request $request
      * @param array $guzzleOptions
      * @throws HttpClientException
@@ -132,14 +133,15 @@ class ArtemeonHttpClient implements HttpClient
     /**
      * Converts a GuzzleResponse object to our Response object
      *
-     * @throws HttpClientException
+     * @param GuzzleResponse $guzzleResponse
+     * @throws InvalidArgumentException
      */
     private function convertFromGuzzleResponse(GuzzleResponse $guzzleResponse): Response
     {
         $headers = Headers::create();
 
         foreach (array_keys($guzzleResponse->getHeaders()) as $headerField) {
-            $headers->addHeader(Header::fromArray($headerField, $guzzleResponse->getHeader($headerField)));
+            $headers->add(Header::fromArray($headerField, $guzzleResponse->getHeader($headerField)));
         }
 
         return new Response(

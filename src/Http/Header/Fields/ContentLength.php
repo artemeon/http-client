@@ -25,6 +25,8 @@ class ContentLength implements HeaderField
 
     /**
      * ContentLength constructor.
+     *
+     * @param int $contentLength
      */
     public function __construct(int $contentLength)
     {
@@ -33,6 +35,8 @@ class ContentLength implements HeaderField
 
     /**
      * Named constructor to create an instance from the given int value
+     *
+     * @param int $contentLength
      */
     public static function fromInt(int $contentLength): self
     {

@@ -124,7 +124,7 @@ class MultipartFormDataEncoder implements Encoder
     /**
      * Detects the encoding of the given string
      *
-     * @throws RuntimeException
+     * @param string $value
      */
     private function detectEncoding(string $value): string
     {

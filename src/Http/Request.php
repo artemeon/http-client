@@ -33,8 +33,8 @@ class Request extends Message implements RequestInterface
     /** @var string */
     private $method;
 
-    /** @var Uri */
-    private $url;
+    /** @var UriInterface */
+    private $uri;
 
     /** @var string */
     private $requestTarget;
@@ -61,7 +61,7 @@ class Request extends Message implements RequestInterface
      * Request constructor.
      *
      * @param string $method
-     * @param Uri $url
+     * @param UriInterface $uri
      * @param Headers|null $headers
      * @param StreamInterface|null $body
      * @param string $version
@@ -69,18 +69,18 @@ class Request extends Message implements RequestInterface
      */
     private function __construct(
         string $method,
-        Uri $url,
+        UriInterface $uri,
         ?Headers $headers = null,
         ?StreamInterface $body = null,
         string $version = '1.1'
     ) {
-        $this->url = $url;
-        $this->requestTarget = $this->parseRequestTarget($url);
+        $this->uri = $uri;
+        $this->requestTarget = $this->parseRequestTarget($uri);
         $this->assertValidMethod($method);
         $this->method = $method;
 
         parent::__construct(
-            $this->addHostHeader($url, $headers),
+            $this->addHostHeader($uri, $headers),
             $body,
             $version
         );
@@ -89,16 +89,16 @@ class Request extends Message implements RequestInterface
     /**
      * Named constructor to create an instance for post requests
      *
-     * @param Uri $url The Url object
+     * @param Uri $uri The Url object
      * @param Headers|null $headers Optional: Headers collection or null
      * @param string $version Optional: http protocol version string
      * @throws InvalidArgumentException
      */
-    public static function forGet(Uri $url, ?Headers $headers = null, string $version = '1.1'): self
+    public static function forGet(Uri $uri, ?Headers $headers = null, string $version = '1.1'): self
     {
         return new self(
             self::METHOD_GET,
-            $url,
+            $uri,
             $headers,
             null,
             $version
@@ -108,16 +108,16 @@ class Request extends Message implements RequestInterface
     /**
      * Named constructor to create an instance for OPTIONS requests
      *
-     * @param Uri $url The Url object
+     * @param Uri $uri The Url object
      * @param Headers|null $headers Optional: Headers collection or null
      * @param string $version Optional: the http protocol version string
      * @throws InvalidArgumentException
      */
-    public static function forOptions(Uri $url, ?Headers $headers = null, string $version = '1.1'): self
+    public static function forOptions(Uri $uri, ?Headers $headers = null, string $version = '1.1'): self
     {
         return new self(
             self::METHOD_OPTIONS,
-            $url,
+            $uri,
             $headers,
             null,
             $version
@@ -127,19 +127,19 @@ class Request extends Message implements RequestInterface
     /**
      * Named constructor to create an instance for POST requests
      *
-     * @param Uri $url The Url object
+     * @param Uri $uri The Url object
      * @param Body $body The Body object
      * @param Headers|null $headers Optional: Headers collection or null
      * @param string $version Optional: the http protocol version string
      * @throws InvalidArgumentException
      */
-    public static function forPost(Uri $url, Body $body, ?Headers $headers = null, string $version = '1.1'): self
+    public static function forPost(Uri $uri, Body $body, ?Headers $headers = null, string $version = '1.1'): self
     {
         $headers = self::addHeaderFromBody($body, $headers);
 
         return new self(
             self::METHOD_POST,
-            $url,
+            $uri,
             $headers,
             $body->getStream(),
             $version
@@ -149,19 +149,19 @@ class Request extends Message implements RequestInterface
     /**
      * Named constructor to create an instance for PUT requests
      *
-     * @param Uri $url The Url object
+     * @param Uri $uri The Url object
      * @param Body $body The Body object
      * @param Headers|null $headers Optional: Headers collection or null
      * @param string $version Optional: the http protocol version string
      * @throws InvalidArgumentException
      */
-    public static function forPut(Uri $url, Body $body, ?Headers $headers = null, string $version = '1.1'): self
+    public static function forPut(Uri $uri, Body $body, ?Headers $headers = null, string $version = '1.1'): self
     {
         $headers = self::addHeaderFromBody($body, $headers);
 
         return new self(
             self::METHOD_PUT,
-            $url,
+            $uri,
             $headers,
             $body->getStream(),
             $version
@@ -171,19 +171,19 @@ class Request extends Message implements RequestInterface
     /**
      * Named constructor to create an instance for PATCH requests
      *
-     * @param Uri $url The Url object
+     * @param Uri $uri The Url object
      * @param Body $body The Body object
      * @param Headers|null $headers Optional: Headers collection or null
      * @param string $version Optional: the http protocol version string
      * @throws InvalidArgumentException
      */
-    public static function forPatch(Uri $url, Body $body, ?Headers $headers = null, string $version = '1.1'): self
+    public static function forPatch(Uri $uri, Body $body, ?Headers $headers = null, string $version = '1.1'): self
     {
         $headers = self::addHeaderFromBody($body, $headers);
 
         return new self(
             self::METHOD_PATCH,
-            $url,
+            $uri,
             $headers,
             $body->getStream(),
             $version
@@ -193,16 +193,16 @@ class Request extends Message implements RequestInterface
     /**
      * Named constructor to create an instance for DELETE requests
      *
-     * @param Uri $url The Url object
+     * @param Uri $uri The Url object
      * @param Headers|null $headers Optional: Headers collection or null
      * @param string $version Optional: http protocol version string
      * @throws InvalidArgumentException
      */
-    public static function forDelete(Uri $url, ?Headers $headers = null, string $version = '1.1'): self
+    public static function forDelete(Uri $uri, ?Headers $headers = null, string $version = '1.1'): self
     {
         return new self(
             self::METHOD_DELETE,
-            $url,
+            $uri,
             $headers,
             null,
             $version
@@ -239,7 +239,7 @@ class Request extends Message implements RequestInterface
      */
     public function getUri(): UriInterface
     {
-        return $this->url;
+        return $this->uri;
     }
 
     /**
@@ -248,18 +248,18 @@ class Request extends Message implements RequestInterface
     public function withUri(UriInterface $uri, $preserveHost = false): self
     {
         $cloned = clone $this;
-        $cloned->url = $uri;
+        $cloned->uri = $uri;
 
         $newHost = Header::fromString(HeaderField::HOST, $uri->getHost());
 
         if ($preserveHost === true) {
             // Update only if the Host header is missing or empty, and the new URI contains a host component
             if ($cloned->headers->isEmpty(HeaderField::HOST) || !empty($uri->getHost())) {
-                $cloned->headers->replaceHeader($newHost);
+                $cloned->headers->replace($newHost);
             }
         } elseif (!empty($uri->getHost())) {
             // Default: Update the Host header if the URI contains a host component
-            $cloned->headers->replaceHeader($newHost);
+            $cloned->headers->replace($newHost);
         }
 
         return $cloned;
@@ -294,8 +294,8 @@ class Request extends Message implements RequestInterface
     private static function addHeaderFromBody(Body $body, ?Headers $headers): Headers
     {
         $headers = $headers ?? Headers::create();
-        $headers->addHeader(Header::fromField(ContentType::fromString($body->getMimeType())));
-        $headers->addHeader(Header::fromField(ContentLength::fromInt($body->getContentLength())));
+        $headers->add(Header::fromField(ContentType::fromString($body->getMimeType())));
+        $headers->add(Header::fromField(ContentLength::fromInt($body->getContentLength())));
 
         return $headers;
     }
@@ -303,14 +303,14 @@ class Request extends Message implements RequestInterface
     /**
      * Add the host header based on the given Url
      *
-     * @param Uri $uri
+     * @param UriInterface $uri
      * @param Headers|null $headers
      * @throws InvalidArgumentException
      */
-    private function addHostHeader(Uri $uri, ?Headers $headers): Headers
+    private function addHostHeader(UriInterface $uri, ?Headers $headers): Headers
     {
         if ($headers instanceof Headers) {
-            $headers->addHeader(Header::fromField(Host::fromUri($uri)));
+            $headers->add(Header::fromField(Host::fromUri($uri)));
         } else {
             $headers = Headers::fromFields([Host::fromUri($uri)]);
         }
@@ -319,7 +319,7 @@ class Request extends Message implements RequestInterface
     }
 
     /**
-     * Checks request method is valid
+     * Checks for valid request methods
      *
      * @param string $method
      * @throws InvalidArgumentException
@@ -341,6 +341,9 @@ class Request extends Message implements RequestInterface
     }
 
     /**
+     * Parse the standard request target from the given Uri
+     *
+     * @param UriInterface $uri
      * @return string
      */
     private function parseRequestTarget(UriInterface $uri): string
