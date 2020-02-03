@@ -223,10 +223,7 @@ class Uri implements UriInterface
             $cloned->password = '';
         } else {
             $cloned->user = strval($user);
-
-            if ($password !== null) {
-                $cloned->password = strval($password);
-            }
+            $cloned->password = strval($password) ?? '';
         }
 
         return $cloned;
@@ -243,6 +240,7 @@ class Uri implements UriInterface
 
         $cloned = clone $this;
         $cloned->host = strtolower($host);
+        $cloned->assertIsValid();
 
         return $cloned;
     }
@@ -313,13 +311,15 @@ class Uri implements UriInterface
 
     /**
      * @throws InvalidArgumentException
+     * @see https://mathiasbynens.be/demo/url-regex gruber v2
      */
     private function assertIsValid(): void
     {
         $uri = $this->__toString();
+        $pattern = "#(?i)\b((?:[a-z][\w-]+:(?:/{1,3}|[a-z0-9%])|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:'\".,<>?«»“”‘’]))#iS";
 
-        if (!filter_var($uri, FILTER_VALIDATE_URL)) {
-            throw new InvalidArgumentException('Url is invalid: ' . $uri);
+        if (preg_match($pattern, $uri) !== 1) {
+            throw new InvalidArgumentException('Uri is invalid: ' . $uri);
         }
     }
 }

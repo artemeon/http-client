@@ -65,6 +65,7 @@ class StreamTest extends TestCase
 
     /**
      * @test
+     * @runInSeparateProcess
      */
     public function __construct_ResourceIsInvalid_ThrowsException()
     {
@@ -148,6 +149,7 @@ class StreamTest extends TestCase
 
     /**
      * @test
+     * @runInSeparateProcess
      */
     public function fromFile_ResourceIsInvalid_ThrowsException(): void
     {

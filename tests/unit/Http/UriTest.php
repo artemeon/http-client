@@ -17,7 +17,7 @@ use Artemeon\HttpClient\Exception\InvalidArgumentException;
 use Artemeon\HttpClient\Http\Uri;
 use PHPUnit\Framework\TestCase;
 
-class UrlTest extends TestCase
+class UriTest extends TestCase
 {
     /**
      * @test
@@ -146,5 +146,90 @@ class UrlTest extends TestCase
     {
         $url = Uri::fromString('http://www.artemeon.de:8080');
         self::assertSame('', $url->getPath());
+    }
+
+    /**
+     * @test
+     */
+    public function withScheme_IsNotString_ThroesException(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $url = Uri::fromString('http://www.artemeon.de:8080');
+        $url->withScheme(0);
+    }
+
+    /**
+     * @test
+     */
+    public function withScheme_ReturnsUpdatedInstance(): void
+    {
+        $url = Uri::fromString('http://www.artemeon.de:8080');
+        $cloned = $url->withScheme('FTP');
+
+        self::assertNotSame($url, $cloned);
+        self::assertSame('ftp', $cloned->getScheme());
+        self::assertSame('ftp://www.artemeon.de:8080', $cloned->__toString());
+    }
+
+    /**
+     * @test
+     */
+    public function withUserInfo_EmptyUserString_RemovesUserData(): void
+    {
+        $url = Uri::fromString('http://dietmar.simons:password@www.artemeon.de:8080');
+        $cloned = $url->withUserInfo('');
+
+        self::assertNotSame($url, $cloned);
+        self::assertSame('http://www.artemeon.de:8080', $cloned->__toString());
+        self::assertEmpty($cloned->getUserInfo());
+    }
+
+    /**
+     * @test
+     */
+    public function withUserInfo_WithUserString_SetsValidUserInfo(): void
+    {
+        $url = Uri::fromString('http://dietmar.simons:password@www.artemeon.de');
+        $cloned = $url->withUserInfo('user');
+
+        self::assertNotSame($url, $cloned);
+        self::assertSame('http://user@www.artemeon.de', $cloned->__toString());
+        self::assertSame('user', $cloned->getUserInfo());
+    }
+
+    /**
+     * @test
+     */
+    public function withUserInfo_WithUserStringAndPassword_SetsValidUserInfo(): void
+    {
+        $url = Uri::fromString('http://dietmar.simons:password@www.artemeon.de');
+        $cloned = $url->withUserInfo('user', 'password');
+
+        self::assertNotSame($url, $cloned);
+        self::assertSame('http://user:password@www.artemeon.de', $cloned->__toString());
+        self::assertSame('user:password', $cloned->getUserInfo());
+    }
+
+    /**
+     * @test
+     */
+    public function withHost_IsNotString_ThrowsException(): void
+    {
+        $url = Uri::fromString('http://dietmar.simons:password@www.artemeon.de');
+        $this->expectException(InvalidArgumentException::class);
+
+        $url->withHost(123);
+    }
+
+    /**
+     * @test
+     */
+    public function withHost_IsUpperCase_WillConvertedToLoweCase(): void
+    {
+        $url = Uri::fromString('http://www.artemeon.de');
+        $cloned = $url->withHost('ARTEMEON.COM');
+
+        self::assertNotSame($url, $cloned);
+        self::assertSame('artemeon.com', $cloned->getHost());
     }
 }

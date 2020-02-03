@@ -164,6 +164,76 @@ class HeadersTest extends TestCase
     /**
      * @test
      */
+    public function isEmpty_FieldExists_ReturnsTrue(): void
+    {
+        $expected = Header::fromString(HeaderField::AUTHORIZATION, '');
+        $this->headers->add($expected);
+
+        self::assertTrue($this->headers->isEmpty(HeaderField::AUTHORIZATION));
+    }
+
+    /**
+     * @test
+     */
+    public function isEmpty_FieldDoesNotExists_ReturnsTrue(): void
+    {
+        $expected = Header::fromString(HeaderField::AUTHORIZATION, 'some-credentials');
+        $this->headers->add($expected);
+
+        self::assertTrue($this->headers->isEmpty('does-not-exists'));
+    }
+
+
+    /**
+     * @test
+     */
+    public function isEmpty_FieldExistsCaseIncentive_ReturnsTrue(): void
+    {
+        $expected = Header::fromString('Authorization', '');
+        $this->headers->add($expected);
+
+        self::assertTrue($this->headers->isEmpty('AUTHoriZATION'));
+    }
+
+    /**
+     * @test
+     */
+    public function remove_FieldDoesNotExists_DoesNothing(): void
+    {
+        $expected = Header::fromField(UserAgent::fromString());
+        $this->headers->add($expected);
+        $this->headers->remove('does-not-exists');
+
+        self::assertCount(1 , $this->headers);
+    }
+
+    /**
+     * @test
+     */
+    public function remove_FieldExists_RemovesField(): void
+    {
+        $expected = Header::fromField(UserAgent::fromString());
+        $this->headers->add($expected);
+        $this->headers->remove(HeaderField::USER_AGENT);
+
+        self::assertCount(0 , $this->headers);
+    }
+
+    /**
+     * @test
+     */
+    public function remove_FieldExistsCaseIncentive_RemovesField(): void
+    {
+        $expected = Header::fromField(UserAgent::fromString());
+        $this->headers->add($expected);
+        $this->headers->remove('USER-AGENT');
+
+        self::assertCount(0 , $this->headers);
+    }
+
+    /**
+     * @test
+     */
     public function getIterator_ReturnsArrayIterator(): void
     {
         $expected = Header::fromField(Authorization::forAuthBasic('john.doe', 'geheim'));

@@ -254,7 +254,7 @@ class Request extends Message implements RequestInterface
 
         if ($preserveHost === true) {
             // Update only if the Host header is missing or empty, and the new URI contains a host component
-            if ($cloned->headers->isEmpty(HeaderField::HOST) || !empty($uri->getHost())) {
+            if ($cloned->headers->isEmpty(HeaderField::HOST) && !empty($uri->getHost())) {
                 $cloned->headers->replace($newHost);
             }
         } elseif (!empty($uri->getHost())) {

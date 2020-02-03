@@ -44,7 +44,7 @@ class Header
      */
     public static function fromString(string $name, string $value): self
     {
-        return new self($name, [$value]);
+        return new self($name, [trim($value)]);
     }
 
     /**

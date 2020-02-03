@@ -134,7 +134,7 @@ abstract class Message implements MessageInterface
             foreach ($value as &$val) {
                 $val = trim($val);
 
-                if (!is_string($value)) {
+                if (!is_string($val)) {
                     throw new InvalidArgumentException('value must be an array of strings');
                 }
             }

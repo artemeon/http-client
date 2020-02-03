@@ -119,7 +119,7 @@ class Headers implements Countable, IteratorAggregate
         try {
             return empty($this->get($headerField)->getValue());
         } catch (InvalidArgumentException $e) {
-            return false;
+            return true;
         }
     }
 

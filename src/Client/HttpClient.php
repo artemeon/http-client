@@ -37,15 +37,15 @@ interface HttpClient
      * @param Request $request Request object to send
      * @param ClientOptions|null $clientOptions Optional client configuration object
      *
-     * @throws HttpClientException  Interface to catches all possible exceptions
-     * @throws InvalidArgumentException 1. All exception with invalid arguments
-     * @throws RuntimeException 2. All exception during runtime
+     * @throws HttpClientException  Interface to catch all possible exceptions
+     * @throws InvalidArgumentException 1. All exceptions with invalid arguments
+     * @throws RuntimeException 2. All exceptions during runtime
      * @throws TransferException 2.1 All exceptions during the request/response transfers
-     * @throws ConnectException 2.1.1 All exception on the network level like timeouts, etc.
+     * @throws ConnectException 2.1.1 All exceptions on the network level like timeouts, etc.
      * @throws ResponseException 2.1.2 All response exceptions
-     * @throws ServerResponseException 2.1.2.1 All response exception with 500 status codes
-     * @throws ClientResponseException 2.1.2.2 All response exception with 400 status codes
-     * @throws RedirectResponseException 2.1.2.3 All response exception with 300 status codes
+     * @throws ServerResponseException 2.1.2.1 All response exceptions with 500 status codes
+     * @throws ClientResponseException 2.1.2.2 All response exceptions with 400 status codes
+     * @throws RedirectResponseException 2.1.2.3 All response exceptions with 300 status codes
      */
     public function send(Request $request, ClientOptions $clientOptions = null): Response;
 }
