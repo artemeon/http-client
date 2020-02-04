@@ -259,7 +259,7 @@ class Uri implements UriInterface
     public function withHost($host): self
     {
         $cloned = clone $this;
-        $cloned->host = $this->filterHost($host);
+        $cloned->host = $cloned->filterHost($host);
 
         return $cloned;
     }
@@ -270,7 +270,7 @@ class Uri implements UriInterface
     public function withPort($port): self
     {
         $cloned = clone $this;
-        $cloned->port = $this->filterPort($port);
+        $cloned->port = $cloned->filterPort($port);
 
         return $cloned;
     }
@@ -285,7 +285,7 @@ class Uri implements UriInterface
         }
 
         $cloned = clone $this;
-        $cloned->path = $path;
+        $cloned->path = $cloned->filterPath($path);
 
         return $cloned;
     }
@@ -296,7 +296,7 @@ class Uri implements UriInterface
     public function withQuery($query): self
     {
         $cloned = clone $this;
-        $cloned->query = $this->filterQueryOrFragment($query);
+        $cloned->query = $cloned->filterQueryOrFragment($query);
 
         return $cloned;
     }
@@ -308,7 +308,7 @@ class Uri implements UriInterface
     public function withFragment($fragment): self
     {
         $cloned = clone $this;
-        $cloned->fragment = $this->filterQueryOrFragment($fragment);
+        $cloned->fragment = $cloned->filterQueryOrFragment($fragment);
 
         return $cloned;
     }
@@ -372,7 +372,7 @@ class Uri implements UriInterface
      */
     private function filterPath($path): string
     {
-        if (!\is_string($path)) {
+        if (!is_string($path)) {
             throw new InvalidArgumentException('path must be a string');
         }
 
@@ -391,7 +391,7 @@ class Uri implements UriInterface
      */
     private function filterQueryOrFragment($fragment): string
     {
-        if (!\is_string($fragment)) {
+        if (!is_string($fragment)) {
             throw new InvalidArgumentException('fragment must be a string');
         }
 
