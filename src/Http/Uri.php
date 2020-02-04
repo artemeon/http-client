@@ -45,6 +45,27 @@ class Uri implements UriInterface
     /** @var string */
     private $fragment = '';
 
+    /** @var string */
+    private const UNRESERVED = 'a-zA-Z0-9_\-\.~';
+
+    /** @var string */
+    private const DELIMITER = '!\$&\'\(\)\*\+,;=';
+
+    /** @var int[] */
+    private const STANDARD_PORTS = [
+        'http' => 80,
+        'https' => 443,
+        'ftp' => 21,
+        'gopher' => 70,
+        'nntp' => 119,
+        'news' => 119,
+        'telnet' => 23,
+        'tn3270' => 23,
+        'imap' => 143,
+        'pop' => 110,
+        'ldap' => 389,
+    ];
+
     /**
      * Url constructor.
      *
@@ -54,16 +75,14 @@ class Uri implements UriInterface
     private function __construct(string $uri)
     {
         if ($uri !== '') {
-            $this->query = parse_url($uri, PHP_URL_QUERY) ?? '';
-            $this->scheme = strtolower(parse_url($uri, PHP_URL_SCHEME) ?? '');
-            $this->host = strtolower(parse_url($uri, PHP_URL_HOST) ?? '');
-            $this->port = parse_url($uri, PHP_URL_PORT);
-            $this->fragment = parse_url($uri, PHP_URL_FRAGMENT) ?? '';
+            $this->query = $this->filterQueryOrFragment(parse_url($uri, PHP_URL_QUERY) ?? '');
+            $this->scheme = $this->filterScheme(parse_url($uri, PHP_URL_SCHEME) ?? '');
+            $this->host = $this->filterHost(parse_url($uri, PHP_URL_HOST) ?? '');
+            $this->port = $this->filterPort(parse_url($uri, PHP_URL_PORT) ?? null);
+            $this->fragment = $this->filterQueryOrFragment(parse_url($uri, PHP_URL_FRAGMENT) ?? '');
+            $this->path = $this->filterPath(parse_url($uri, PHP_URL_PATH) ?? '');
             $this->user = parse_url($uri, PHP_URL_USER) ?? '';
             $this->password = parse_url($uri, PHP_URL_PASS) ?? '';
-            $this->path = parse_url($uri, PHP_URL_PATH) ?? '';
-
-            $this->assertIsValid();
         }
     }
 
@@ -115,6 +134,10 @@ class Uri implements UriInterface
      */
     public function getPort(): ?int
     {
+        if ($this->isStandardPort($this->scheme, $this->port)) {
+            return null;
+        }
+
         return $this->port;
     }
 
@@ -123,8 +146,8 @@ class Uri implements UriInterface
      */
     public function getUserInfo(): string
     {
-        if (strlen($this->user) > 0) {
-            if (strlen($this->password) > 0) {
+        if ($this->user !== '') {
+            if ($this->password !== '') {
                 return $this->user . ':' . $this->password;
             }
             return $this->user;
@@ -161,21 +184,21 @@ class Uri implements UriInterface
      */
     public function __toString(): string
     {
-        $uri = (strlen($this->getScheme()) > 0) ? $this->getScheme() . ':' : '';
+        $uri = ($this->getScheme() !== '') ? $this->getScheme() . ':' : '';
 
-        if (strlen($this->getAuthority()) > 0) {
+        if ($this->getAuthority() !== '') {
             $uri .= '//' . $this->getAuthority();
         }
 
-        if (strlen($this->getPath()) > 0) {
+        if ($this->getPath() !== '') {
             $uri .= $this->getPath();
         }
 
-        if (strlen($this->getQuery()) > 0) {
+        if ($this->getQuery() !== '') {
             $uri .= '?' . $this->getQuery();
         }
 
-        if (strlen($this->getFragment()) > 0) {
+        if ($this->getFragment() !== '') {
             $uri .= '#' . $this->getFragment();
         }
 
@@ -187,9 +210,9 @@ class Uri implements UriInterface
      */
     public function getAuthority(): string
     {
-        $authority = ($this->port === null) ? $this->host : $this->host . ':' . $this->port;
+        $authority = ($this->getPort() === null) ? $this->host : $this->host . ':' . $this->port;
 
-        if (strlen($this->getUserInfo()) > 0) {
+        if ($this->getUserInfo() !== '') {
             return $this->getUserInfo() . '@' . $authority;
         }
 
@@ -201,13 +224,10 @@ class Uri implements UriInterface
      */
     public function withScheme($scheme): self
     {
-        if (!is_string($scheme)) {
-            throw new InvalidArgumentException('scheme must be a lowercase string');
-        }
+        $this->filterScheme($scheme);
 
         $cloned = clone $this;
         $cloned->scheme = strtolower($scheme);
-        $cloned->assertIsValid();
 
         return $cloned;
     }
@@ -217,12 +237,12 @@ class Uri implements UriInterface
      */
     public function withUserInfo($user, $password = null): self
     {
-        $cloned = clone $this;
         $user = trim(strval($user));
         $password = trim(strval($password));
+        $cloned = clone $this;
 
         // Empty string for the user is equivalent to removing user
-        if (strlen($user) === 0) {
+        if ($user === '') {
             $cloned->user = '';
             $cloned->password = '';
         } else {
@@ -238,13 +258,8 @@ class Uri implements UriInterface
      */
     public function withHost($host): self
     {
-        if (!is_string($host)) {
-            throw new InvalidArgumentException('host must be a string value');
-        }
-
         $cloned = clone $this;
-        $cloned->host = strtolower($host);
-        $cloned->assertIsValid();
+        $cloned->host = $this->filterHost($host);
 
         return $cloned;
     }
@@ -254,18 +269,8 @@ class Uri implements UriInterface
      */
     public function withPort($port): self
     {
-        if ($port !== null) {
-            if (!is_int($port)) {
-                throw new InvalidArgumentException('port must be a integer value');
-            }
-
-            if ($port < 0 || $port > 65535) {
-                throw new InvalidArgumentException("port: $port must be in a range between 0 and 65535");
-            }
-        }
-
         $cloned = clone $this;
-        $cloned->port = $port;
+        $cloned->port = $this->filterPort($port);
 
         return $cloned;
     }
@@ -281,7 +286,6 @@ class Uri implements UriInterface
 
         $cloned = clone $this;
         $cloned->path = $path;
-        $cloned->assertIsValid();
 
         return $cloned;
     }
@@ -291,37 +295,136 @@ class Uri implements UriInterface
      */
     public function withQuery($query): self
     {
-        if (!is_string($query)) {
-            throw new InvalidArgumentException('query must be a string value');
-        }
-
         $cloned = clone $this;
-        $cloned->query = $query;
-        $cloned->assertIsValid();
+        $cloned->query = $this->filterQueryOrFragment($query);
 
         return $cloned;
     }
 
     /**
      * @inheritDoc
+     * @throws InvalidArgumentException
      */
     public function withFragment($fragment): self
     {
         $cloned = clone $this;
-        $cloned->fragment = strval($fragment);
+        $cloned->fragment = $this->filterQueryOrFragment($fragment);
 
         return $cloned;
     }
 
     /**
+     * Filter and validate the port
+     *
+     * @param $port
      * @throws InvalidArgumentException
      */
-    private function assertIsValid(): void
+    private function filterPort($port): ?int
     {
-        $uri = $this->__toString();
+        if ($port !== null) {
+            if (!is_int($port)) {
+                throw new InvalidArgumentException('port must be a integer value');
+            }
 
-        if (parse_url($uri) === false) {
-            throw new InvalidArgumentException('Uri is invalid: ' . $uri);
+            if ($port < 0 || $port > 65535) {
+                throw new InvalidArgumentException("port: $port must be in a range between 0 and 65535");
+            }
         }
+
+        return $port;
+    }
+
+    /**
+     * Filter and validate the scheme
+     *
+     * @param $scheme
+     * @throws InvalidArgumentException
+     */
+    private function filterScheme($scheme): string
+    {
+        if (!is_string($scheme)) {
+            throw new InvalidArgumentException('scheme must be a lowercase string');
+        }
+
+        return strtolower(trim($scheme));
+    }
+
+    /**
+     * Filter and validate the host
+     *
+     * @param $host
+     * @throws InvalidArgumentException
+     */
+    private function filterHost($host): string
+    {
+        if (!is_string($host)) {
+            throw new InvalidArgumentException('host must be a string value');
+        }
+
+        return strtolower(trim($host));
+    }
+
+    /**
+     * Filter, validate and encode the path
+     *
+     * @param $path
+     * @throws InvalidArgumentException
+     */
+    private function filterPath($path): string
+    {
+        if (!\is_string($path)) {
+            throw new InvalidArgumentException('path must be a string');
+        }
+
+        return preg_replace_callback(
+            '/(?:[^' . self::UNRESERVED . self::DELIMITER . '%:@\/]++|%(?![A-Fa-f0-9]{2}))/',
+            [$this, 'encode'],
+            $path
+        );
+    }
+
+    /**
+     * * Filter, validate and encode the query or fragment
+     *
+     * @param $fragment
+     * @throws InvalidArgumentException
+     */
+    private function filterQueryOrFragment($fragment): string
+    {
+        if (!\is_string($fragment)) {
+            throw new InvalidArgumentException('fragment must be a string');
+        }
+
+        return preg_replace_callback(
+            '/(?:[^' . self::UNRESERVED . self::DELIMITER . '%:@\/\?]++|%(?![A-Fa-f0-9]{2}))/',
+            [$this, 'encode'],
+            $fragment
+        );
+    }
+
+    /**
+     * Checks if the given scheme uses their standard port
+     *
+     * @param string $scheme
+     * @param int $port
+     */
+    private function isStandardPort(string $scheme, ?int $port): bool
+    {
+        if (!isset(self::STANDARD_PORTS[$scheme])) {
+            return false;
+        }
+
+        return self::STANDARD_PORTS[$scheme] === $port;
+    }
+
+    /**
+     * Encoding for path, query and fragment characters
+     *
+     * @param string[] $matches
+     * @return string
+     */
+    private function encode(array $matches): string
+    {
+        return rawurlencode($matches[0]);
     }
 }
