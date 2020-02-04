@@ -32,15 +32,6 @@ class UriTest extends TestCase
     /**
      * @test
      */
-    public function fromString_UrlIsInvalid_ThrowsException(): void
-    {
-        $this->expectException(InvalidArgumentException::class);
-        Uri::fromString('dfg;docs//invalid');
-    }
-
-    /**
-     * @test
-     */
     public function getQuery_ReturnExpectedValue(): void
     {
         $expected = 'user=john.doe';

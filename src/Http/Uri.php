@@ -53,10 +53,10 @@ class Uri implements UriInterface
      */
     private function __construct(string $uri)
     {
-        if (!empty(trim($uri))) {
+        if ($uri !== '') {
             $this->query = parse_url($uri, PHP_URL_QUERY) ?? '';
             $this->scheme = strtolower(parse_url($uri, PHP_URL_SCHEME) ?? '');
-            $this->host = parse_url($uri, PHP_URL_HOST) ?? '';
+            $this->host = strtolower(parse_url($uri, PHP_URL_HOST) ?? '');
             $this->port = parse_url($uri, PHP_URL_PORT);
             $this->fragment = parse_url($uri, PHP_URL_FRAGMENT) ?? '';
             $this->user = parse_url($uri, PHP_URL_USER) ?? '';
@@ -315,18 +315,12 @@ class Uri implements UriInterface
 
     /**
      * @throws InvalidArgumentException
-     * @see https://mathiasbynens.be/demo/url-regex gruber v2
      */
     private function assertIsValid(): void
     {
         $uri = $this->__toString();
-        $pattern = "#(?i)\b((?:[a-z][\w-]+:(?:/{1,3}|[a-z0-9%])|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:'\".,<>?«»“”‘’]))#iS";
 
-        if ($uri === '/') {
-            return;
-        }
-
-        if (preg_match($pattern, $uri) !== 1) {
+        if (parse_url($uri) === false) {
             throw new InvalidArgumentException('Uri is invalid: ' . $uri);
         }
     }
