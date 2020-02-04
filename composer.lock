@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "71a0e3e3524edfd90121c4f1f64b4293",
+    "content-hash": "30a9faa068f2af7e0125d5c37d8f09e2",
     "packages": [
         {
             "name": "guzzlehttp/guzzle",
@@ -585,6 +585,61 @@
             ],
             "description": "Library for handling version information and constraints",
             "time": "2018-07-08T19:19:57+00:00"
+        },
+        {
+            "name": "php-http/psr7-integration-tests",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/php-http/psr7-integration-tests.git",
+                "reference": "78af0f859fd2b77f63b2561790f54b37eb2bb1c3"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/php-http/psr7-integration-tests/zipball/78af0f859fd2b77f63b2561790f54b37eb2bb1c3",
+                "reference": "78af0f859fd2b77f63b2561790f54b37eb2bb1c3",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.2",
+                "phpunit/phpunit": "^8.0",
+                "psr/http-message": "^1.0"
+            },
+            "require-dev": {
+                "guzzlehttp/psr7": "^1.4",
+                "laminas/laminas-diactoros": "^2.1",
+                "nyholm/psr7": "^1.0",
+                "ringcentral/psr7": "^1.2",
+                "slim/psr7": "dev-master"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.0-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Http\\Psr7Test\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Tobias Nyholm",
+                    "email": "tobias.nyholm@gmail.com"
+                }
+            ],
+            "description": "Test suite for PSR7",
+            "homepage": "http://php-http.org",
+            "keywords": [
+                "psr-7",
+                "test"
+            ],
+            "time": "2020-01-08T08:52:57+00:00"
         },
         {
             "name": "php-mock/php-mock",
@@ -2119,7 +2174,9 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "php-http/psr7-integration-tests": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
