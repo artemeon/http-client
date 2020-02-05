@@ -91,6 +91,23 @@ class Header
     }
 
     /**
+     * Add an array of values to the header, doublets will be skipped
+     *
+     * @param string $values The string value to add
+     */
+    public function addValues(array $values): void
+    {
+        foreach ($values as $value) {
+            // Skipp possible doublet
+            if (in_array($value, $this->values)) {
+                continue;
+            }
+
+            $this->values[] = $value;
+        }
+    }
+
+    /**
      * Returns all value of the http header field
      */
     public function getValues(): array

@@ -170,7 +170,11 @@ abstract class Message implements MessageInterface
         $cloned = clone $this;
 
         if ($cloned->headers->has($name)) {
-            $cloned->headers->get($name)->addValue($value);
+            if (is_array($value)) {
+                $cloned->headers->get($name)->addValues($value);
+            } else {
+                $cloned->headers->get($name)->addValue($value);
+            }
         } else {
             // Field does not exists, create new header
             $header = is_array($value) ? Header::fromArray($name, $value) : Header::fromString($name, $value);
