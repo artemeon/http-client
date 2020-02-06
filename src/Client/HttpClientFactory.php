@@ -24,7 +24,7 @@ use InvalidArgumentException;
 use Psr\Log\LoggerInterface;
 
 /**
- * Static factory class
+ * Static factory class for production environment
  */
 class HttpClientFactory
 {
@@ -62,34 +62,5 @@ class HttpClientFactory
         }
 
         return new LoggerDecorator($httpClient, $logger);
-    }
-
-    /**
-     * Named constructor to create an instance with a middleware to record transactions only for debugging purposes
-     *
-     * Example:
-     * $transactions = []
-     * HttpClientFactory::withMiddleware($transactions)->send($request);
-     *
-     * print_r($transactions[0]['request']);
-     * print_r($transactions[0]['response']);
-     * echo $transactions[0]['request']->getBody();
-     *
-     * @param array $transactions Empty array to 'record' all request and responses
-     */
-    public static function withTransactionMiddleware(array &$transactions): HttpClient
-    {
-        try {
-            $history = Middleware::history($transactions);
-            $handlerStack = HandlerStack::create();
-            $handlerStack->push($history);
-
-            return new ArtemeonHttpClient(
-                new GuzzleClient(['handler' => $handlerStack]),
-                new ClientOptionsConverter()
-            );
-        } catch (InvalidArgumentException $exception) {
-            throw RuntimeException::fromGuzzleException($exception);
-        }
     }
 }

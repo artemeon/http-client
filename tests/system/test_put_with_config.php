@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Artemeon\HttpClient\Tests\System;
 
-use Artemeon\HttpClient\Client\HttpClientFactory;
+use Artemeon\HttpClient\Client\HttpClientTestFactory;
 use Artemeon\HttpClient\Client\Options\ClientOptions;
 use Artemeon\HttpClient\Exception\HttpClientException;
 use Artemeon\HttpClient\Http\Body\Body;
@@ -23,12 +23,8 @@ use Artemeon\HttpClient\Http\Header\Fields\UserAgent;
 use Artemeon\HttpClient\Http\Header\Headers;
 use Artemeon\HttpClient\Http\Request;
 use Artemeon\HttpClient\Http\Uri;
-use GuzzleHttp\MessageFormatter;
 
 require '../../vendor/autoload.php';
-
-$transactions = [];
-$formatter = new MessageFormatter(MessageFormatter::DEBUG);
 
 try {
     $request = Request::forPut(
@@ -54,9 +50,8 @@ try {
     $clientOptions->optDisableSslVerification();
     $clientOptions->optSetTimeout(15);
 
-    HttpClientFactory::withTransactionMiddleware($transactions)->send($request, $clientOptions);
-
-    echo nl2br($formatter->format($transactions[0]['request'], $transactions[0]['response']));
+    HttpClientTestFactory::withTransactionLog()->send($request, $clientOptions);
+    HttpClientTestFactory::printTransactionLog();
 } catch (HttpClientException $exception) {
     print_r($exception);
 }

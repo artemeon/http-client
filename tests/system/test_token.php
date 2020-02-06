@@ -15,16 +15,31 @@ namespace Artemeon\HttpClient\Tests\System;
 
 use Artemeon\HttpClient\Client\Decorator\OAuth2\ClientCredentials;
 use Artemeon\HttpClient\Client\Decorator\OAuth2\ClientCredentialsDecorator;
-use Artemeon\HttpClient\Client\HttpClientFactory;
+use Artemeon\HttpClient\Client\HttpClientTestFactory;
 use Artemeon\HttpClient\Exception\HttpClientException;
+use Artemeon\HttpClient\Http\Header\Fields\ContentType;
+use Artemeon\HttpClient\Http\Header\Headers;
+use Artemeon\HttpClient\Http\MediaType;
 use Artemeon\HttpClient\Http\Request;
+use Artemeon\HttpClient\Http\Response;
 use Artemeon\HttpClient\Http\Uri;
-use GuzzleHttp\MessageFormatter;
+use Artemeon\HttpClient\Stream\Stream;
 
 require '../../vendor/autoload.php';
 
-$transactions = [];
-$formatter = new MessageFormatter(MessageFormatter::DEBUG);
+HttpClientTestFactory::mockResponses(
+    [
+        new Response(
+            200,
+            '1.1',
+            Stream::fromString(
+                '{"access_token": "PQtdWwDDESjpSyYnDAerj92O3sHWlZ", "expires_in": 7884000, "token_type": "Bearer", "scope": "read_suppliers"}'
+            ),
+            Headers::fromFields([ContentType::fromString(MediaType::JSON)])
+        ),
+        new Response(200, '1.1', Stream::fromString('It works')),
+    ]
+);
 
 try {
     $apiClient = ClientCredentialsDecorator::fromClientCredentials(
@@ -34,16 +49,15 @@ try {
             'your_client_secret',
             'read_suppliers'
         ),
-        HttpClientFactory::withTransactionMiddleware($transactions)
+        HttpClientTestFactory::withMockHandler()
     );
 
-    $apiClient->send(Request::forGet(Uri::fromString('https://api.lbbw-test.prospeum.com/api/v01/supplier/search/')));
-
-    foreach ($transactions as $transaction) {
-        echo nl2br($formatter->format($transaction['request'], $transaction['response']));
-    }
+    $response = $apiClient->send(
+        Request::forGet(Uri::fromString('https://api.lbbw-test.prospeum.com/api/v01/supplier/search/'))
+    );
+    echo $response->getBody()->__toString();
 } catch (HttpClientException $exception) {
-    foreach ($transactions as $transaction) {
-        echo nl2br($formatter->format($transaction['request'], $transaction['response'], $exception));
-    }
+    print_r($exception);
 }
+
+

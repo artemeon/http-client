@@ -13,19 +13,15 @@ declare(strict_types=1);
 
 namespace Artemeon\HttpClient\Tests\System;
 
-use Artemeon\HttpClient\Client\HttpClientFactory;
+use Artemeon\HttpClient\Client\HttpClientTestFactory;
 use Artemeon\HttpClient\Exception\HttpClientException;
 use Artemeon\HttpClient\Http\Body\Body;
 use Artemeon\HttpClient\Http\Body\Encoder\MultipartFormDataEncoder;
 use Artemeon\HttpClient\Http\Request;
 use Artemeon\HttpClient\Http\Uri;
 use Artemeon\HttpClient\Stream\Stream;
-use GuzzleHttp\MessageFormatter;
 
 require '../../vendor/autoload.php';
-
-$transactions = [];
-$formatter = new MessageFormatter(MessageFormatter::DEBUG);
 
 try {
     $request = Request::forPost(
@@ -38,9 +34,8 @@ try {
         )
     );
 
-    HttpClientFactory::withTransactionMiddleware($transactions)->send($request);
-
-    echo nl2br($formatter->format($transactions[0]['request'], $transactions[0]['response']));
+    HttpClientTestFactory::withTransactionLog()->send($request);
+    HttpClientTestFactory::printTransactionLog();
 } catch (HttpClientException $exception) {
     print_r($exception);
 }
