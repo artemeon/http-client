@@ -14,6 +14,9 @@ declare(strict_types=1);
 namespace Artemeon\HttpClient\Client\Decorator\OAuth2;
 
 use Artemeon\HttpClient\Client\Decorator\HttpClientDecorator;
+use Artemeon\HttpClient\Client\Decorator\OAuth2\Token\AccessToken;
+use Artemeon\HttpClient\Client\Decorator\OAuth2\Token\AccessTokenCache;
+use Artemeon\HttpClient\Client\Decorator\OAuth2\Token\InMemoryAccessTokenCache;
 use Artemeon\HttpClient\Client\HttpClient;
 use Artemeon\HttpClient\Client\Options\ClientOptions;
 use Artemeon\HttpClient\Exception\HttpClientException;
@@ -37,19 +40,23 @@ class ClientCredentialsDecorator extends HttpClientDecorator
     /** @var Request */
     private $accessTokenRequest;
 
-    /** @var AccessToken */
-    private $accessToken;
+    /** @var AccessTokenCache */
+    private $accessTokenCache;
 
     /**
      * ClientCredentialsDecorator constructor.
      *
      * @param HttpClient $httpClient The http client to decorate
-     * @param Request $request The http request object
+     * @param Request $accessTokenRequest The http request object
+     * @param AccessTokenCache $accessTokenCache Cache strategy to store the access token
      */
-    public function __construct(HttpClient $httpClient, Request $request)
-    {
-        $this->accessTokenRequest = $request;
-        $this->accessToken = null;
+    public function __construct(
+        HttpClient $httpClient,
+        Request $accessTokenRequest,
+        AccessTokenCache $accessTokenCache
+    ) {
+        $this->accessTokenRequest = $accessTokenRequest;
+        $this->accessTokenCache = $accessTokenCache;
 
         parent::__construct($httpClient);
     }
@@ -63,14 +70,20 @@ class ClientCredentialsDecorator extends HttpClientDecorator
      * @throws InvalidArgumentException
      */
     public static function fromClientCredentials(
-        Uri $uri,
         ClientCredentials $clientCredentials,
-        HttpClient $httpClient
+        Uri $uri,
+        HttpClient $httpClient,
+        AccessTokenCache $accessTokenCache = null
     ): self {
-        $body = Body::fromEncoder(FormUrlEncoder::fromArray($clientCredentials->toArray()));
-        $request = Request::forPost($uri, $body);
+        // Ensure default cache strategy
+        if ($accessTokenCache === null) {
+            $accessTokenCache = new InMemoryAccessTokenCache();
+        }
 
-        return new self($httpClient, $request);
+        $body = Body::fromEncoder(FormUrlEncoder::fromArray($clientCredentials->toArray()));
+        $accessTokenRequest = Request::forPost($uri, $body);
+
+        return new self($httpClient, $accessTokenRequest, $accessTokenCache);
     }
 
     /**
@@ -78,11 +91,12 @@ class ClientCredentialsDecorator extends HttpClientDecorator
      */
     public function send(Request $request, ClientOptions $clientOptions = null): Response
     {
-        if (!$this->accessToken instanceof AccessToken) {
-            $this->accessToken = $this->requestAccessToken($clientOptions);
+        if ($this->accessTokenCache->isExpired()) {
+            $this->accessTokenCache->add($this->requestAccessToken());
         }
 
-        $authorisation = Authorization::forAuthBearer($this->accessToken->getToken());
+        $accessToken = $this->accessTokenCache->get();
+        $authorisation = Authorization::forAuthBearer($accessToken->getToken());
         $requestWithAuthorisation = $request->withHeader($authorisation->getName(), $authorisation->getValue());
 
         return $this->httpClient->send($requestWithAuthorisation, $clientOptions);
