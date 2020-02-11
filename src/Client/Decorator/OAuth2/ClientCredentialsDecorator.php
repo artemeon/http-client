@@ -30,6 +30,7 @@ use Artemeon\HttpClient\Http\MediaType;
 use Artemeon\HttpClient\Http\Request;
 use Artemeon\HttpClient\Http\Response;
 use Artemeon\HttpClient\Http\Uri;
+use Exception;
 
 /**
  * Http client decorator to add transparent access tokens to requests. Fetches the 'Access Token' from
@@ -64,10 +65,12 @@ class ClientCredentialsDecorator extends HttpClientDecorator
     /**
      * Named constructor to create an instance based on the given ClientCredentials
      *
-     * @param Uri $uri The Uri object
      * @param ClientCredentials $clientCredentials The OAuth2 client credential object
+     * @param Uri $uri The Uri object
      * @param HttpClient $httpClient The http client to decorate
+     * @param AccessTokenCache|null $accessTokenCache
      * @throws InvalidArgumentException
+     * @throws RuntimeException
      */
     public static function fromClientCredentials(
         ClientCredentials $clientCredentials,
@@ -106,12 +109,13 @@ class ClientCredentialsDecorator extends HttpClientDecorator
      * Fetches the access token
      *
      * @param ClientOptions|null $clientOptions
+     * @throws RuntimeException
      */
     private function requestAccessToken(ClientOptions $clientOptions = null): AccessToken
     {
         try {
             $response = $this->httpClient->send($this->accessTokenRequest, $clientOptions);
-        } catch (HttpClientException $exception) {
+        } catch (HttpClientException | Exception $exception) {
             throw new RuntimeException("Cant request access token", 0, $exception);
         }
 
@@ -124,6 +128,7 @@ class ClientCredentialsDecorator extends HttpClientDecorator
      * Checks for a valid access token response with valid json body
      *
      * @param Response $response
+     * @throws RuntimeException
      */
     private function assertIsValidJsonResponse(Response $response): void
     {

@@ -39,6 +39,7 @@ class AccessToken
      * @param int $expires The expires in integer
      * @param string $type The type of authorization
      * @param string $scope The scope of the authorization
+     * @throws RuntimeException
      */
     private function __construct(string $token, int $expires, string $type, string $scope = '')
     {
@@ -58,6 +59,7 @@ class AccessToken
      * Named constructor to create an instance based on the given json encoded body string
      *
      * @param string $json Json encoded response string
+     * @throws RuntimeException
      */
     public static function fromJsonString(string $json): self
     {

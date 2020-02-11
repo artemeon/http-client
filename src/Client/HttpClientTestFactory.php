@@ -64,6 +64,8 @@ class HttpClientTestFactory
      * Example:
      * $httpClient = HttpClientTestFactory::withTransactionLog();
      * print_r(HttpClientTestFactory::getTransactionLog);
+     *
+     * @throws RuntimeException
      */
     public static function withTransactionLog(): HttpClient
     {
@@ -97,6 +99,8 @@ class HttpClientTestFactory
      * $response_1 = $client->send(Request::forGet(Uri::fromString('www.artemeon.de')));
      * $response_2 = $client->send(Request::forGet(Uri::fromString('www.artemeon.de')));
      * ```
+     *
+     * @throws RuntimeException
      */
     public static function withMockHandler(): HttpClient
     {

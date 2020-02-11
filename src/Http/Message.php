@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Artemeon\HttpClient\Http;
 
 use Artemeon\HttpClient\Exception\InvalidArgumentException;
+use Artemeon\HttpClient\Exception\RuntimeException;
 use Artemeon\HttpClient\Http\Header\Header;
 use Artemeon\HttpClient\Http\Header\Headers;
 use Artemeon\HttpClient\Stream\Stream;
@@ -67,6 +68,7 @@ abstract class Message implements MessageInterface
 
     /**
      * @inheritDoc
+     * @throws RuntimeException
      */
     public function getBody(): StreamInterface
     {

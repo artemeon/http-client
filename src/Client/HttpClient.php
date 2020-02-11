@@ -46,6 +46,7 @@ interface HttpClient
      * @throws ServerResponseException 2.1.2.1 All response exceptions with 500 status codes
      * @throws ClientResponseException 2.1.2.2 All response exceptions with 400 status codes
      * @throws RedirectResponseException 2.1.2.3 All response exceptions with 300 status codes
+     * @throws \InvalidArgumentException
      */
     public function send(Request $request, ClientOptions $clientOptions = null): Response;
 }

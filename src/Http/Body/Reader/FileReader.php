@@ -33,6 +33,7 @@ class FileReader implements Reader
      *
      * @param StreamInterface $stream The content stream
      * @param string $file The file path with file extension
+     * @throws RuntimeException
      */
     public function __construct(StreamInterface $stream, string $file)
     {

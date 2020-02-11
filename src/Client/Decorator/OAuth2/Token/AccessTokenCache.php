@@ -20,6 +20,8 @@ interface AccessTokenCache
 {
     /**
      * Add token to the cache
+     *
+     * @param AccessToken $accessToken
      */
     public function add(AccessToken $accessToken);
 

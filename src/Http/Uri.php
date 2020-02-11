@@ -376,11 +376,9 @@ class Uri implements UriInterface
             throw new InvalidArgumentException('path must be a string');
         }
 
-        return preg_replace_callback(
-            "/(?:[^" . self::UNRESERVED . self::DELIMITER . "%:@\/]++|%(?![A-Fa-f0-9]{2}))/",
-            [$this, 'encode'],
-            $path
-        );
+        $pattern = "/(?:[^" . self::UNRESERVED . self::DELIMITER . "%:@\/]++|%(?![A-Fa-f0-9]{2}))/";
+
+        return preg_replace_callback($pattern, [$this, 'encode'], $path);
     }
 
     /**
@@ -395,11 +393,9 @@ class Uri implements UriInterface
             throw new InvalidArgumentException('fragment must be a string');
         }
 
-        return preg_replace_callback(
-            '/(?:[^' . self::UNRESERVED . self::DELIMITER . '%:@\/\?]++|%(?![A-Fa-f0-9]{2}))/',
-            [$this, 'encode'],
-            $fragment
-        );
+        $pattern = '/(?:[^' . self::UNRESERVED . self::DELIMITER . '%:@\/\?]++|%(?![A-Fa-f0-9]{2}))/';
+
+        return preg_replace_callback($pattern, [$this, 'encode'], $fragment);
     }
 
     /**
