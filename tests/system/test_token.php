@@ -43,12 +43,12 @@ HttpClientTestFactory::mockResponses(
 
 try {
     $apiClient = ClientCredentialsDecorator::fromClientCredentials(
-        Uri::fromString('https://api.lbbw-test.prospeum.com/o/token/'),
         ClientCredentials::fromHeaderAuthorization(
             'yoour_client_id',
             'your_client_secret',
             'read_suppliers'
         ),
+        Uri::fromString('https://api.lbbw-test.prospeum.com/o/token/'),
         HttpClientTestFactory::withMockHandler()
     );
 

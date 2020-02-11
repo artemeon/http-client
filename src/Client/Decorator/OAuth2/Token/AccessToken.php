@@ -11,7 +11,7 @@
 
 declare(strict_types=1);
 
-namespace Artemeon\HttpClient\Client\Decorator\OAuth2;
+namespace Artemeon\HttpClient\Client\Decorator\OAuth2\Token;
 
 use Artemeon\HttpClient\Exception\RuntimeException;
 
