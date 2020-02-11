@@ -13,6 +13,8 @@ declare(strict_types=1);
 
 namespace Artemeon\HttpClient\Http\Header;
 
+use Artemeon\HttpClient\Exception\InvalidArgumentException;
+
 /**
  * Value object for parsed http header fields
  */
@@ -29,11 +31,12 @@ class Header
      *
      * @param string $name Name of the http header field
      * @param string[] $values Array of header values
+     * @throws InvalidArgumentException
      */
     private function __construct(string $name, array $values)
     {
-        $this->name = trim($name);
-        $this->values = $values;
+        $this->name = $this->assertName($name);
+        $this->values = $this->assertValues($values);
     }
 
     /**
@@ -41,10 +44,11 @@ class Header
      *
      * @param string $name Name of the http header field
      * @param string $value Value of the http header field
+     * @throws InvalidArgumentException
      */
     public static function fromString(string $name, string $value): self
     {
-        return new self($name, [trim($value)]);
+        return new self($name, [$value]);
     }
 
     /**
@@ -52,13 +56,10 @@ class Header
      *
      * @param string $name Name of the http header field
      * @param array $values Array of header values
+     * @throws InvalidArgumentException
      */
     public static function fromArray(string $name, array $values)
     {
-        foreach ($values as &$value) {
-            $value = trim(strval($value));
-        }
-
         return new self($name, $values);
     }
 
@@ -66,6 +67,7 @@ class Header
      * Named constructor to create an instance based on the HeaderField object
      *
      * @param HeaderField $headerField
+     * @throws InvalidArgumentException
      */
     public static function fromField(HeaderField $headerField): self
     {
@@ -93,7 +95,7 @@ class Header
     /**
      * Add an array of values to the header, doublets will be skipped
      *
-     * @param string $values The string value to add
+     * @param array $values The string value to add
      */
     public function addValues(array $values): void
     {
@@ -121,5 +123,48 @@ class Header
     public function getValue(): string
     {
         return implode(', ', $this->values);
+    }
+
+    /**
+     * Check and normalize header values
+     *
+     * @param array $values
+     * @throws InvalidArgumentException
+     */
+    private function assertValues(array $values): array
+    {
+        if (empty($values)) {
+            throw new InvalidArgumentException('Header values can not be empty');
+        }
+
+        foreach ($values as &$value) {
+            $value = trim($value);
+
+            if ((!is_numeric($value) && !is_string($value)) || 1 !== preg_match(
+                    "@^[ \t\x21-\x7E\x80-\xFF]*$@",
+                    strval($value)
+                )) {
+                throw new InvalidArgumentException('Header values must be RFC 7230 compatible strings.');
+            }
+        }
+
+        return $values;
+    }
+
+    /**
+     * Check vor valid header name
+     *
+     * @param string $name
+     * @throws InvalidArgumentException
+     */
+    private function assertName(string $name): string
+    {
+        $name = trim($name);
+
+        if (1 !== preg_match("@^[!#$%&'*+.^_`|~0-9A-Za-z-]+$@", $name)) {
+            throw new InvalidArgumentException('Header name must be an RFC 7230 compatible string.');
+        }
+
+        return $name;
     }
 }

@@ -13,7 +13,6 @@ declare(strict_types=1);
 
 namespace Artemeon\HttpClient\Http;
 
-use Artemeon\HttpClient\Exception\HttpClientException;
 use Artemeon\HttpClient\Exception\InvalidArgumentException;
 use Artemeon\HttpClient\Http\Header\Header;
 use Artemeon\HttpClient\Http\Header\Headers;
@@ -52,7 +51,7 @@ abstract class Message implements MessageInterface
     }
 
     /**
-     * Return the Header collection
+     * Return the Header collection as an array
      */
     public function getHeaders(): array
     {
@@ -120,31 +119,15 @@ abstract class Message implements MessageInterface
 
     /**
      * @inheritDoc
-     * @throws HttpClientException
      */
     public function withHeader($name, $value): self
     {
-        if (!is_string($name)) {
-            throw new InvalidArgumentException('name must be string value');
-        }
-
         $cloned = clone $this;
+        $cloned->assertHeader($name, $value);
 
         if (is_array($value)) {
-            foreach ($value as &$val) {
-                $val = trim($val);
-
-                if (!is_string($val)) {
-                    throw new InvalidArgumentException('value must be an array of strings');
-                }
-            }
-
             $cloned->headers->replace(Header::fromArray($name, $value));
         } else {
-            if (!is_string($value)) {
-                throw new InvalidArgumentException('value must be an string');
-            }
-
             $cloned->headers->replace(Header::fromString($name, $value));
         }
 
@@ -168,6 +151,7 @@ abstract class Message implements MessageInterface
     public function withAddedHeader($name, $value): self
     {
         $cloned = clone $this;
+        $cloned->assertHeader($name, $value);
 
         if ($cloned->headers->has($name)) {
             if (is_array($value)) {
@@ -208,5 +192,29 @@ abstract class Message implements MessageInterface
         $cloned->body = $body;
 
         return $cloned;
+    }
+
+    /**
+     * Checks the header data
+     *
+     * @param $name
+     * @param $value
+     * @throws InvalidArgumentException
+     */
+    private function assertHeader($name, $value): void
+    {
+        if (!is_string($name) || $name === '') {
+            throw new InvalidArgumentException('Header must be a non empty string');
+        }
+
+        if (is_array($value)) {
+            foreach ($value as &$val) {
+                if (!is_string($val) && !is_numeric($val)) {
+                    throw new InvalidArgumentException('Values must a string or numeric');
+                }
+            }
+        } elseif (!is_string($value) && !is_numeric($value)) {
+            throw new InvalidArgumentException('Values must a string or numeric');
+        }
     }
 }

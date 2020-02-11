@@ -57,6 +57,9 @@ class Request extends Message implements RequestInterface
     /** @var string */
     public const METHOD_PATCH = 'PATCH';
 
+    /** @var string */
+    public const METHOD_HEAD = 'HEAD';
+
     /**
      * Request constructor.
      *
@@ -244,6 +247,7 @@ class Request extends Message implements RequestInterface
 
     /**
      * @inheritDoc
+     * @throws InvalidArgumentException
      */
     public function withUri(UriInterface $uri, $preserveHost = false): self
     {
@@ -333,9 +337,10 @@ class Request extends Message implements RequestInterface
             self::METHOD_PATCH,
             self::METHOD_POST,
             self::METHOD_PUT,
+            self::METHOD_HEAD,
         ];
 
-        if (!in_array($method, $validMethods)) {
+        if (!in_array(strtoupper($method), $validMethods)) {
             throw new InvalidArgumentException("method: $method is invalid");
         }
     }

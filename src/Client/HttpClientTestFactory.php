@@ -39,9 +39,6 @@ class HttpClientTestFactory
 
     /**
      * HttpClientMockFactory constructor.
-     *
-     * @param array $transactionLog
-     * @param MockHandler $mockHandler
      */
     public function __construct()
     {
@@ -67,8 +64,6 @@ class HttpClientTestFactory
      * Example:
      * $httpClient = HttpClientTestFactory::withTransactionLog();
      * print_r(HttpClientTestFactory::getTransactionLog);
-     *
-     * @param array $transactions Empty array to 'record' all request and responses
      */
     public static function withTransactionLog(): HttpClient
     {
@@ -117,6 +112,12 @@ class HttpClientTestFactory
         }
     }
 
+    /**
+     * Register the responses to mock
+     *
+     * @param array $responses
+     * @throws InvalidArgumentException
+     */
     public static function mockResponses(array $responses): void
     {
         $instance = self::getInstance();
@@ -148,8 +149,8 @@ class HttpClientTestFactory
 
         foreach (self::getTransactionLog() as $transaction) {
             $result = nl2br($formatter->format($transaction['request'], $transaction['response']));
-        };
+        }
 
-        echo  $result;
+        echo $result;
     }
 }

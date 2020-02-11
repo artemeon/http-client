@@ -20,6 +20,9 @@
         <testsuite name="Unit Tests">
             <directory>unit</directory>
         </testsuite>
+        <testsuite name="Intergration Tests">
+            <directory>integration</directory>
+        </testsuite>
     </testsuites>
 
     <filter>
