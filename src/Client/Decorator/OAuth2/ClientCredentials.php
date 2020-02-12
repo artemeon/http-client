@@ -51,7 +51,7 @@ class ClientCredentials
      * @param string $clientSecret The 'client_secret'
      * @param string $scope The scope
      */
-    public static function fromHeaderAuthorization(string $clientId, string $clientSecret, string $scope = ''): self
+    public static function forHeaderAuthorization(string $clientId, string $clientSecret, string $scope = ''): self
     {
         return new self($clientId, $clientSecret, $scope);
     }

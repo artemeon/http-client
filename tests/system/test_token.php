@@ -43,7 +43,7 @@ HttpClientTestFactory::mockResponses(
 
 try {
     $apiClient = ClientCredentialsDecorator::fromClientCredentials(
-        ClientCredentials::fromHeaderAuthorization(
+        ClientCredentials::forHeaderAuthorization(
             'yoour_client_id',
             'your_client_secret',
             'read_suppliers'

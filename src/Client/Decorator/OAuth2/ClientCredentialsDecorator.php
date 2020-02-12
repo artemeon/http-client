@@ -68,7 +68,8 @@ class ClientCredentialsDecorator extends HttpClientDecorator
      * @param ClientCredentials $clientCredentials The OAuth2 client credential object
      * @param Uri $uri The Uri object
      * @param HttpClient $httpClient The http client to decorate
-     * @param AccessTokenCache|null $accessTokenCache
+     * @param AccessTokenCache|null $accessTokenCache AccessTokenCache implementation
+     *
      * @throws InvalidArgumentException
      * @throws RuntimeException
      */
