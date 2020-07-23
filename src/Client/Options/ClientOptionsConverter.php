@@ -33,6 +33,10 @@ class ClientOptionsConverter
         $options[GuzzleRequestOptions::ALLOW_REDIRECTS] = $this->createAllowRedirectsKey($clientOptions);
         $options[GuzzleRequestOptions::TIMEOUT] = $clientOptions->getTimeout();
 
+        if ($clientOptions->getSink() !== null) {
+            $options[GuzzleRequestOptions::SINK] = $clientOptions->getSink();
+        }
+
         return $options;
     }
 

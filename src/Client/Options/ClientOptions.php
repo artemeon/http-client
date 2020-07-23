@@ -36,6 +36,9 @@ class ClientOptions
     /** @var bool */
     private $addReferer;
 
+    /** @var resource */
+    private $sink;
+
     /**
      * Named constructor to create an instance based on the default values
      */
@@ -48,6 +51,7 @@ class ClientOptions
         $instance->customCaBundlePath = '';
         $instance->maxRedirects = 5;
         $instance->addReferer = true;
+        $instance->sink = null;
 
         return $instance;
     }
@@ -161,5 +165,21 @@ class ClientOptions
     public function hasCustomCaBundlePath(): bool
     {
         return !empty($this->getCustomCaBundlePath());
+    }
+
+    /**
+     * @param resource $sink
+     */
+    public function setSink($sink): void
+    {
+        $this->sink = $sink;
+    }
+
+    /**
+     * @return resource
+     */
+    public function getSink()
+    {
+        return $this->sink;
     }
 }
