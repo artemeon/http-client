@@ -25,18 +25,11 @@ use Psr\Http\Message\StreamInterface;
  */
 class Body
 {
-    /** @var int */
-    private $length;
-
-    /** @var string */
-    private $mimeType;
-
-    /** @var string */
-    private $stream;
+    private int $length;
+    private string $mimeType;
+    private StreamInterface $stream;
 
     /**
-     * Body constructor.
-     *
      * @param string $mimeType The mime type of the body content stream
      * @param StreamInterface $stream The body content stream
      */

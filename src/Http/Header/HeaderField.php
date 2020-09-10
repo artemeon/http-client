@@ -33,7 +33,7 @@ interface HeaderField
     /** @var string */
     public const CONTENT_LENGTH = 'Content-Length';
 
-    /** @var string  */
+    /** @var string */
     public const HOST = 'Host';
 
     /**
@@ -44,5 +44,5 @@ interface HeaderField
     /**
      * Returns the value of the field
      */
-    public function getValue(): string ;
+    public function getValue(): string;
 }

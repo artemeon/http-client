@@ -24,18 +24,11 @@ use Psr\Http\Message\StreamInterface;
  */
 class MultipartFormDataEncoder implements Encoder
 {
-    /** @var string */
-    private $boundary;
-
-    /** @var AppendableStream */
-    private $multiPartStream;
-
-    /** @var string */
-    private $crlf = "\r\n";
+    private string $boundary;
+    private AppendableStream $multiPartStream;
+    private string $crlf = "\r\n";
 
     /**
-     * MultipartFormDataEncoder constructor.
-     *
      * @param string $boundary Boundary string 7bit US-ASCII
      * @throws RuntimeException
      */

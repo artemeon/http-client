@@ -45,15 +45,10 @@ use Psr\Http\Message\ResponseInterface as GuzzleResponse;
  */
 class ArtemeonHttpClient implements HttpClient
 {
-    /** @var GuzzleClient */
-    private $guzzleClient;
-
-    /** @var ClientOptionsConverter */
-    private $clientOptionsConverter;
+    private GuzzleClient $guzzleClient;
+    private ClientOptionsConverter $clientOptionsConverter;
 
     /**
-     * GuzzleHttpClient constructor.
-     *
      * @param GuzzleClient $guzzleClient
      * @param ClientOptionsConverter $clientOptionsConverter
      */

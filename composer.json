@@ -31,6 +31,7 @@
     "php": ">=7.4",
     "guzzlehttp/guzzle": "~6.0",
     "ext-json": "*",
+    "ext-http": "*",
     "ext-mbstring": "*",
     "psr/log": "^1.1"
   },

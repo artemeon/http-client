@@ -20,13 +20,10 @@ use Artemeon\HttpClient\Http\Header\HeaderField;
  */
 class ContentType implements HeaderField
 {
-    /** @var string */
-    private $mimeType;
+    private string $mimeType;
 
     /**
-     * ContentType constructor.
-     *
-     * @param string $mimeType
+     * @param string $mimeType Mime type string
      */
     private function __construct(string $mimeType)
     {

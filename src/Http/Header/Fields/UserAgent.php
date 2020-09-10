@@ -20,15 +20,10 @@ use Artemeon\HttpClient\Http\Header\HeaderField;
  */
 class UserAgent implements HeaderField
 {
-    /** @var string */
-    private $userAgent;
-
-    /** @var string */
-    public const default = "Artemeon/HttpClient/Guzzle6";
+    private string $userAgent;
+    public const DEFAULT = "Artemeon/HttpClient/Guzzle6";
 
     /**
-     * UserAgent constructor.
-     *
      * @param string $userAgent The user agent string
      */
     public function __construct(string $userAgent)
@@ -41,7 +36,7 @@ class UserAgent implements HeaderField
      *
      * @param string $userAgent User agent string
      */
-    public static function fromString(string $userAgent = self::default): self
+    public static function fromString(string $userAgent = self::DEFAULT): self
     {
         return new self($userAgent);
     }

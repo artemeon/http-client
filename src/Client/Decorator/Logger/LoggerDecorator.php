@@ -28,15 +28,8 @@ use Psr\Log\LoggerInterface;
  */
 class LoggerDecorator extends HttpClientDecorator
 {
-    /** @var LoggerInterface */
-    private $logger;
+    private LoggerInterface $logger;
 
-    /**
-     * HttpClientLogDecorator constructor.
-     *
-     * @param LoggerInterface $logger
-     * @param HttpClient $httpClient
-     */
     public function __construct(HttpClient $httpClient, LoggerInterface $logger)
     {
         $this->logger = $logger;

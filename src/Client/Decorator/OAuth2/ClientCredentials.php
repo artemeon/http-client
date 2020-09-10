@@ -20,14 +20,9 @@ use function utf8_encode;
  */
 class ClientCredentials
 {
-    /** @var string */
-    private $clientId;
-
-    /** @var string */
-    private $clientSecret;
-
-    /** @var string */
-    private $scope;
+    private string $clientId;
+    private string $clientSecret;
+    private string $scope;
 
     /**
      * ClientCredentials constructor.

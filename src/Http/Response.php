@@ -23,15 +23,10 @@ use Psr\Http\Message\StreamInterface;
  */
 class Response extends Message implements ResponseInterface
 {
-    /** @var int */
-    private $statusCode;
-
-    /** @var string */
-    private $reasonPhrase;
+    private int $statusCode;
+    private string $reasonPhrase;
 
     /**
-     * Response constructor.
-     *
      * @param int $statusCode The http status code
      * @param string $version The http version number without http prefix
      * @param StreamInterface $body The body content stream

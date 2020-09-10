@@ -23,8 +23,7 @@ use Artemeon\HttpClient\Http\Response;
  */
 abstract class HttpClientDecorator implements HttpClient
 {
-    /** @var HttpClient */
-    protected $httpClient;
+    protected HttpClient $httpClient;
 
     /**
      * HttpClientDecorator constructor.

@@ -20,15 +20,10 @@ use Artemeon\HttpClient\Exception\InvalidArgumentException;
  */
 class Header
 {
-    /** @var string */
-    private $name;
-
-    /** @var string[] */
-    private $values;
+    private string $name;
+    private array $values;
 
     /**
-     * Header constructor.
-     *
      * @param string $name Name of the http header field
      * @param string[] $values Array of header values
      * @throws InvalidArgumentException
@@ -58,7 +53,7 @@ class Header
      * @param array $values Array of header values
      * @throws InvalidArgumentException
      */
-    public static function fromArray(string $name, array $values)
+    public static function fromArray(string $name, array $values): self
     {
         return new self($name, $values);
     }
@@ -139,11 +134,10 @@ class Header
 
         foreach ($values as &$value) {
             $value = trim($value);
+            $isInvalidValue = !is_numeric($value) && !is_string($value);
+            $containsInvalidCharacters = preg_match("@^[ \t\x21-\x7E\x80-\xFF]*$@", (string)$value) !== 1;
 
-            if ((!is_numeric($value) && !is_string($value)) || 1 !== preg_match(
-                    "@^[ \t\x21-\x7E\x80-\xFF]*$@",
-                    strval($value)
-                )) {
+            if ($isInvalidValue || $containsInvalidCharacters) {
                 throw new InvalidArgumentException('Header values must be RFC 7230 compatible strings.');
             }
         }

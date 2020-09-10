@@ -25,13 +25,9 @@ class JsonEncoder implements Encoder
 {
     /** @var array|object */
     private $value;
-
-    /** @var int */
-    private $options;
+    private int $options;
 
     /**
-     * JsonEncoder constructor.
-     *
      * @param mixed $value String, object or array to encode
      * @param int $options Json encode options: @see https://www.php.net/manual/de/function.json-encode.php
      */
