@@ -37,6 +37,9 @@ class ClientOptionsConverter
         if ($clientOptions->getSink() !== null) {
             $options[GuzzleRequestOptions::SINK] = $clientOptions->getSink();
         }
+        if ($clientOptions->getHandler() !== null) {
+            $options['handler'] = $clientOptions->getHandler();
+        }
 
         return $options;
     }
