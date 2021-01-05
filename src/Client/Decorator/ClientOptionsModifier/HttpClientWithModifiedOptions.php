@@ -2,8 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Artemeon\HttpClient\Client\Decorator;
+namespace Artemeon\HttpClient\Client\Decorator\ClientOptionsModifier;
 
+use Artemeon\HttpClient\Client\Decorator\HttpClientDecorator;
 use Artemeon\HttpClient\Client\HttpClient;
 use Artemeon\HttpClient\Client\Options\ClientOptions;
 use Artemeon\HttpClient\Client\Options\ClientOptionsModifier;
