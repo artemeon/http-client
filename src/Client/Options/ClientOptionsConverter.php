@@ -32,9 +32,13 @@ class ClientOptionsConverter
         $options[GuzzleRequestOptions::VERIFY] = $this->createVerifyKey($clientOptions);
         $options[GuzzleRequestOptions::ALLOW_REDIRECTS] = $this->createAllowRedirectsKey($clientOptions);
         $options[GuzzleRequestOptions::TIMEOUT] = $clientOptions->getTimeout();
+        $options[GuzzleRequestOptions::HTTP_ERRORS] = !$clientOptions->isNonSuccessfulHttpStatusAllowed();
 
         if ($clientOptions->getSink() !== null) {
             $options[GuzzleRequestOptions::SINK] = $clientOptions->getSink();
+        }
+        if ($clientOptions->getHandler() !== null) {
+            $options['handler'] = $clientOptions->getHandler();
         }
 
         return $options;
