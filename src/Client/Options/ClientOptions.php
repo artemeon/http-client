@@ -39,6 +39,11 @@ class ClientOptions
     /** @var resource */
     private $sink;
 
+    private bool $httpErrors;
+
+    /** @var callable|null */
+    private $handler;
+
     /**
      * Named constructor to create an instance based on the default values
      */
@@ -52,6 +57,8 @@ class ClientOptions
         $instance->maxRedirects = 5;
         $instance->addReferer = true;
         $instance->sink = null;
+        $instance->httpErrors = true;
+        $instance->handler = null;
 
         return $instance;
     }
@@ -181,5 +188,25 @@ class ClientOptions
     public function getSink()
     {
         return $this->sink;
+    }
+
+    public function isNonSuccessfulHttpStatusAllowed(): bool
+    {
+        return $this->httpErrors;
+    }
+
+    public function optAllowNonSuccessfulHttpStatus(): void
+    {
+        $this->httpErrors = false;
+    }
+
+    public function getHandler(): ?callable
+    {
+        return $this->handler;
+    }
+
+    public function setHandler(callable $handler): void
+    {
+        $this->handler = $handler;
     }
 }
