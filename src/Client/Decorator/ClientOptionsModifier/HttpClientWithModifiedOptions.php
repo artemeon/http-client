@@ -13,8 +13,7 @@ use Artemeon\HttpClient\Http\Response;
 
 final class HttpClientWithModifiedOptions extends HttpClientDecorator
 {
-    /** @var ClientOptionsModifier */
-    private $clientOptionsModifier;
+    private ClientOptionsModifier $clientOptionsModifier;
 
     public function __construct(HttpClient $httpClient, ClientOptionsModifier $clientOptionsModifier)
     {

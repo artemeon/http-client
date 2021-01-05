@@ -8,8 +8,7 @@ use Closure;
 
 final class InlineClientOptionsModifier implements ClientOptionsModifier
 {
-    /** @var Closure */
-    private $callback;
+    private Closure $callback;
 
     private function __construct(Closure $callback)
     {
