@@ -20,8 +20,8 @@ use Artemeon\HttpClient\Http\Header\HeaderField;
  */
 class UserAgent implements HeaderField
 {
-    private string $userAgent;
     public const DEFAULT = "Artemeon/HttpClient/Guzzle6";
+    private string $userAgent;
 
     /**
      * @param string $userAgent The user agent string

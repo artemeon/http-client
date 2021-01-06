@@ -30,7 +30,7 @@ class HttpClientTestFactory
 {
     private array $transactionLog = [];
     private MockHandler $mockHandler;
-    private static ?HttpClientTestFactory $instance = null;
+    private static HttpClientTestFactory $instance;
 
     public function __construct()
     {
@@ -43,7 +43,7 @@ class HttpClientTestFactory
      */
     private static function getInstance(): self
     {
-        if (self::$instance === null) {
+        if (!isset(self::$instance)) {
             self::$instance = new self();
         }
 

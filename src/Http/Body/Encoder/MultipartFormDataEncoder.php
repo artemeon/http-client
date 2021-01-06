@@ -24,9 +24,9 @@ use Psr\Http\Message\StreamInterface;
  */
 class MultipartFormDataEncoder implements Encoder
 {
+    private const CRLF = "\r\n";
     private string $boundary;
     private AppendableStream $multiPartStream;
-    private string $crlf = "\r\n";
 
     /**
      * @param string $boundary Boundary string 7bit US-ASCII
@@ -60,11 +60,11 @@ class MultipartFormDataEncoder implements Encoder
     {
         $encoding = $this->detectEncoding($value);
 
-        $part = '--' . $this->boundary . $this->crlf;
-        $part .= sprintf('Content-Disposition: form-data; name="%s"', $fieldName) . $this->crlf;
-        $part .= sprintf('Content-Type: text/plain; charset=%s', $encoding) . $this->crlf;
-        $part .= $this->crlf;
-        $part .= $value . $this->crlf;
+        $part = '--' . $this->boundary . self::CRLF;
+        $part .= sprintf('Content-Disposition: form-data; name="%s"', $fieldName) . self::CRLF;
+        $part .= sprintf('Content-Type: text/plain; charset=%s', $encoding) . self::CRLF;
+        $part .= self::CRLF;
+        $part .= $value . self::CRLF;
 
         $this->multiPartStream->appendStream(Stream::fromString($part));
 
@@ -83,14 +83,14 @@ class MultipartFormDataEncoder implements Encoder
     {
         $fileExtension = preg_replace('/^.*\.([^.]+)$/', '$1', $fileName);
 
-        $part = '--' . $this->boundary . $this->crlf;
-        $part .= sprintf('Content-Disposition: form-data; name="%s"; filename="%s"', $name, $fileName) . $this->crlf;
-        $part .= sprintf('Content-Type: %s', MediaType::mapFileExtensionToMimeType($fileExtension)) . $this->crlf;
-        $part .= $this->crlf;
+        $part = '--' . $this->boundary . self::CRLF;
+        $part .= sprintf('Content-Disposition: form-data; name="%s"; filename="%s"', $name, $fileName) . self::CRLF;
+        $part .= sprintf('Content-Type: %s', MediaType::mapFileExtensionToMimeType($fileExtension)) . self::CRLF;
+        $part .= self::CRLF;
 
         $this->multiPartStream->appendStream(Stream::fromString($part));
         $this->multiPartStream->appendStream($fileContent);
-        $this->multiPartStream->appendStream(Stream::fromString($this->crlf));
+        $this->multiPartStream->appendStream(Stream::fromString(self::CRLF));
 
         return $this;
     }
@@ -101,7 +101,7 @@ class MultipartFormDataEncoder implements Encoder
     public function encode(): StreamInterface
     {
         // Add the end boundary
-        $this->multiPartStream->appendStream(Stream::fromString('--' . $this->boundary . '--' . $this->crlf));
+        $this->multiPartStream->appendStream(Stream::fromString('--' . $this->boundary . '--' . self::CRLF));
 
         return $this->multiPartStream;
     }
@@ -125,7 +125,7 @@ class MultipartFormDataEncoder implements Encoder
         $encoding = mb_detect_encoding($value);
 
         if ($encoding === false) {
-            throw new RuntimeException("Cant't detect encoding for multipart");
+            throw new RuntimeException("Can't detect encoding for multipart");
         }
 
         return $encoding;
