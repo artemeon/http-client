@@ -25,15 +25,10 @@ use Artemeon\HttpClient\Http\Header\HeaderField;
  */
 class Authorization implements HeaderField
 {
-    /** @var string */
-    private $type;
-
-    /** @var string */
-    private $credentials;
+    private string $type;
+    private string $credentials;
 
     /**
-     * Authorisation constructor.
-     *
      * @param string $type The type of the http authorization
      * @param string $credentials The credentials string
      */

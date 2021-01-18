@@ -21,12 +21,9 @@ use Psr\Http\Message\UriInterface;
  */
 class Host implements HeaderField
 {
-    /** @var string */
-    private $host;
+    private string $host;
 
     /**
-     * ContentType constructor.
-     *
      * @param string $host The host string
      */
     private function __construct(string $host)

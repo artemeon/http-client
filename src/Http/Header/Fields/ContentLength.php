@@ -20,12 +20,9 @@ use Artemeon\HttpClient\Http\Header\HeaderField;
  */
 class ContentLength implements HeaderField
 {
-    /** @var int */
-    private $contentLength;
+    private int $contentLength;
 
     /**
-     * ContentLength constructor.
-     *
      * @param int $contentLength
      */
     public function __construct(int $contentLength)

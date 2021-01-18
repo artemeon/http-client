@@ -22,15 +22,10 @@ use Psr\Http\Message\StreamInterface;
  */
 class FileReader implements Reader
 {
-    /** @var StreamInterface */
-    private $stream;
-
-    /** @var string */
-    private $file;
+    private StreamInterface $stream;
+    private string $file;
 
     /**
-     * FileReader constructor.
-     *
      * @param StreamInterface $stream The content stream
      * @param string $file The file path with file extension
      * @throws RuntimeException

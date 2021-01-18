@@ -38,11 +38,8 @@ use Exception;
  */
 class ClientCredentialsDecorator extends HttpClientDecorator
 {
-    /** @var Request */
-    private $accessTokenRequest;
-
-    /** @var AccessTokenCache */
-    private $accessTokenCache;
+    private Request $accessTokenRequest;
+    private AccessTokenCache  $accessTokenCache;
 
     /**
      * ClientCredentialsDecorator constructor.

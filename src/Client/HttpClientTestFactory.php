@@ -28,18 +28,10 @@ use Psr\Http\Message\ResponseInterface;
  */
 class HttpClientTestFactory
 {
-    /** @var array */
-    private $transactionLog = [];
+    private array $transactionLog = [];
+    private MockHandler $mockHandler;
+    private static HttpClientTestFactory $instance;
 
-    /** @var MockHandler */
-    private $mockHandler;
-
-    /** @var HttpClientTestFactory */
-    private static $instance;
-
-    /**
-     * HttpClientMockFactory constructor.
-     */
     public function __construct()
     {
         $this->transactionLog = [];
@@ -51,7 +43,7 @@ class HttpClientTestFactory
      */
     private static function getInstance(): self
     {
-        if (self::$instance === null) {
+        if (!isset(self::$instance)) {
             self::$instance = new self();
         }
 

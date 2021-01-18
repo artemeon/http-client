@@ -24,15 +24,7 @@ use IteratorAggregate;
 class Headers implements Countable, IteratorAggregate
 {
     /** @var Header[] */
-    private $headers;
-
-    /**
-     * Headers constructor.
-     */
-    private function __construct()
-    {
-        $this->headers = [];
-    }
+    private array $headers = [];
 
     /**
      * Named constructor to create an instance based on the given array of HeaderField objects

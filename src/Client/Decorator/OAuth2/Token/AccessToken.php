@@ -20,17 +20,10 @@ use Artemeon\HttpClient\Exception\RuntimeException;
  */
 class AccessToken
 {
-    /** @var string */
-    private $token;
-
-    /** @var int */
-    private $expires;
-
-    /** @var string */
-    private $type;
-
-    /** @var string */
-    private $scope;
+    private string $token;
+    private int $expires;
+    private string $type;
+    private string $scope;
 
     /**
      * AccessToken constructor.
@@ -66,10 +59,10 @@ class AccessToken
         $data = json_decode($json, true);
 
         return new self(
-            isset($data['access_token']) ? (string) $data['access_token'] : '',
-            isset($data['expires_in']) ? (int) $data['expires_in'] : 0,
-            isset($data['token_type']) ? (string) $data['token_type'] : '',
-            isset($data['scope']) ? (string) $data['scope'] : ''
+            (string) $data['access_token'] ?? '',
+            (int) $data['expires_in'] ?? 0,
+            (string) $data['token_type'] ?? '',
+            (string) $data['scope'] ?? ''
         );
     }
 

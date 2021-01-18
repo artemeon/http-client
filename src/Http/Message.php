@@ -28,18 +28,11 @@ use Psr\Http\Message\StreamInterface;
  */
 abstract class Message implements MessageInterface
 {
-    /** @var Headers */
-    protected $headers;
-
-    /** @var StreamInterface */
-    protected $body;
-
-    /** @var string */
-    protected $version;
+    protected Headers $headers;
+    protected ?StreamInterface $body;
+    protected string $version;
 
     /**
-     * Message constructor.
-     *
      * @param Headers|null $headers Optional: Headers collection or null
      * @param StreamInterface|null $body Optional: Body object or null
      * @param string $version Optional: Http protocol version string

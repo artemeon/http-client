@@ -13,16 +13,15 @@ declare(strict_types=1);
 
 namespace Artemeon\HttpClient\Client\Decorator\OAuth2\Token;
 
+use http\Exception\RuntimeException;
+
 /**
  * Class to store AccessToken in memory
  */
 class InMemoryAccessTokenCache implements AccessTokenCache
 {
-    /** @var AccessToken */
-    private $token;
-
-    /** @var int */
-    private $expireTime;
+    private ?AccessToken $token = null;
+    private int $expireTime;
 
     /**
      * @inheritDoc
@@ -38,6 +37,10 @@ class InMemoryAccessTokenCache implements AccessTokenCache
      */
     public function get(): AccessToken
     {
+        if ($this->isExpired()) {
+            throw new RuntimeException('Token expired or not set');
+        }
+
         return $this->token;
     }
 

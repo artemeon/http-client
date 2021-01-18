@@ -22,8 +22,7 @@ use Exception;
  */
 class TransferException extends RuntimeException
 {
-    /** @var Request */
-    protected $request;
+    protected Request $request;
 
     /**
      * Named constructor to create an instance based on the given request object

@@ -26,14 +26,11 @@ class Stream implements AppendableStream
     private $resource;
 
     /**
-     * @var array[]
      * @see https://www.php.net/manual/de/function.stream-get-meta-data
      */
-    private $metaData;
+    private array $metaData;
 
     /**
-     * Stream constructor.
-     *
      * @param resource $resource
      * @throws RuntimeException
      */

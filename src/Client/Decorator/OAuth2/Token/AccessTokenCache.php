@@ -13,6 +13,8 @@ declare(strict_types=1);
 
 namespace Artemeon\HttpClient\Client\Decorator\OAuth2\Token;
 
+use http\Exception\RuntimeException;
+
 /**
  * Interface to realize several strategy's to store AccessToken
  */
@@ -27,6 +29,8 @@ interface AccessTokenCache
 
     /**
      * Get token from the cache
+     *
+     * @throws RuntimeException
      */
     public function get(): AccessToken;
 

@@ -18,23 +18,12 @@ namespace Artemeon\HttpClient\Client\Options;
  */
 class ClientOptions
 {
-    /** @var bool */
-    private $allowRedirects;
-
-    /** @var int */
-    private $timeout;
-
-    /** @var bool */
-    private $verifySsl;
-
-    /** @var string string */
-    private $customCaBundlePath;
-
-    /** @var int */
-    private $maxRedirects;
-
-    /** @var bool */
-    private $addReferer;
+    private bool $allowRedirects;
+    private int $timeout;
+    private bool $verifySsl;
+    private string $customCaBundlePath;
+    private int $maxRedirects;
+    private bool $addReferer;
 
     /** @var resource */
     private $sink;

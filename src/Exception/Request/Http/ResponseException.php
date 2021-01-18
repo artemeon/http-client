@@ -23,11 +23,8 @@ use Exception;
  */
 class ResponseException extends TransferException
 {
-    /** @var Response */
-    protected $response;
-
-    /** @var int */
-    protected $statusCode;
+    protected Response $response;
+    protected int $statusCode;
 
     /**
      * Named constructor to create an instance based on the response of the failed request

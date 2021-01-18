@@ -18,22 +18,11 @@ namespace Artemeon\HttpClient\Http\Header;
  */
 interface HeaderField
 {
-    /** @var string */
     public const AUTHORIZATION = 'Authorization';
-
-    /** @var string */
     public const REFERER = "Referer";
-
-    /** @var string */
     public const USER_AGENT = "User-Agent";
-
-    /** @var string */
     public const CONTENT_TYPE = 'Content-Type';
-
-    /** @var string */
     public const CONTENT_LENGTH = 'Content-Length';
-
-    /** @var string  */
     public const HOST = 'Host';
 
     /**
@@ -44,5 +33,5 @@ interface HeaderField
     /**
      * Returns the value of the field
      */
-    public function getValue(): string ;
+    public function getValue(): string;
 }

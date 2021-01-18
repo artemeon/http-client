@@ -21,37 +21,17 @@ use Psr\Http\Message\UriInterface;
  */
 class Uri implements UriInterface
 {
-    /** @var string */
-    private $query = '';
-
-    /** @var string */
-    private $scheme = '';
-
-    /** @var string */
-    private $host = '';
-
-    /** @var string */
-    private $user = '';
-
-    /** @var string */
-    private $password = '';
-
-    /** @var int|null */
-    private $port;
-
-    /** @var string */
-    private $path = '';
-
-    /** @var string */
-    private $fragment = '';
-
-    /** @var string */
+    private string $query = '';
+    private string $scheme = '';
+    private string $host = '';
+    private string $user = '';
+    private string $password = '';
+    private ?int $port;
+    private string $path = '';
+    private string $fragment = '';
     private const UNRESERVED = 'a-zA-Z0-9_\-\.~';
-
-    /** @var string */
     private const DELIMITER = '!\$&\'\(\)\*\+,;=';
 
-    /** @var int[] */
     private const STANDARD_PORTS = [
         'http' => 80,
         'https' => 443,
@@ -67,8 +47,6 @@ class Uri implements UriInterface
     ];
 
     /**
-     * Url constructor.
-     *
      * @param string $uri Url string with protocol
      * @throws InvalidArgumentException
      */

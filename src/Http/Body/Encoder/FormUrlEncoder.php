@@ -22,8 +22,7 @@ use Psr\Http\Message\StreamInterface;
  */
 class FormUrlEncoder implements Encoder
 {
-    /** @var array */
-    private $formValues;
+    private array $formValues;
 
     /**
      * FormUrlEncoder constructor.
