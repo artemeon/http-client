@@ -16,7 +16,6 @@ namespace Artemeon\HttpClient\Client;
 use Artemeon\HttpClient\Client\Options\ClientOptions;
 use Artemeon\HttpClient\Client\Options\ClientOptionsConverter;
 use Artemeon\HttpClient\Exception\HttpClientException;
-use Artemeon\HttpClient\Exception\InvalidArgumentException;
 use Artemeon\HttpClient\Exception\Request\Http\ClientResponseException;
 use Artemeon\HttpClient\Exception\Request\Http\RedirectResponseException;
 use Artemeon\HttpClient\Exception\Request\Http\ResponseException;
@@ -122,6 +121,10 @@ class ArtemeonHttpClient implements HttpClient
             throw RuntimeException::fromGuzzleException($previous);
         }
 
+        if ($response === null) {
+           throw RuntimeException::fromString("Subsystem response is null");
+        }
+
         return $this->convertFromGuzzleResponse($response);
     }
 
@@ -129,7 +132,7 @@ class ArtemeonHttpClient implements HttpClient
      * Converts a GuzzleResponse object to our Response object
      *
      * @param GuzzleResponse $guzzleResponse
-     * @throws InvalidArgumentException
+     * @return Response
      */
     private function convertFromGuzzleResponse(GuzzleResponse $guzzleResponse): Response
     {
