@@ -37,9 +37,4 @@ class RuntimeException extends \RuntimeException implements HttpClientException
     {
         return new self($exception->getMessage(), 0, $exception);
     }
-
-    public static function fromString(string $message): self
-    {
-        return new self($message);
-    }
 }
