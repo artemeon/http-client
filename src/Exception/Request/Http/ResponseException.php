@@ -23,20 +23,20 @@ use Exception;
  */
 class ResponseException extends TransferException
 {
-    protected Response $response;
+    protected ?Response $response;
     protected int $statusCode;
 
     /**
      * Named constructor to create an instance based on the response of the failed request
      *
-     * @param Response $response The failed response
+     * @param ?Response $response The failed response if exists
      * @param Request $request The failed request
      * @param string $message The error message
      * @param Exception|null $previous The previous exception
      * @return ResponseException
      */
     public static function fromResponse(
-        Response $response,
+        ?Response $response,
         Request $request,
         string $message,
         Exception $previous = null
@@ -52,9 +52,17 @@ class ResponseException extends TransferException
     /**
      * Returns the Response object
      */
-    public function getResponse(): Response
+    public function getResponse(): ?Response
     {
         return $this->response;
+    }
+
+    /**
+     * Checks if we have a response object
+     */
+    public function hasResponse(): bool
+    {
+        return $this->response instanceof Response;
     }
 
     /**
