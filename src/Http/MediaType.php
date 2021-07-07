@@ -49,7 +49,7 @@ class MediaType
     public const UNKNOWN = "application/octet-stream";
 
     /** @var string[] */
-    private static $extensionToType = [
+    private static array $extensionToType = [
         'json' => self::JSON,
         'pdf' => self::PDF,
         'xml' => self::XML,
