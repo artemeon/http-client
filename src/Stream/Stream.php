@@ -22,7 +22,6 @@ use Artemeon\HttpClient\Exception\RuntimeException;
  */
 class Stream implements AppendableStream
 {
-    /** @var resource */
     private $resource;
 
     /**
@@ -85,7 +84,7 @@ class Stream implements AppendableStream
      *
      * @param string $file Path to the file
      * @param string $mode Stream Modes: @see https://www.php.net/manual/de/function.fopen.php
-     * @throws RuntimeException;
+     * @throws RuntimeException
      */
     public static function fromFile(string $file, string $mode = 'r+'): self
     {

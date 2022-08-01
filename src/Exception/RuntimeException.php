@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Artemeon\HttpClient\Exception;
 
 use Exception;
+use GuzzleHttp\Exception\GuzzleException;
 
 /**
  * Base class to catch all possible runtime exceptions
@@ -30,10 +31,12 @@ use Exception;
  */
 class RuntimeException extends \RuntimeException implements HttpClientException
 {
-    /**
-     * @param Exception $exception Previous guzzle exception
-     */
-    public static function fromGuzzleException(Exception $exception): self
+    public static function fromPreviousException(Exception $exception): self
+    {
+        return new self($exception->getMessage(), 0, $exception);
+    }
+
+    public static function fromGuzzleException(GuzzleException $exception): self
     {
         return new self($exception->getMessage(), 0, $exception);
     }
