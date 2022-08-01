@@ -16,19 +16,22 @@ namespace Artemeon\HttpClient\Tests\System;
 use Artemeon\HttpClient\Client\HttpClientTestFactory;
 use Artemeon\HttpClient\Exception\HttpClientException;
 use Artemeon\HttpClient\Http\Body\Body;
-use Artemeon\HttpClient\Http\Body\Reader\FileReader;
-use Artemeon\HttpClient\Http\Header\Fields\Authorization;
-use Artemeon\HttpClient\Http\Header\Headers;
+use Artemeon\HttpClient\Http\Body\Encoder\MultipartFormDataEncoder;
 use Artemeon\HttpClient\Http\Request;
 use Artemeon\HttpClient\Http\Uri;
+use Artemeon\HttpClient\Stream\Stream;
 
 require '../../vendor/autoload.php';
 
 try {
     $request = Request::forPost(
         Uri::fromString('http://apache/endpoints/upload.php'),
-        Body::fromReader(FileReader::fromFile('../fixtures/encoder/generated.json')),
-        Headers::fromFields([Authorization::forAuthBasic('John.Doe', 'geheim')])
+        Body::fromEncoder(
+            MultipartFormDataEncoder::create()
+                ->addFieldPart('user', 'John.Doe')
+                ->addFieldPart('password', utf8_encode('geheim'))
+                ->addFilePart('user_image', 'header_logo.png', Stream::fromFile('../Fixtures/reader/header_logo.png'))
+        )
     );
 
     HttpClientTestFactory::withTransactionLog()->send($request);
@@ -36,3 +39,4 @@ try {
 } catch (HttpClientException $exception) {
     print_r($exception);
 }
+

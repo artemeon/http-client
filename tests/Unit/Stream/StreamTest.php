@@ -11,7 +11,7 @@
 
 declare(strict_types=1);
 
-namespace Artemeon\HttpClient\Tests\Stream;
+namespace Artemeon\HttpClient\Tests\Unit\Stream;
 
 use Artemeon\HttpClient\Exception\RuntimeException;
 use Artemeon\HttpClient\Stream\Stream;
@@ -49,7 +49,7 @@ class StreamTest extends TestCase
         $this->filesystem = vfsStream::setup('stream');
 
         vfsStream::copyFromFileSystem(
-            __DIR__ . '/../../fixtures/encoder',
+            __DIR__ . '/../../Fixtures/encoder',
             $this->filesystem
         );
     }

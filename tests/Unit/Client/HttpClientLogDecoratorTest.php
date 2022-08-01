@@ -11,14 +11,13 @@
 
 declare(strict_types=1);
 
-namespace Artemeon\HttpClient\Tests\Client;
+namespace Artemeon\HttpClient\Tests\Unit\Client;
 
 use Artemeon\HttpClient\Client\Decorator\Logger\LoggerDecorator;
 use Artemeon\HttpClient\Client\HttpClient;
 use Artemeon\HttpClient\Client\Options\ClientOptions;
 use Artemeon\HttpClient\Exception\HttpClientException;
 use Artemeon\HttpClient\Exception\InvalidArgumentException;
-use Artemeon\HttpClient\Exception\RuntimeException;
 use Artemeon\HttpClient\Exception\Request\Http\ClientResponseException;
 use Artemeon\HttpClient\Exception\Request\Http\ServerResponseException;
 use Artemeon\HttpClient\Http\Request;
@@ -26,6 +25,8 @@ use Artemeon\HttpClient\Http\Response;
 use Artemeon\HttpClient\Http\Uri;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
+use Prophecy\PhpUnit\ProphecyTrait;
+use Prophecy\Prophecy\ObjectProphecy;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -33,17 +34,12 @@ use Psr\Log\LoggerInterface;
  */
 class HttpClientLogDecoratorTest extends TestCase
 {
-    /** @var LoggerInterface */
-    private $logger;
+    use ProphecyTrait;
 
-    /** @var HttpClient */
-    private $httpClient;
-
-    /** @var LoggerDecorator */
-    private $httpClientLogDecorator;
-
-    /** @var ClientOptions */
-    private $clientOptions;
+    private LoggerInterface|ObjectProphecy $logger;
+    private HttpClient|ObjectProphecy $httpClient;
+    private LoggerDecorator $httpClientLogDecorator;
+    private ClientOptions $clientOptions;
 
     /**
      * @inheritDoc

@@ -3,7 +3,7 @@ version: '3'
 services:
     php:
         build: docker/php
-        image: php:7.4-fpm-alpine-httpclient-dev
+        image: php:8.1-fpm-alpine-httpclient-dev
         volumes:
             - ./:/http-client
         networks:
@@ -13,7 +13,7 @@ services:
         ports:
             - 80:80
         volumes:
-            - ./tests/system:/usr/local/apache2/htdocs/
+            - ./tests/System:/usr/local/apache2/htdocs/
             - ./docker/apache/httpd.conf:/usr/local/apache2/conf/httpd.conf
         networks:
             - http-client-network

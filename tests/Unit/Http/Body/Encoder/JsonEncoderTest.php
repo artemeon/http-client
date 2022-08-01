@@ -11,7 +11,7 @@
 
 declare(strict_types=1);
 
-namespace Artemeon\HttpClient\Tests\Http\Body\Encoder;
+namespace Artemeon\HttpClient\Tests\Unit\Http\Body\Encoder;
 
 use Artemeon\HttpClient\Exception\RuntimeException;
 use Artemeon\HttpClient\Http\Body\Encoder\JsonEncoder;

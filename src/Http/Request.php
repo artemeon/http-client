@@ -30,9 +30,6 @@ use Psr\Http\Message\UriInterface;
  */
 class Request extends Message implements RequestInterface
 {
-    private string $method;
-    private UriInterface $uri;
-    private string $requestTarget;
     public const METHOD_POST = 'POST';
     public const METHOD_GET = 'GET';
     public const METHOD_PUT = 'PUT';
@@ -40,6 +37,10 @@ class Request extends Message implements RequestInterface
     public const METHOD_OPTIONS = 'OPTIONS';
     public const METHOD_PATCH = 'PATCH';
     public const METHOD_HEAD = 'HEAD';
+
+    private string $method;
+    private UriInterface $uri;
+    private string $requestTarget;
 
     /**
      * @param string $method
