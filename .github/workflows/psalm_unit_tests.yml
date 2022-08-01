@@ -32,4 +32,4 @@ jobs:
       - name: Composer install
         run: composer install --no-interaction --no-ansi --no-progress
       - name: Run PHPUnit
-        run: vendor/bin/phpunit -c tests/phpunit.xml
+        run: vendor/phpunit/phpunit/phpunit -c tests/phpunit.xml
