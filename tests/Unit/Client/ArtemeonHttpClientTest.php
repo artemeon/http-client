@@ -11,7 +11,7 @@
 
 declare(strict_types=1);
 
-namespace Artemeon\HttpClient\Tests\Client;
+namespace Artemeon\HttpClient\Tests\Unit\Client;
 
 use Artemeon\HttpClient\Client\ArtemeonHttpClient;
 use Artemeon\HttpClient\Client\Options\ClientOptions;
@@ -40,6 +40,8 @@ use GuzzleHttp\Psr7\Request as GuzzleRequest;
 use GuzzleHttp\Psr7\Response as GuzzleResponse;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
+use Prophecy\PhpUnit\ProphecyTrait;
+use Prophecy\Prophecy\ObjectProphecy;
 
 /**
  * @covers \Artemeon\HttpClient\Client\ArtemeonHttpClient
@@ -53,20 +55,13 @@ use Prophecy\Argument;
  */
 class ArtemeonHttpClientTest extends TestCase
 {
-    /** @var GuzzleClient */
-    private $guzzleClient;
+    use ProphecyTrait;
 
-    /** @var MockHandler */
-    private $mockHandler;
-
-    /** @var ArtemeonHttpClient */
-    private $httpClient;
-
-    /** @var ClientOptions */
-    private $clientOptions;
-
-    /** @var ClientOptionsConverter */
-    private $clientOptionsConverter;
+    private GuzzleClient $guzzleClient;
+    private MockHandler $mockHandler;
+    private ArtemeonHttpClient $httpClient;
+    private ClientOptions $clientOptions;
+    private ClientOptionsConverter|ObjectProphecy $clientOptionsConverter;
 
     /**
      * @inheritDoc

@@ -11,25 +11,27 @@
 
 declare(strict_types=1);
 
-namespace Artemeon\HttpClient\Tests\Client;
+namespace Artemeon\HttpClient\Tests\Unit\Client;
 
 use Artemeon\HttpClient\Client\Options\ClientOptions;
 use PHPUnit\Framework\TestCase;
+use Prophecy\PhpUnit\ProphecyTrait;
 
 /**
  * @covers \Artemeon\HttpClient\Client\Options\ClientOptions
  */
 class ClientOptionsTest extends TestCase
 {
-    /** @var \Artemeon\HttpClient\Client\Options\ClientOptions */
-    private $clientOptions;
+    use ProphecyTrait;
+
+    private ClientOptions $clientOptions;
 
     /**
      * @inheritDoc
      */
     public function setUp(): void
     {
-        $this->clientOptions = \Artemeon\HttpClient\Client\Options\ClientOptions::fromDefaults();
+        $this->clientOptions = ClientOptions::fromDefaults();
     }
 
     /**

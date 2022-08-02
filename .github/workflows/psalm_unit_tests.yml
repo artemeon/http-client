@@ -1,0 +1,35 @@
+name: UNIT-TESTS
+on:
+  - pull_request
+  - push
+jobs:
+  psalm:
+    name: Psalm
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Install PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.1
+          coverage: none
+      - name: Composer install
+        run: composer install --no-interaction --no-ansi --no-progress
+      - name: Run Psalm
+        run: vendor/vimeo/psalm/psalm --no-progress --show-info=false
+  phpunit:
+    name: PHPUnit
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Install PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.1
+          coverage: none
+      - name: Composer install
+        run: composer install --no-interaction --no-ansi --no-progress
+      - name: Run PHPUnit
+        run: vendor/phpunit/phpunit/phpunit -c tests/phpunit.xml

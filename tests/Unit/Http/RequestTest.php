@@ -11,7 +11,7 @@
 
 declare(strict_types=1);
 
-namespace Artemeon\HttpClient\Tests\Http;
+namespace Artemeon\HttpClient\Tests\Unit\Http;
 
 use Artemeon\HttpClient\Http\Body\Body;
 use Artemeon\HttpClient\Http\Body\Encoder\FormUrlEncoder;

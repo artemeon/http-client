@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Artemeon\HttpClient\Client\Decorator\OAuth2\Token;
 
-use http\Exception\RuntimeException;
+use Artemeon\HttpClient\Exception\RuntimeException;
 
 /**
  * Interface to realize several strategy's to store AccessToken

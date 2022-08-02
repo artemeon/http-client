@@ -11,23 +11,23 @@
 
 declare(strict_types=1);
 
-namespace Artemeon\HttpClient\Tests\Client;
+namespace Artemeon\HttpClient\Tests\Unit\Client;
 
 use Artemeon\HttpClient\Client\Options\ClientOptions;
 use Artemeon\HttpClient\Client\Options\ClientOptionsConverter;
 use GuzzleHttp\RequestOptions as GuzzleRequestOptions;
 use PHPUnit\Framework\TestCase;
+use Prophecy\PhpUnit\ProphecyTrait;
 
 /**
  * @covers \Artemeon\HttpClient\Client\Options\ClientOptionsConverter
  */
 class ClientOptionsConverterTest extends TestCase
 {
-    /** @var \Artemeon\HttpClient\Client\Options\ClientOptionsConverter */
-    private $clientOptionConverter;
+    use ProphecyTrait;
 
-    /** @var ClientOptions */
-    private $clientOptions;
+    private ClientOptionsConverter $clientOptionConverter;
+    private ClientOptions $clientOptions;
 
     /**
      * @inheritDoc
@@ -35,7 +35,7 @@ class ClientOptionsConverterTest extends TestCase
     public function setUp(): void
     {
         $this->clientOptions = ClientOptions::fromDefaults();
-        $this->clientOptionConverter = new \Artemeon\HttpClient\Client\Options\ClientOptionsConverter();
+        $this->clientOptionConverter = new ClientOptionsConverter();
     }
 
     /**

@@ -33,8 +33,8 @@ use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Exception\BadResponseException as GuzzleBadResponseException;
 use GuzzleHttp\Exception\ClientException as GuzzleClientException;
 use GuzzleHttp\Exception\ConnectException as GuzzleConnectException;
+use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Exception\RequestException as GuzzleRequestException;
-use GuzzleHttp\Exception\SeekException;
 use GuzzleHttp\Exception\ServerException as GuzzleServerException;
 use GuzzleHttp\Exception\TooManyRedirectsException as GuzzleTooManyRedirectsException;
 use GuzzleHttp\Exception\TransferException as GuzzleTransferException;
@@ -74,16 +74,16 @@ class ArtemeonHttpClient implements HttpClient
     /**
      * Send request and transform Guzzle exception to Artemeon exceptions
      * Map Guzzle exceptions -> HttpClient exceptions:
+     *
      * ```
      *  1. \RuntimeException -> RuntimeException (HttpClientException)
-     *      1. SeekException
-     *      2. GuzzleTransferException -> TransferException
-     *          1. GuzzleRequestException ->  ResponseException
-     *              1. GuzzleConnectException -> ConnectException
-     *              2. GuzzleTooManyRedirectsException -> RedirectResponseException
-     *              3. GuzzleBadResponseException -> ResponseException
-     *                  1. GuzzleServerException -> ServerResponseException
-     *                  2. GuzzleClientException -> ClientResponseException
+     *  -- 1. GuzzleTransferException -> TransferException
+     *  ---- 1. GuzzleConnectException -> ConnectException
+     *  ---- 2. GuzzleRequestException ->  ResponseException
+     *  ------ 1. GuzzleTooManyRedirectsException -> RedirectResponseException
+     *  ------ 2. GuzzleBadResponseException -> ResponseException
+     *  -------- 1. GuzzleServerException -> ServerResponseException
+     *  -------- 2. GuzzleClientException -> ClientResponseException
      * ```
      *
      * @throws HttpClientException
@@ -100,15 +100,15 @@ class ArtemeonHttpClient implements HttpClient
             throw ResponseException::fromResponse($this->getResponseFromGuzzleException($previous), $request, $previous->getMessage(), $previous);
         } catch (GuzzleTooManyRedirectsException $previous) {
             throw RedirectResponseException::fromResponse($this->getResponseFromGuzzleException($previous), $request, $previous->getMessage(), $previous);
-        } catch (GuzzleConnectException $previous) {
-            throw ConnectException::fromRequest($request, $previous->getMessage(), $previous);
         } catch (GuzzleRequestException $previous) {
             throw ResponseException::fromResponse($this->getResponseFromGuzzleException($previous), $request, $previous->getMessage(), $previous);
+        } catch (GuzzleConnectException $previous) {
+            throw ConnectException::fromRequest($request, $previous->getMessage(), $previous);
         } catch (GuzzleTransferException $previous) {
             throw TransferException::fromRequest($request, $previous->getMessage(), $previous);
-        } catch (SeekException $previous) {
-            throw RuntimeException::fromGuzzleException($previous);
         } catch (\RuntimeException $previous) {
+            throw RuntimeException::fromPreviousException($previous);
+        } catch (GuzzleException $previous) {
             throw RuntimeException::fromGuzzleException($previous);
         }
 

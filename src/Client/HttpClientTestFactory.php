@@ -72,7 +72,7 @@ class HttpClientTestFactory
                 new ClientOptionsConverter()
             );
         } catch (InvalidArgumentException $exception) {
-            throw RuntimeException::fromGuzzleException($exception);
+            throw RuntimeException::fromPreviousException($exception);
         }
     }
 
@@ -104,7 +104,7 @@ class HttpClientTestFactory
                 new ClientOptionsConverter()
             );
         } catch (InvalidArgumentException $exception) {
-            throw RuntimeException::fromGuzzleException($exception);
+            throw RuntimeException::fromPreviousException($exception);
         }
     }
 

@@ -11,7 +11,7 @@
 
 declare(strict_types=1);
 
-namespace Artemeon\HttpClient\Tests\Http\Header;
+namespace Artemeon\HttpClient\Tests\Unit\Http\Header;
 
 use Artemeon\HttpClient\Exception\InvalidArgumentException;
 use Artemeon\HttpClient\Http\Header\Fields\Authorization;

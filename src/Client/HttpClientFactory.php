@@ -58,7 +58,7 @@ class HttpClientFactory
                 new ClientOptionsConverter()
             );
         } catch (InvalidArgumentException $exception) {
-            throw RuntimeException::fromGuzzleException($exception);
+            throw RuntimeException::fromPreviousException($exception);
         }
 
         return new LoggerDecorator($httpClient, $logger);
