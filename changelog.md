@@ -15,3 +15,7 @@
 * Fixed incorrect test namespaces
 * Added psalm support
 
+## 0.2.1 - 2022-10-12
+* Added optional parameter to set custom mime type for json encoder
+* Added media type constant for application/vnd.api+json
+
