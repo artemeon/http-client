@@ -26,15 +26,18 @@ class JsonEncoder implements Encoder
     /** @var array|object */
     private $value;
     private int $options;
+    private string $mimeType;
 
     /**
      * @param mixed $value String, object or array to encode
-     * @param int $options Json encode options: @see https://www.php.net/manual/de/function.json-encode.php
+     * @param int $options Optional json encode options: @see https://www.php.net/manual/de/function.json-encode.php
+     * @param string $mimeType Optional custom mime type
      */
-    private function __construct($value, int $options = 0)
+    private function __construct($value, int $options = 0, string $mimeType = MediaType::JSON)
     {
         $this->value = $value;
         $this->options = $options;
+        $this->mimeType = $mimeType;
     }
 
     /**
@@ -54,23 +57,24 @@ class JsonEncoder implements Encoder
      * ```
      *
      * @param array $value Array to encode, associative array always encoded as json object
-     * @param int $options Bitmask of json constants: @see https://www.php.net/manual/en/function.json-encode.php
+     * @param int $options Optional Bitmask of json constants: @see https://www.php.net/manual/en/function.json-encode.php
+     * @param string $mimeType Optional custom mime type
      */
-    public static function fromArray(array $value, int $options = 0): self
+    public static function fromArray(array $value, int $options = 0, string $mimeType = MediaType::JSON): self
     {
-        return new self($value, $options);
+        return new self($value, $options, $mimeType);
     }
 
     /**
      * Named constructor to create an instance based on the given object
      *
      * @param object $value Object to encode
-     * @param int $options Bitmask of json constants:
-     * @see https://www.php.net/manual/en/function.json-encode.php
+     * @param int $options Bitmask of json constants: @see https://www.php.net/manual/en/function.json-encode.php
+     * @param string $mimeType Optional custom mime type
      */
-    public static function fromObject(object $value, int $options = 0): self
+    public static function fromObject(object $value, int $options = 0, string $mimeType = MediaType::JSON): self
     {
-        return new self($value, $options);
+        return new self($value, $options, $mimeType);
     }
 
     /**
@@ -94,6 +98,6 @@ class JsonEncoder implements Encoder
      */
     public function getMimeType(): string
     {
-        return MediaType::JSON;
+        return $this->mimeType;
     }
 }
