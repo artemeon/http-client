@@ -22,6 +22,9 @@ class MediaType
     public const JSON = "application/json";
 
     /** @var string */
+    public const JSON_API = "application/vnd.api+json";
+
+    /** @var string */
     public const FORM_URL_ENCODED = "application/x-www-form-urlencoded";
 
     /** @var string */
