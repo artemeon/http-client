@@ -44,7 +44,7 @@ class ResponseException extends TransferException
         $instance = new static($message, 0, $previous);
         $instance->request = $request;
         $instance->response = $response;
-        $instance->statusCode = $response->getStatusCode();
+        $instance->statusCode = $response?->getStatusCode() ?? 0;
 
         return $instance;
     }

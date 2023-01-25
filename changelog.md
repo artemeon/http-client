@@ -19,3 +19,6 @@
 * Added optional parameter to set custom mime type for json encoder
 * Added media type constant for application/vnd.api+json
 
+## 0.2.2 - 2023-01-25
+* Fixed null response in exception handling 
+
