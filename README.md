@@ -6,4 +6,4 @@
 
 ## License
 
-The AGP Installer is open-sourced software licensed under the [MIT license](LICENSE).
+The ARTEMEON HTTP Client is open-sourced software licensed under the [MIT license](LICENSE).
