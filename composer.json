@@ -1,8 +1,9 @@
 {
   "name": "artemeon/http-client",
+  "description": "Thin wrapper for external http client libraries.",
+  "homepage": "https://github.com/artemeon/http-client#readme",
   "license": "MIT",
   "type": "library",
-  "description": "Thin wrapper for external http client libraries.",
   "keywords": [
     "php7",
     "http",
