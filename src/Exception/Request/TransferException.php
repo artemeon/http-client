@@ -16,6 +16,7 @@ namespace Artemeon\HttpClient\Exception\Request;
 use Artemeon\HttpClient\Exception\RuntimeException;
 use Artemeon\HttpClient\Http\Request;
 use Exception;
+use Throwable;
 
 /**
  * Class for all runtime exceptions during the request/response transfers
@@ -37,6 +38,11 @@ class TransferException extends RuntimeException
         $instance->request = $request;
 
         return $instance;
+    }
+
+    final public function __construct(string $message = '', int $code = 0, ?Throwable $previous = null)
+    {
+        parent::__construct($message, $code, $previous);
     }
 
     /**
