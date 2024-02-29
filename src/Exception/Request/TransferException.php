@@ -33,7 +33,7 @@ class TransferException extends RuntimeException
      */
     public static function fromRequest(Request $request, string $message, Exception $previous = null): self
     {
-        $instance = new static($message, 0, $previous);
+        $instance = new self($message, 0, $previous);
         $instance->request = $request;
 
         return $instance;

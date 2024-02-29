@@ -41,7 +41,7 @@ class ResponseException extends TransferException
         string $message,
         Exception $previous = null
     ): self {
-        $instance = new static($message, 0, $previous);
+        $instance = new self($message, 0, $previous);
         $instance->request = $request;
         $instance->response = $response;
         $instance->statusCode = $response?->getStatusCode() ?? 0;

@@ -225,7 +225,7 @@ class Uri implements UriInterface
             $cloned->password = '';
         } else {
             $cloned->user = $user;
-            $cloned->password = $password ?? '';
+            $cloned->password = $password;
         }
 
         return $cloned;
