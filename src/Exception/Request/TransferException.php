@@ -32,9 +32,9 @@ class TransferException extends RuntimeException
      * @param string $message The error message
      * @param Exception|null $previous The precious third party exception
      */
-    public static function fromRequest(Request $request, string $message, Exception $previous = null): self
+    public static function fromRequest(Request $request, string $message, Exception $previous = null): static
     {
-        $instance = new self($message, 0, $previous);
+        $instance = new static($message, 0, $previous);
         $instance->request = $request;
 
         return $instance;
