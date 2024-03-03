@@ -17,6 +17,7 @@ use Artemeon\HttpClient\Exception\Request\TransferException;
 use Artemeon\HttpClient\Http\Request;
 use Artemeon\HttpClient\Http\Response;
 use Exception;
+use Throwable;
 
 /**
  * Exception class to catch all possible http status code ranges
@@ -40,7 +41,7 @@ class ResponseException extends TransferException
         Request $request,
         string $message,
         Exception $previous = null
-    ): self {
+    ): static {
         $instance = new static($message, 0, $previous);
         $instance->request = $request;
         $instance->response = $response;

@@ -39,13 +39,13 @@ class ClientOptionsTest extends TestCase
      */
     public function fromDefaults_setValidValues(): void
     {
-        self::assertSame(true, $this->clientOptions->isRedirectAllowed());
+        self::assertTrue($this->clientOptions->isRedirectAllowed());
         self::assertSame(10, $this->clientOptions->getTimeout());
-        self::assertSame(true, $this->clientOptions->isSslVerificationEnabled());
+        self::assertTrue($this->clientOptions->isSslVerificationEnabled());
         self::assertSame('', $this->clientOptions->getCustomCaBundlePath());
         self::assertSame(5, $this->clientOptions->getMaxAllowedRedirects());
-        self::assertSame(true, $this->clientOptions->isRefererForRedirectsEnabled());
-        self::assertSame(false, $this->clientOptions->hasCustomCaBundlePath());
+        self::assertTrue($this->clientOptions->isRefererForRedirectsEnabled());
+        self::assertFalse($this->clientOptions->hasCustomCaBundlePath());
     }
 
     /**
@@ -60,12 +60,12 @@ class ClientOptionsTest extends TestCase
         $this->clientOptions->optSetMaxRedirects(10);
         $this->clientOptions->optDisableRefererForRedirects();
 
-        self::assertSame(false, $this->clientOptions->isRedirectAllowed());
+        self::assertFalse($this->clientOptions->isRedirectAllowed());
         self::assertSame(50, $this->clientOptions->getTimeout());
-        self::assertSame(false, $this->clientOptions->isSslVerificationEnabled());
+        self::assertFalse($this->clientOptions->isSslVerificationEnabled());
         self::assertSame('/custom/path', $this->clientOptions->getCustomCaBundlePath());
-        self::assertSame(true, $this->clientOptions->hasCustomCaBundlePath());
+        self::assertTrue($this->clientOptions->hasCustomCaBundlePath());
         self::assertSame(10, $this->clientOptions->getMaxAllowedRedirects());
-        self::assertSame(false, $this->clientOptions->isRefererForRedirectsEnabled());
+        self::assertFalse($this->clientOptions->isRefererForRedirectsEnabled());
     }
 }
