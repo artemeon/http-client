@@ -29,7 +29,7 @@ try {
         Body::fromEncoder(
             MultipartFormDataEncoder::create()
                 ->addFieldPart('user', 'John.Doe')
-                ->addFieldPart('password', utf8_encode('geheim'))
+                ->addFieldPart('password', mb_convert_encoding('geheim', 'UTF-8', 'ISO-8859-1'))
                 ->addFilePart('user_image', 'header_logo.png', Stream::fromFile('../Fixtures/reader/header_logo.png'))
         )
     );

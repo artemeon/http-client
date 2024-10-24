@@ -13,8 +13,6 @@ declare(strict_types=1);
 
 namespace Artemeon\HttpClient\Client\Decorator\OAuth2;
 
-use function utf8_encode;
-
 /**
  * Class to generate client credentials for OAuth2 Access Token Request's
  */
@@ -34,9 +32,9 @@ class ClientCredentials
     private function __construct(string $clientID, string $clientSecret, string $scope = '')
     {
         // According to the rfc https://tools.ietf.org/html/rfc6749#page-43 encoding must UTF-8
-        $this->clientId = utf8_encode($clientID);
-        $this->clientSecret = utf8_encode($clientSecret);
-        $this->scope = utf8_encode($scope);
+        $this->clientId = mb_convert_encoding($clientID, 'UTF-8', 'ISO-8859-1');
+        $this->clientSecret = mb_convert_encoding($clientSecret, 'UTF-8', 'ISO-8859-1');
+        $this->scope = mb_convert_encoding($scope, 'UTF-8', 'ISO-8859-1');
     }
 
     /**
