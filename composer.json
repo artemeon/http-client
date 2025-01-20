@@ -1,11 +1,12 @@
 {
   "name": "artemeon/http-client",
+  "version": "1.1.0",
   "description": "Thin wrapper for external http client libraries.",
   "homepage": "https://github.com/artemeon/http-client#readme",
   "license": "MIT",
   "type": "library",
   "keywords": [
-    "php7",
+    "php8",
     "http",
     "client"
   ],
@@ -34,7 +35,7 @@
     }
   },
   "require": {
-    "php": ">=8.1",
+    "php": ">=8.4",
     "guzzlehttp/guzzle": "~7.4",
     "ext-json": "*",
     "ext-mbstring": "*",

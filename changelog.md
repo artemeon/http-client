@@ -1,3 +1,6 @@
+## 1.1.0 - 2024-01-20
+* make library php 8.4 ready
+
 ## 0.1.0 - 2020-02-12
 * Initial release
 
