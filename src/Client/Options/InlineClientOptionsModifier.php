@@ -6,13 +6,10 @@ namespace Artemeon\HttpClient\Client\Options;
 
 use Closure;
 
-final class InlineClientOptionsModifier implements ClientOptionsModifier
+final readonly class InlineClientOptionsModifier implements ClientOptionsModifier
 {
-    private Closure $callback;
-
-    private function __construct(Closure $callback)
+    private function __construct(private Closure $callback)
     {
-        $this->callback = $callback;
     }
 
     public static function fromClosure(Closure $closure): self
@@ -25,6 +22,7 @@ final class InlineClientOptionsModifier implements ClientOptionsModifier
         return new self(Closure::fromCallable($callable));
     }
 
+    #[\Override]
     public function modify(ClientOptions $clientOptions): ClientOptions
     {
         $callback = $this->callback;

@@ -24,9 +24,9 @@ use Psr\Http\Message\StreamInterface;
  */
 class MultipartFormDataEncoder implements Encoder
 {
-    private const CRLF = "\r\n";
-    private string $boundary;
-    private AppendableStream $multiPartStream;
+    private const string CRLF = "\r\n";
+    private readonly string $boundary;
+    private readonly AppendableStream $multiPartStream;
 
     /**
      * @param string $boundary Boundary string 7bit US-ASCII
@@ -98,6 +98,7 @@ class MultipartFormDataEncoder implements Encoder
     /**
      * @inheritDoc
      */
+    #[\Override]
     public function encode(): StreamInterface
     {
         // Add the end boundary
@@ -109,6 +110,7 @@ class MultipartFormDataEncoder implements Encoder
     /**
      * @inheritDoc
      */
+    #[\Override]
     public function getMimeType(): string
     {
         return sprintf('%s; boundary="%s"', MediaType::MULTIPART_FORM_DATA, $this->boundary);

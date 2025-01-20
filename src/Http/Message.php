@@ -29,24 +29,21 @@ use Psr\Http\Message\StreamInterface;
 abstract class Message implements MessageInterface
 {
     protected Headers $headers;
-    protected ?StreamInterface $body;
-    protected string $version;
 
     /**
      * @param Headers|null $headers Optional: Headers collection or null
      * @param StreamInterface|null $body Optional: Body object or null
      * @param string $version Optional: Http protocol version string
      */
-    protected function __construct(?Headers $headers = null, StreamInterface $body = null, string $version = '1.1')
+    protected function __construct(?Headers $headers = null, protected ?StreamInterface $body = null, protected string $version = '1.1')
     {
         $this->headers = $headers ?? Headers::create();
-        $this->body = $body;
-        $this->version = $version;
     }
 
     /**
      * Return the Header collection as an array
      */
+    #[\Override]
     public function getHeaders(): array
     {
         $headers = [];
@@ -63,6 +60,7 @@ abstract class Message implements MessageInterface
      * @inheritDoc
      * @throws RuntimeException
      */
+    #[\Override]
     public function getBody(): StreamInterface
     {
         if (!$this->body instanceof StreamInterface) {
@@ -75,6 +73,7 @@ abstract class Message implements MessageInterface
     /**
      * @inheritDoc
      */
+    #[\Override]
     public function getProtocolVersion(): string
     {
         return $this->version;
@@ -83,6 +82,7 @@ abstract class Message implements MessageInterface
     /**
      * @inheritDoc
      */
+    #[\Override]
     public function hasHeader($name): bool
     {
         return $this->headers->has(strval($name));
@@ -91,11 +91,12 @@ abstract class Message implements MessageInterface
     /**
      * @inheritDoc
      */
+    #[\Override]
     public function getHeader($name): array
     {
         try {
             return $this->headers->get(strval($name))->getValues();
-        } catch (InvalidArgumentException $e) {
+        } catch (InvalidArgumentException) {
             return [];
         }
     }
@@ -103,11 +104,12 @@ abstract class Message implements MessageInterface
     /**
      * @inheritDoc
      */
+    #[\Override]
     public function getHeaderLine($name): string
     {
         try {
             return $this->headers->get(strval($name))->getValue();
-        } catch (InvalidArgumentException $e) {
+        } catch (InvalidArgumentException) {
             return '';
         }
     }
@@ -115,6 +117,7 @@ abstract class Message implements MessageInterface
     /**
      * @inheritDoc
      */
+    #[\Override]
     public function withHeader($name, $value): self
     {
         $cloned = clone $this;
@@ -132,6 +135,7 @@ abstract class Message implements MessageInterface
     /**
      * @inheritDoc
      */
+    #[\Override]
     public function withProtocolVersion($version): self
     {
         $cloned = clone $this;
@@ -143,6 +147,7 @@ abstract class Message implements MessageInterface
     /**
      * @inheritDoc
      */
+    #[\Override]
     public function withAddedHeader($name, $value): self
     {
         $cloned = clone $this;
@@ -166,6 +171,7 @@ abstract class Message implements MessageInterface
     /**
      * @inheritDoc
      */
+    #[\Override]
     public function withoutHeader($name)
     {
         $cloned = clone $this;
@@ -177,6 +183,7 @@ abstract class Message implements MessageInterface
     /**
      * @inheritDoc
      */
+    #[\Override]
     public function withBody(StreamInterface $body)
     {
         if (!$body->isReadable()) {

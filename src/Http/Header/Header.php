@@ -20,7 +20,7 @@ use Artemeon\HttpClient\Exception\InvalidArgumentException;
  */
 class Header
 {
-    private string $name;
+    private readonly string $name;
     private array $values;
 
     /**
@@ -133,7 +133,7 @@ class Header
         }
 
         foreach ($values as &$value) {
-            $value = trim($value);
+            $value = trim((string) $value);
             $isInvalidValue = !is_numeric($value) && !is_string($value);
             $containsInvalidCharacters = preg_match("@^[ \t\x21-\x7E\x80-\xFF]*$@", (string)$value) !== 1;
 

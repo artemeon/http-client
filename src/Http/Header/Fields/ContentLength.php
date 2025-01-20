@@ -20,14 +20,11 @@ use Artemeon\HttpClient\Http\Header\HeaderField;
  */
 class ContentLength implements HeaderField
 {
-    private int $contentLength;
-
     /**
      * @param int $contentLength
      */
-    public function __construct(int $contentLength)
+    public function __construct(private readonly int $contentLength)
     {
-        $this->contentLength = $contentLength;
     }
 
     /**
@@ -43,6 +40,7 @@ class ContentLength implements HeaderField
     /**
      * @inheritDoc
      */
+    #[\Override]
     public function getName(): string
     {
         return HeaderField::CONTENT_LENGTH;
@@ -51,6 +49,7 @@ class ContentLength implements HeaderField
     /**
      * @inheritDoc
      */
+    #[\Override]
     public function getValue(): string
     {
         return strval($this->contentLength);

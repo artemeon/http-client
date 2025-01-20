@@ -39,7 +39,6 @@ class Request extends Message implements RequestInterface
     public const METHOD_HEAD = 'HEAD';
 
     private string $method;
-    private UriInterface $uri;
     private string $requestTarget;
 
     /**
@@ -52,18 +51,17 @@ class Request extends Message implements RequestInterface
      */
     private function __construct(
         string $method,
-        UriInterface $uri,
+        private UriInterface $uri,
         ?Headers $headers = null,
         ?StreamInterface $body = null,
         string $version = '1.1'
     ) {
-        $this->uri = $uri;
-        $this->requestTarget = $this->parseRequestTarget($uri);
+        $this->requestTarget = $this->parseRequestTarget($this->uri);
         $this->assertValidMethod($method);
         $this->method = $method;
 
         parent::__construct(
-            $this->addHostHeader($uri, $headers),
+            $this->addHostHeader($this->uri, $headers),
             $body,
             $version
         );
@@ -195,6 +193,7 @@ class Request extends Message implements RequestInterface
     /**
      * @inheritDoc
      */
+    #[\Override]
     public function getMethod(): string
     {
         return $this->method;
@@ -203,6 +202,7 @@ class Request extends Message implements RequestInterface
     /**
      * @inheritDoc
      */
+    #[\Override]
     public function withMethod($method): self
     {
         if (!is_string($method)) {
@@ -220,6 +220,7 @@ class Request extends Message implements RequestInterface
     /**
      * @inheritDoc
      */
+    #[\Override]
     public function getUri(): UriInterface
     {
         return $this->uri;
@@ -229,6 +230,7 @@ class Request extends Message implements RequestInterface
      * @inheritDoc
      * @throws InvalidArgumentException
      */
+    #[\Override]
     public function withUri(UriInterface $uri, $preserveHost = false): self
     {
         $cloned = clone $this;
@@ -252,6 +254,7 @@ class Request extends Message implements RequestInterface
     /**
      * @inheritDoc
      */
+    #[\Override]
     public function getRequestTarget(): string
     {
         return $this->requestTarget;
@@ -260,6 +263,7 @@ class Request extends Message implements RequestInterface
     /**
      * @inheritDoc
      */
+    #[\Override]
     public function withRequestTarget($requestTarget): self
     {
         $cloned = clone $this;
@@ -277,7 +281,7 @@ class Request extends Message implements RequestInterface
      */
     private static function addHeaderFromBody(Body $body, ?Headers $headers): Headers
     {
-        $headers = $headers ?? Headers::create();
+        $headers ??= Headers::create();
         $headers->add(Header::fromField(ContentType::fromString($body->getMimeType())));
         $headers->add(Header::fromField(ContentLength::fromInt($body->getContentLength())));
 

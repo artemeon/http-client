@@ -17,6 +17,7 @@ class RequestTest extends RequestIntegrationTest
     /**
      * Overwrite, parent code doesn't work witz Guzzle > 7.2, remove when paren code is fixed
      */
+    #[\Override]
     protected function buildStream($data)
     {
         return Utils::streamFor($data);
@@ -25,6 +26,7 @@ class RequestTest extends RequestIntegrationTest
     /**
      * @inheritDoc
      */
+    #[\Override]
     public function createSubject()
     {
         $this->skippedTests['testMethodIsExtendable'] = "";

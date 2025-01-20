@@ -32,6 +32,7 @@ class ClientOptionsConverterTest extends TestCase
     /**
      * @inheritDoc
      */
+    #[\Override]
     public function setUp(): void
     {
         $this->clientOptions = ClientOptions::fromDefaults();

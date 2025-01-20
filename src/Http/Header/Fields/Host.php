@@ -21,14 +21,11 @@ use Psr\Http\Message\UriInterface;
  */
 class Host implements HeaderField
 {
-    private string $host;
-
     /**
      * @param string $host The host string
      */
-    private function __construct(string $host)
+    private function __construct(private readonly string $host)
     {
-        $this->host = $host;
     }
 
     /**
@@ -48,6 +45,7 @@ class Host implements HeaderField
     /**
      * @inheritDoc
      */
+    #[\Override]
     public function getName(): string
     {
         return HeaderField::HOST;
@@ -56,6 +54,7 @@ class Host implements HeaderField
     /**
      * @inheritDoc
      */
+    #[\Override]
     public function getValue(): string
     {
         return $this->host;

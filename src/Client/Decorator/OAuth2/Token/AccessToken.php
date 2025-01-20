@@ -20,10 +20,9 @@ use Artemeon\HttpClient\Exception\RuntimeException;
  */
 class AccessToken
 {
-    private string $token;
-    private int $expires;
-    private string $type;
-    private string $scope;
+    private readonly string $token;
+    private readonly int $expires;
+    private readonly string $type;
 
     /**
      * AccessToken constructor.
@@ -34,7 +33,7 @@ class AccessToken
      * @param string $scope The scope of the authorization
      * @throws RuntimeException
      */
-    private function __construct(string $token, int $expires, string $type, string $scope = '')
+    private function __construct(string $token, int $expires, string $type, private readonly string $scope = '')
     {
         if (empty($token) || empty($expires) || empty($type)) {
             throw new RuntimeException(
@@ -45,7 +44,6 @@ class AccessToken
         $this->token = $token;
         $this->expires = $expires;
         $this->type = $type;
-        $this->scope = $scope;
     }
 
     /**

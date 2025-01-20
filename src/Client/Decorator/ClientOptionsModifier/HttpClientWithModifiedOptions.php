@@ -13,15 +13,13 @@ use Artemeon\HttpClient\Http\Response;
 
 final class HttpClientWithModifiedOptions extends HttpClientDecorator
 {
-    private ClientOptionsModifier $clientOptionsModifier;
-
-    public function __construct(HttpClient $httpClient, ClientOptionsModifier $clientOptionsModifier)
+    public function __construct(HttpClient $httpClient, private readonly ClientOptionsModifier $clientOptionsModifier)
     {
         parent::__construct($httpClient);
-        $this->clientOptionsModifier = $clientOptionsModifier;
     }
 
-    public function send(Request $request, ClientOptions $clientOptions = null): Response
+    #[\Override]
+    public function send(Request $request, ?ClientOptions $clientOptions = null): Response
     {
         return $this->httpClient->send($request, $this->modified($clientOptions));
     }

@@ -25,17 +25,12 @@ use Artemeon\HttpClient\Http\Header\HeaderField;
  */
 class Authorization implements HeaderField
 {
-    private string $type;
-    private string $credentials;
-
     /**
      * @param string $type The type of the http authorization
      * @param string $credentials The credentials string
      */
-    private function __construct(string $type, string $credentials)
+    private function __construct(private readonly string $type, private readonly string $credentials)
     {
-        $this->type = $type;
-        $this->credentials = $credentials;
     }
 
     /**
@@ -62,6 +57,7 @@ class Authorization implements HeaderField
     /**
      * @inheritDoc
      */
+    #[\Override]
     public function getName(): string
     {
         return self::AUTHORIZATION;
@@ -70,6 +66,7 @@ class Authorization implements HeaderField
     /**
      * @inheritDoc
      */
+    #[\Override]
     public function getValue(): string
     {
         return $this->type . ' ' . $this->credentials;

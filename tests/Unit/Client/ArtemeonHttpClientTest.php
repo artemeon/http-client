@@ -66,6 +66,7 @@ class ArtemeonHttpClientTest extends TestCase
     /**
      * @inheritDoc
      */
+    #[\Override]
     public function setUp(): void
     {
         $this->mockHandler = new MockHandler();

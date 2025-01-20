@@ -71,10 +71,6 @@ class MediaType
     {
         $fileExtension = strtolower($fileExtension);
 
-        if (isset(self::$extensionToType[$fileExtension])) {
-            return self::$extensionToType[$fileExtension];
-        }
-
-        return self::UNKNOWN;
+        return self::$extensionToType[$fileExtension] ?? self::UNKNOWN;
     }
 }

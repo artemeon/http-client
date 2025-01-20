@@ -18,9 +18,9 @@ namespace Artemeon\HttpClient\Client\Decorator\OAuth2;
  */
 class ClientCredentials
 {
-    private string $clientId;
-    private string $clientSecret;
-    private string $scope;
+    private readonly string $clientId;
+    private readonly string $clientSecret;
+    private readonly string $scope;
 
     /**
      * ClientCredentials constructor.

@@ -20,14 +20,11 @@ use Artemeon\HttpClient\Http\Header\HeaderField;
  */
 class ContentType implements HeaderField
 {
-    private string $mimeType;
-
     /**
      * @param string $mimeType Mime type string
      */
-    private function __construct(string $mimeType)
+    private function __construct(private readonly string $mimeType)
     {
-        $this->mimeType = $mimeType;
     }
 
     /**
@@ -43,6 +40,7 @@ class ContentType implements HeaderField
     /**
      * @inheritDoc
      */
+    #[\Override]
     public function getName(): string
     {
         return HeaderField::CONTENT_TYPE;
@@ -51,6 +49,7 @@ class ContentType implements HeaderField
     /**
      * @inheritDoc
      */
+    #[\Override]
     public function getValue(): string
     {
         return $this->mimeType;

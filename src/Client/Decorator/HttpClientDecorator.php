@@ -23,20 +23,18 @@ use Artemeon\HttpClient\Http\Response;
  */
 abstract class HttpClientDecorator implements HttpClient
 {
-    protected HttpClient $httpClient;
-
     /**
      * HttpClientDecorator constructor.
      *
      * @param HttpClient $httpClient
      */
-    public function __construct(HttpClient $httpClient)
+    public function __construct(protected HttpClient $httpClient)
     {
-        $this->httpClient = $httpClient;
     }
 
     /**
      * @inheritDoc
      */
-    abstract public function send(Request $request, ClientOptions $clientOptions = null): Response;
+    #[\Override]
+    abstract public function send(Request $request, ?ClientOptions $clientOptions = null): Response;
 }

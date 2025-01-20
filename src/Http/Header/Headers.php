@@ -110,7 +110,7 @@ class Headers implements Countable, IteratorAggregate
     {
         try {
             return empty($this->get($headerField)->getValue());
-        } catch (InvalidArgumentException $e) {
+        } catch (InvalidArgumentException) {
             return true;
         }
     }
@@ -151,6 +151,7 @@ class Headers implements Countable, IteratorAggregate
     /**
      * @inheritDoc
      */
+    #[\Override]
     public function getIterator(): ArrayIterator
     {
         return new ArrayIterator($this->headers);
@@ -159,6 +160,7 @@ class Headers implements Countable, IteratorAggregate
     /**
      * @inheritDoc
      */
+    #[\Override]
     public function count(): int
     {
         return count($this->headers);

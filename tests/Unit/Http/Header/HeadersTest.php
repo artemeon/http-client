@@ -31,6 +31,7 @@ class HeadersTest extends TestCase
     /** @var Headers */
     private $headers;
 
+    #[\Override]
     public function setUp(): void
     {
         $this->headers = Headers::create();

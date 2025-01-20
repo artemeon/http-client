@@ -42,6 +42,7 @@ class StreamTest extends TestCase
     /**
      * @inheritDoc
      */
+    #[\Override]
     public function setUp(): void
     {
         $this->globalProphet = new PHPProphet();
@@ -57,6 +58,7 @@ class StreamTest extends TestCase
     /**
      * @inheritdoc
      */
+    #[\Override]
     public function tearDown(): void
     {
         $this->globalProphet->checkPredictions();
@@ -209,9 +211,7 @@ class StreamTest extends TestCase
     public function close_IsDetached_ShouldNotCallClose(): void
     {
         $this->globalProphecy->fclose(Argument::type('resource'))->will(
-            function ($args) {
-                return fclose($args[0]);
-            }
+            fn($args) => fclose($args[0])
         )->shouldBeCalledTimes(1);
 
         $this->globalProphecy->reveal();
@@ -229,9 +229,7 @@ class StreamTest extends TestCase
     public function close_ShouldCallClose(): void
     {
         $this->globalProphecy->fclose(Argument::type('resource'))->will(
-            function ($args) {
-                return fclose($args[0]);
-            }
+            fn($args) => fclose($args[0])
         )->shouldBeCalled();
 
         $this->globalProphecy->reveal();
@@ -248,9 +246,7 @@ class StreamTest extends TestCase
     public function detach_ShouldCallClose(): void
     {
         $this->globalProphecy->fclose(Argument::type('resource'))->will(
-            function ($args) {
-                return fclose($args[0]);
-            }
+            fn($args) => fclose($args[0])
         )->shouldBeCalled();
 
         $this->globalProphecy->reveal();
@@ -267,9 +263,7 @@ class StreamTest extends TestCase
     public function getSize_ReturnExpectedValue(): void
     {
         $this->globalProphecy->fstat(Argument::type('resource'))->will(
-            function ($args) {
-                return fstat($args[0]);
-            }
+            fn($args) => fstat($args[0])
         )->shouldBeCalled();
 
         $this->globalProphecy->reveal();

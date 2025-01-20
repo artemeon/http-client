@@ -24,7 +24,7 @@ use Throwable;
  */
 class ResponseException extends TransferException
 {
-    protected ?Response $response;
+    protected ?Response $response = null;
     protected int $statusCode;
 
     /**
@@ -40,7 +40,7 @@ class ResponseException extends TransferException
         ?Response $response,
         Request $request,
         string $message,
-        Exception $previous = null
+        ?Exception $previous = null
     ): static {
         $instance = new static($message, 0, $previous);
         $instance->request = $request;

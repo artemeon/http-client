@@ -44,6 +44,7 @@ class HttpClientLogDecoratorTest extends TestCase
     /**
      * @inheritDoc
      */
+    #[\Override]
     public function setUp(): void
     {
         $this->logger = $this->prophesize(LoggerInterface::class);

@@ -28,18 +28,16 @@ use Psr\Log\LoggerInterface;
  */
 class LoggerDecorator extends HttpClientDecorator
 {
-    private LoggerInterface $logger;
-
-    public function __construct(HttpClient $httpClient, LoggerInterface $logger)
+    public function __construct(HttpClient $httpClient, private readonly LoggerInterface $logger)
     {
-        $this->logger = $logger;
         parent::__construct($httpClient);
     }
 
     /**
      * @inheritDoc
      */
-    public function send(Request $request, ClientOptions $clientOptions = null): Response
+    #[\Override]
+    public function send(Request $request, ?ClientOptions $clientOptions = null): Response
     {
         try {
             return $this->httpClient->send($request, $clientOptions);

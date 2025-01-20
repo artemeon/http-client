@@ -22,16 +22,13 @@ use Psr\Http\Message\StreamInterface;
  */
 class FormUrlEncoder implements Encoder
 {
-    private array $formValues;
-
     /**
      * FormUrlEncoder constructor.
      *
      * @param array $formValues Array with the form values to encode: ['formFieldName' = 'value'],
      */
-    private function __construct(array $formValues)
+    private function __construct(private readonly array $formValues)
     {
-        $this->formValues = $formValues;
     }
 
     /**
@@ -52,6 +49,7 @@ class FormUrlEncoder implements Encoder
     /**
      * @inheritDoc
      */
+    #[\Override]
     public function encode(): StreamInterface
     {
         return Stream::fromString(http_build_query($this->formValues));
@@ -60,6 +58,7 @@ class FormUrlEncoder implements Encoder
     /**
      * @inheritDoc
      */
+    #[\Override]
     public function getMimeType(): string
     {
         return MediaType::FORM_URL_ENCODED;

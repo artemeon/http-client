@@ -16,6 +16,7 @@ class ResponseTest extends ResponseIntegrationTest
     /**
      * Overwrite, parent code doesn't work witz Guzzle > 7.2, remove when paren code is fixed
      */
+    #[\Override]
     protected function buildStream($data)
     {
         return Utils::streamFor($data);
@@ -24,6 +25,7 @@ class ResponseTest extends ResponseIntegrationTest
     /**
      * @inheritDoc
      */
+    #[\Override]
     public function createSubject()
     {
         return new Response(200, '1.1');

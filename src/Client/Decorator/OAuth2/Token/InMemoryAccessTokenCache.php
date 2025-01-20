@@ -26,6 +26,7 @@ class InMemoryAccessTokenCache implements AccessTokenCache
     /**
      * @inheritDoc
      */
+    #[\Override]
     public function add(AccessToken $accessToken)
     {
         $this->token = $accessToken;
@@ -35,6 +36,7 @@ class InMemoryAccessTokenCache implements AccessTokenCache
     /**
      * @inheritDoc
      */
+    #[\Override]
     public function get(): AccessToken
     {
         if ($this->token === null) {
@@ -51,6 +53,7 @@ class InMemoryAccessTokenCache implements AccessTokenCache
     /**
      * @inheritDoc
      */
+    #[\Override]
     public function isExpired(): bool
     {
         if (!$this->token instanceof AccessToken) {

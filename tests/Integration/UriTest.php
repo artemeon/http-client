@@ -15,6 +15,7 @@ class UriTest extends UriIntegrationTest
     /**
      * @inheritDoc
      */
+    #[\Override]
     public function createUri($uri)
     {
         return Uri::fromString($uri);

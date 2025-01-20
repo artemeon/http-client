@@ -25,19 +25,15 @@ use Psr\Http\Message\StreamInterface;
  */
 class Body
 {
-    private int $length;
-    private string $mimeType;
-    private StreamInterface $stream;
+    private readonly int $length;
 
     /**
      * @param string $mimeType The mime type of the body content stream
      * @param StreamInterface $stream The body content stream
      */
-    private function __construct(string $mimeType, StreamInterface $stream)
+    private function __construct(private readonly string $mimeType, private readonly StreamInterface $stream)
     {
-        $this->mimeType = $mimeType;
-        $this->stream = $stream;
-        $this->length = $stream->getSize();
+        $this->length = $this->stream->getSize();
     }
 
     /**

@@ -100,12 +100,13 @@ class Stream implements AppendableStream
     /**
      * @inheritDoc
      */
-    public function __toString()
+    #[\Override]
+    public function __toString(): string
     {
         try {
             $this->rewind();
             $content = $this->getContents();
-        } catch (RuntimeException $exception) {
+        } catch (RuntimeException) {
             $content = '';
         }
 
@@ -115,6 +116,7 @@ class Stream implements AppendableStream
     /**
      * @inheritDoc
      */
+    #[\Override]
     public function appendStream(AppendableStream $stream): int
     {
         $this->assertStreamIsNotDetached();
@@ -137,6 +139,7 @@ class Stream implements AppendableStream
     /**
      * @inheritDoc
      */
+    #[\Override]
     public function getResource()
     {
         return $this->resource;
@@ -145,6 +148,7 @@ class Stream implements AppendableStream
     /**
      * @inheritDoc
      */
+    #[\Override]
     public function close()
     {
         if (!is_resource($this->resource)) {
@@ -157,6 +161,7 @@ class Stream implements AppendableStream
     /**
      * @inheritDoc
      */
+    #[\Override]
     public function detach()
     {
         $this->close();
@@ -167,6 +172,7 @@ class Stream implements AppendableStream
     /**
      * @inheritDoc
      */
+    #[\Override]
     public function getSize()
     {
         if (!is_resource($this->resource)) {
@@ -181,6 +187,7 @@ class Stream implements AppendableStream
     /**
      * @inheritDoc
      */
+    #[\Override]
     public function tell()
     {
         $this->assertStreamIsNotDetached();
@@ -196,6 +203,7 @@ class Stream implements AppendableStream
     /**
      * @inheritDoc
      */
+    #[\Override]
     public function eof()
     {
         if (!is_resource($this->resource)) {
@@ -209,6 +217,7 @@ class Stream implements AppendableStream
     /**
      * @inheritDoc
      */
+    #[\Override]
     public function isSeekable()
     {
         if (!is_resource($this->resource)) {
@@ -217,7 +226,7 @@ class Stream implements AppendableStream
 
         // According to the fopen manual mode 'a' and 'a+' are not seekable
         foreach (['a', 'a+'] as $mode) {
-            if (strpos($this->metaData["mode"], $mode) !== false) {
+            if (str_contains((string) $this->metaData["mode"], $mode)) {
                 return false;
             }
         }
@@ -228,6 +237,7 @@ class Stream implements AppendableStream
     /**
      * @inheritDoc
      */
+    #[\Override]
     public function seek($offset, $whence = SEEK_SET)
     {
         $this->assertStreamIsNotDetached();
@@ -241,6 +251,7 @@ class Stream implements AppendableStream
     /**
      * @inheritDoc
      */
+    #[\Override]
     public function rewind()
     {
         $this->assertStreamIsNotDetached();
@@ -255,6 +266,7 @@ class Stream implements AppendableStream
     /**
      * @inheritDoc
      */
+    #[\Override]
     public function write($string)
     {
         $this->assertStreamIsNotDetached();
@@ -272,6 +284,7 @@ class Stream implements AppendableStream
     /**
      * @inheritDoc
      */
+    #[\Override]
     public function isWritable()
     {
         if (!is_resource($this->resource)) {
@@ -281,7 +294,7 @@ class Stream implements AppendableStream
         $writeModes = ['r+', 'w', 'w+', 'a', 'a+', 'x', 'x+', 'c', 'c+'];
 
         foreach ($writeModes as $mode) {
-            if (strpos($this->metaData["mode"], $mode) !== false) {
+            if (str_contains((string) $this->metaData["mode"], $mode)) {
                 return true;
             }
         }
@@ -292,6 +305,7 @@ class Stream implements AppendableStream
     /**
      * @inheritDoc
      */
+    #[\Override]
     public function isReadable()
     {
         if (!is_resource($this->resource)) {
@@ -301,7 +315,7 @@ class Stream implements AppendableStream
         $readModes = ['r', 'r+', 'w+', 'a+', 'x+', 'c+'];
 
         foreach ($readModes as $mode) {
-            if (strpos($this->metaData["mode"], $mode) !== false) {
+            if (str_contains((string) $this->metaData["mode"], $mode)) {
                 return true;
             }
         }
@@ -312,6 +326,7 @@ class Stream implements AppendableStream
     /**
      * @inheritDoc
      */
+    #[\Override]
     public function read($length)
     {
         $this->assertStreamIsNotDetached();
@@ -332,6 +347,7 @@ class Stream implements AppendableStream
      * This function reads the complete stream from the CURRENT! file pointer. If you
      * want ensure to read the complete stream use __toString() instead.
      */
+    #[\Override]
     public function getContents()
     {
         $this->assertStreamIsNotDetached();
@@ -349,17 +365,14 @@ class Stream implements AppendableStream
     /**
      * @inheritDoc
      */
+    #[\Override]
     public function getMetadata($key = null)
     {
         if ($key === null) {
             return $this->metaData;
         }
 
-        if (isset($this->metaData[$key])) {
-            return $this->metaData[$key];
-        }
-
-        return null;
+        return $this->metaData[$key] ?? null;
     }
 
     /**

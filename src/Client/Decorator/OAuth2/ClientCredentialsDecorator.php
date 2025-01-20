@@ -38,9 +38,6 @@ use Exception;
  */
 class ClientCredentialsDecorator extends HttpClientDecorator
 {
-    private Request $accessTokenRequest;
-    private AccessTokenCache  $accessTokenCache;
-
     /**
      * ClientCredentialsDecorator constructor.
      *
@@ -50,12 +47,9 @@ class ClientCredentialsDecorator extends HttpClientDecorator
      */
     public function __construct(
         HttpClient $httpClient,
-        Request $accessTokenRequest,
-        AccessTokenCache $accessTokenCache
+        private readonly Request $accessTokenRequest,
+        private readonly AccessTokenCache $accessTokenCache
     ) {
-        $this->accessTokenRequest = $accessTokenRequest;
-        $this->accessTokenCache = $accessTokenCache;
-
         parent::__construct($httpClient);
     }
 
@@ -74,7 +68,7 @@ class ClientCredentialsDecorator extends HttpClientDecorator
         ClientCredentials $clientCredentials,
         Uri $uri,
         HttpClient $httpClient,
-        AccessTokenCache $accessTokenCache = null
+        ?AccessTokenCache $accessTokenCache = null
     ): self {
         // Ensure default cache strategy
         if ($accessTokenCache === null) {
@@ -90,7 +84,8 @@ class ClientCredentialsDecorator extends HttpClientDecorator
     /**
      * @inheritDoc
      */
-    public function send(Request $request, ClientOptions $clientOptions = null): Response
+    #[\Override]
+    public function send(Request $request, ?ClientOptions $clientOptions = null): Response
     {
         if ($this->accessTokenCache->isExpired()) {
             $this->accessTokenCache->add($this->requestAccessToken());
@@ -109,7 +104,7 @@ class ClientCredentialsDecorator extends HttpClientDecorator
      * @param ClientOptions|null $clientOptions
      * @throws RuntimeException
      */
-    private function requestAccessToken(ClientOptions $clientOptions = null): AccessToken
+    private function requestAccessToken(?ClientOptions $clientOptions = null): AccessToken
     {
         try {
             $response = $this->httpClient->send($this->accessTokenRequest, $clientOptions);

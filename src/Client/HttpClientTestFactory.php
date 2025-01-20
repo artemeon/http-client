@@ -29,7 +29,7 @@ use Psr\Http\Message\ResponseInterface;
 class HttpClientTestFactory
 {
     private array $transactionLog = [];
-    private MockHandler $mockHandler;
+    private readonly MockHandler $mockHandler;
     private static HttpClientTestFactory $instance;
 
     public function __construct()

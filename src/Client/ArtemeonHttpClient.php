@@ -45,16 +45,15 @@ use Psr\Http\Message\ResponseInterface as GuzzleResponse;
  */
 class ArtemeonHttpClient implements HttpClient
 {
-    private GuzzleClient $guzzleClient;
-    private ClientOptionsConverter $clientOptionsConverter;
-
-    public function __construct(GuzzleClient $guzzleClient, ClientOptionsConverter $clientOptionsConverter)
+    public function __construct(
+        private readonly GuzzleClient           $guzzleClient,
+        private readonly ClientOptionsConverter $clientOptionsConverter
+    )
     {
-        $this->guzzleClient = $guzzleClient;
-        $this->clientOptionsConverter = $clientOptionsConverter;
     }
 
-    final public function send(Request $request, ClientOptions $clientOptions = null): Response
+    #[\Override]
+    final public function send(Request $request, ?ClientOptions $clientOptions = null): Response
     {
         if ($clientOptions instanceof ClientOptions) {
             $guzzleOptions = $this->clientOptionsConverter->toGuzzleOptionsArray($clientOptions);

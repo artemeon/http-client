@@ -23,20 +23,13 @@ use Psr\Http\Message\StreamInterface;
  */
 class JsonEncoder implements Encoder
 {
-    private array|object $value;
-    private int $options;
-    private string $mimeType;
-
     /**
      * @param mixed $value String, object or array to encode
      * @param int $options Optional json encode options: @see https://www.php.net/manual/de/function.json-encode.php
      * @param string $mimeType Optional custom mime type
      */
-    private function __construct(mixed $value, int $options = 0, string $mimeType = MediaType::JSON)
+    private function __construct(private readonly array|object $value, private readonly int $options = 0, private readonly string $mimeType = MediaType::JSON)
     {
-        $this->value = $value;
-        $this->options = $options;
-        $this->mimeType = $mimeType;
     }
 
     /**
@@ -80,6 +73,7 @@ class JsonEncoder implements Encoder
      * @inheritDoc
      * @throws RuntimeException
      */
+    #[\Override]
     public function encode(): StreamInterface
     {
         $json = json_encode($this->value, $this->options);
@@ -95,6 +89,7 @@ class JsonEncoder implements Encoder
     /**
      * @inheritDoc
      */
+    #[\Override]
     public function getMimeType(): string
     {
         return $this->mimeType;

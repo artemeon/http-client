@@ -22,22 +22,20 @@ use Psr\Http\Message\StreamInterface;
  */
 class FileReader implements Reader
 {
-    private StreamInterface $stream;
-    private string $file;
+    private readonly StreamInterface $stream;
 
     /**
      * @param StreamInterface $stream The content stream
      * @param string $file The file path with file extension
      * @throws RuntimeException
      */
-    public function __construct(StreamInterface $stream, string $file)
+    public function __construct(StreamInterface $stream, private readonly string $file)
     {
         if (!$stream->isReadable()) {
             throw new RuntimeException('Stream is nor readable');
         }
 
         $this->stream = $stream;
-        $this->file = $file;
     }
 
     /**
@@ -54,6 +52,7 @@ class FileReader implements Reader
     /**
      * @inheritDoc
      */
+    #[\Override]
     public function getStream(): StreamInterface
     {
         return $this->stream;
@@ -62,6 +61,7 @@ class FileReader implements Reader
     /**
      * @inheritDoc
      */
+    #[\Override]
     public function getFileExtension(): string
     {
         if (!preg_match("/\.([a-zA-Z]+)$/", $this->file, $matches)) {
