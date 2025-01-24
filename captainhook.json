@@ -64,6 +64,35 @@
             }
         ]
     },
+    "prepare-commit-msg": {
+        "enabled": true,
+        "actions": [
+            {
+                "action": "\\CaptainHook\\App\\Hook\\Message\\Action\\PrepareFromFile",
+                "options": {
+                    "file": ".git/CH_MSG.temp"
+                }
+            },
+            {
+                "action": "\\CaptainHook\\App\\Hook\\Message\\Action\\InjectIssueKeyFromBranch",
+                "conditions": [
+                    {
+                        "exec": "\\CaptainHook\\App\\Hook\\Condition\\Branch\\OnMatching",
+                        "args": [
+                            "/\\/#[1-9][0-9]*[^_-]/"
+                        ]
+                    }
+                ],
+                "options": {
+                    "force": false,
+                    "into": "subject",
+                    "mode": "prepend",
+                    "prefix": "#",
+                    "regex": "/\\/#([1-9][0-9]*[^_-])/"
+                }
+            }
+        ]
+    },
     "post-commit": {
         "enabled": false,
         "actions": [ ]
