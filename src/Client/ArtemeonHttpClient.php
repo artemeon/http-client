@@ -128,7 +128,7 @@ class ArtemeonHttpClient implements HttpClient
     /**
      * Converts a GuzzleResponse object to our Response object.
      */
-    private function convertGuzzleResponse(GuzzleResponse $guzzleResponse): Response
+    private function convertGuzzleResponse(?\Psr\Http\Message\ResponseInterface $guzzleResponse): Response
     {
         $headers = Headers::create();
 
