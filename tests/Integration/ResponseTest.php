@@ -10,11 +10,12 @@ use Http\Psr7Test\ResponseIntegrationTest;
 
 /**
  * @covers \Artemeon\HttpClient\Http\Response
+ * @internal
  */
 class ResponseTest extends ResponseIntegrationTest
 {
     /**
-     * Overwrite, parent code doesn't work witz Guzzle > 7.2, remove when paren code is fixed
+     * Overwrite, parent code doesn't work witz Guzzle > 7.2, remove when paren code is fixed.
      */
     #[\Override]
     protected function buildStream($data)

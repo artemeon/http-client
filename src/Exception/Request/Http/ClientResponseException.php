@@ -14,7 +14,7 @@ declare(strict_types=1);
 namespace Artemeon\HttpClient\Exception\Request\Http;
 
 /**
- * Exception class to catch all client related http errors (400 range)
+ * Exception class to catch all client related http errors (400 range).
  */
 class ClientResponseException extends ResponseException
 {

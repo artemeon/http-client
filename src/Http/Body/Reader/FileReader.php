@@ -18,7 +18,7 @@ use Artemeon\HttpClient\Stream\Stream;
 use Psr\Http\Message\StreamInterface;
 
 /**
- * Reader to read body content from local and remote file system
+ * Reader to read body content from local and remote file system.
  */
 class FileReader implements Reader
 {
@@ -39,7 +39,7 @@ class FileReader implements Reader
     }
 
     /**
-     * Named construct to create an instance based on the given file path string
+     * Named construct to create an instance based on the given file path string.
      *
      * @param string $file Filename inclusive path and extension
      * @throws RuntimeException

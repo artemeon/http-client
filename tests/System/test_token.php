@@ -33,12 +33,12 @@ HttpClientTestFactory::mockResponses(
             200,
             '1.1',
             Stream::fromString(
-                '{"access_token": "PQtdWwDDESjpSyYnDAerj92O3sHWlZ", "expires_in": 7884000, "token_type": "Bearer", "scope": "read_suppliers"}'
+                '{"access_token": "PQtdWwDDESjpSyYnDAerj92O3sHWlZ", "expires_in": 7884000, "token_type": "Bearer", "scope": "read_suppliers"}',
             ),
-            Headers::fromFields([ContentType::fromString(MediaType::JSON)])
+            Headers::fromFields([ContentType::fromString(MediaType::JSON)]),
         ),
         new Response(200, '1.1', Stream::fromString('It works')),
-    ]
+    ],
 );
 
 try {
@@ -46,18 +46,16 @@ try {
         ClientCredentials::forHeaderAuthorization(
             'yoour_client_id',
             'your_client_secret',
-            'read_suppliers'
+            'read_suppliers',
         ),
         Uri::fromString('https://api.lbbw-test.prospeum.com/o/token/'),
-        HttpClientTestFactory::withMockHandler()
+        HttpClientTestFactory::withMockHandler(),
     );
 
     $response = $apiClient->send(
-        Request::forGet(Uri::fromString('https://api.lbbw-test.prospeum.com/api/v01/supplier/search/'))
+        Request::forGet(Uri::fromString('https://api.lbbw-test.prospeum.com/api/v01/supplier/search/')),
     );
     echo $response->getBody()->__toString();
 } catch (HttpClientException $exception) {
     print_r($exception);
 }
-
-

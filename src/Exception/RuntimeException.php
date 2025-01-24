@@ -17,7 +17,7 @@ use Exception;
 use GuzzleHttp\Exception\GuzzleException;
 
 /**
- * Base class to catch all possible runtime exceptions
+ * Base class to catch all possible runtime exceptions.
  *
  * ```
  * 1. RuntimeException (All possible exceptions inclusive during instantiation)

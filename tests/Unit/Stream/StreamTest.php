@@ -24,6 +24,7 @@ use Prophecy\Prophecy\ProphecyInterface;
 
 /**
  * @covers \Artemeon\HttpClient\Stream\Stream
+ * @internal
  */
 class StreamTest extends TestCase
 {
@@ -51,12 +52,12 @@ class StreamTest extends TestCase
 
         vfsStream::copyFromFileSystem(
             __DIR__ . '/../../Fixtures/encoder',
-            $this->filesystem
+            $this->filesystem,
         );
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
     #[\Override]
     public function tearDown(): void
@@ -69,7 +70,7 @@ class StreamTest extends TestCase
      * @test
      * @runInSeparateProcess
      */
-    public function __construct_ResourceIsInvalid_ThrowsException()
+    public function constructResourceIsInvalidThrowsException(): void
     {
         $this->globalProphecy->fopen(Argument::any(), Argument::any())
             ->shouldBeCalled()
@@ -84,7 +85,7 @@ class StreamTest extends TestCase
     /**
      * @test
      */
-    public function appendStream_IsDetached_ThrowsException(): void
+    public function appendStreamIsDetachedThrowsException(): void
     {
         $this->stream = Stream::fromString('test');
         $this->stream->detach();
@@ -97,7 +98,7 @@ class StreamTest extends TestCase
     /**
      * @test
      */
-    public function appendStream_IsNotWriteable_ThrowsException(): void
+    public function appendStreamIsNotWriteableThrowsException(): void
     {
         $this->stream = Stream::fromFileMode('r');
         $this->expectException(RuntimeException::class);
@@ -109,7 +110,7 @@ class StreamTest extends TestCase
     /**
      * @test
      */
-    public function appendStream_GivenStreamIsNotReadable_ThrowsException(): void
+    public function appendStreamGivenStreamIsNotReadableThrowsException(): void
     {
         $this->stream = Stream::fromString('test');
         $this->expectException(RuntimeException::class);
@@ -122,7 +123,7 @@ class StreamTest extends TestCase
     /**
      * @test
      */
-    public function appendStream_CantCopyStream_ThrowsException(): void
+    public function appendStreamCantCopyStreamThrowsException(): void
     {
         $this->globalProphecy->stream_copy_to_stream(Argument::any(), Argument::any())
             ->shouldBeCalled()
@@ -132,7 +133,7 @@ class StreamTest extends TestCase
 
         $this->stream = Stream::fromString('test');
         $this->expectException(RuntimeException::class);
-        $this->expectErrorMessage("Append failed");
+        $this->expectErrorMessage('Append failed');
 
         $writeOnlyStream = Stream::fromFile($this->filesystem->url() . '/generated.json');
         $this->stream->appendStream($writeOnlyStream);
@@ -141,7 +142,7 @@ class StreamTest extends TestCase
     /**
      * @test
      */
-    public function appendStream_ReturnsAppendedStream(): void
+    public function appendStreamReturnsAppendedStream(): void
     {
         $this->stream = Stream::fromString('test');
         $this->stream->appendStream(Stream::fromString('_appended'));
@@ -153,7 +154,7 @@ class StreamTest extends TestCase
      * @test
      * @runInSeparateProcess
      */
-    public function fromFile_ResourceIsInvalid_ThrowsException(): void
+    public function fromFileResourceIsInvalidThrowsException(): void
     {
         $this->globalProphecy->fopen(Argument::any(), Argument::any())
             ->shouldBeCalled()
@@ -168,7 +169,7 @@ class StreamTest extends TestCase
     /**
      * @test
      */
-    public function __toString_IsDetached_ReturnEmptyString(): void
+    public function toStringIsDetachedReturnEmptyString(): void
     {
         $this->stream = Stream::fromString('some_content');
         $this->stream->detach();
@@ -180,7 +181,7 @@ class StreamTest extends TestCase
     /**
      * @test
      */
-    public function __toString_ReturnValidString(): void
+    public function toStringReturnValidString(): void
     {
         $expected = 'some_content';
         $this->stream = Stream::fromString($expected);
@@ -192,7 +193,7 @@ class StreamTest extends TestCase
     /**
      * @test
      */
-    public function __toString_WithBytesRead_ReturnsCompleteString(): void
+    public function toStringWithBytesReadReturnsCompleteString(): void
     {
         $expected = 'some_content';
         $this->stream = Stream::fromString($expected);
@@ -208,10 +209,10 @@ class StreamTest extends TestCase
      * @doesNotPerformAssertions
      * @runInSeparateProcess
      */
-    public function close_IsDetached_ShouldNotCallClose(): void
+    public function closeIsDetachedShouldNotCallClose(): void
     {
         $this->globalProphecy->fclose(Argument::type('resource'))->will(
-            fn($args) => fclose($args[0])
+            fn ($args) => fclose($args[0]),
         )->shouldBeCalledTimes(1);
 
         $this->globalProphecy->reveal();
@@ -226,10 +227,10 @@ class StreamTest extends TestCase
      * @doesNotPerformAssertions
      * @runInSeparateProcess
      */
-    public function close_ShouldCallClose(): void
+    public function closeShouldCallClose(): void
     {
         $this->globalProphecy->fclose(Argument::type('resource'))->will(
-            fn($args) => fclose($args[0])
+            fn ($args) => fclose($args[0]),
         )->shouldBeCalled();
 
         $this->globalProphecy->reveal();
@@ -243,10 +244,10 @@ class StreamTest extends TestCase
      * @test
      * @runInSeparateProcess
      */
-    public function detach_ShouldCallClose(): void
+    public function detachShouldCallClose(): void
     {
         $this->globalProphecy->fclose(Argument::type('resource'))->will(
-            fn($args) => fclose($args[0])
+            fn ($args) => fclose($args[0]),
         )->shouldBeCalled();
 
         $this->globalProphecy->reveal();
@@ -258,12 +259,12 @@ class StreamTest extends TestCase
 
     /**
      * @test
-     * @runInSeparateProcess 
+     * @runInSeparateProcess
      */
-    public function getSize_ReturnExpectedValue(): void
+    public function getSizeReturnExpectedValue(): void
     {
         $this->globalProphecy->fstat(Argument::type('resource'))->will(
-            fn($args) => fstat($args[0])
+            fn ($args) => fstat($args[0]),
         )->shouldBeCalled();
 
         $this->globalProphecy->reveal();
@@ -275,7 +276,7 @@ class StreamTest extends TestCase
     /**
      * @test
      */
-    public function getSize_IsDetached_ReturnNull(): void
+    public function getSizeIsDetachedReturnNull(): void
     {
         $this->stream = Stream::fromString('content');
         $this->stream->detach();
@@ -286,7 +287,7 @@ class StreamTest extends TestCase
     /**
      * @test
      */
-    public function tell_IsDetached_ThrowsException(): void
+    public function tellIsDetachedThrowsException(): void
     {
         $this->stream = Stream::fromString('content');
         $this->stream->detach();
@@ -298,7 +299,7 @@ class StreamTest extends TestCase
     /**
      * @test
      */
-    public function tell_FtellReturnsFalse_ThrowsException(): void
+    public function tellFtellReturnsFalseThrowsException(): void
     {
         $this->globalProphecy->ftell(Argument::type('resource'))->willReturn(false);
         $this->globalProphecy->reveal();
@@ -312,7 +313,7 @@ class StreamTest extends TestCase
     /**
      * @test
      */
-    public function tell_ReturnsExpectedValued(): void
+    public function tellReturnsExpectedValued(): void
     {
         $this->stream = Stream::fromString('content');
         $this->stream->getContents();
@@ -323,7 +324,7 @@ class StreamTest extends TestCase
     /**
      * @test
      */
-    public function eof_IsDetached_ReturnsTrue(): void
+    public function eofIsDetachedReturnsTrue(): void
     {
         $this->stream = Stream::fromString('content');
         $this->stream->detach();
@@ -334,7 +335,7 @@ class StreamTest extends TestCase
     /**
      * @test
      */
-    public function eof_ReturnsExpectedValued(): void
+    public function eofReturnsExpectedValued(): void
     {
         $this->stream = Stream::fromString('content');
         self::assertFalse($this->stream->eof());
@@ -346,7 +347,7 @@ class StreamTest extends TestCase
     /**
      * @test
      */
-    public function isSeekable_IsDetached_ReturnFalse(): void
+    public function isSeekableIsDetachedReturnFalse(): void
     {
         $this->stream = Stream::fromString('content');
         $this->stream->detach();
@@ -357,7 +358,7 @@ class StreamTest extends TestCase
     /**
      * @test
      */
-    public function isSeekable_WithNonSeekableFileModes_ReturnFalse(): void
+    public function isSeekableWithNonSeekableFileModesReturnFalse(): void
     {
         $this->stream = Stream::fromFile($this->filesystem->url() . '/generated.json', 'a');
         self::assertFalse($this->stream->isSeekable());
@@ -369,7 +370,7 @@ class StreamTest extends TestCase
     /**
      * @test
      */
-    public function isSeekable_ReturnTrue(): void
+    public function isSeekableReturnTrue(): void
     {
         $this->stream = Stream::fromFile($this->filesystem->url() . '/generated.json');
         self::assertTrue($this->stream->isSeekable());
@@ -378,7 +379,7 @@ class StreamTest extends TestCase
     /**
      * @test
      */
-    public function seek_IsDetached_ThrowsException(): void
+    public function seekIsDetachedThrowsException(): void
     {
         $this->stream = Stream::fromString('content');
         $this->stream->detach();
@@ -390,7 +391,7 @@ class StreamTest extends TestCase
     /**
      * @test
      */
-    public function seek_FseekFails_ThrowsException(): void
+    public function seekFseekFailsThrowsException(): void
     {
         $this->stream = Stream::fromString('content');
         $this->expectException(RuntimeException::class);
@@ -401,7 +402,7 @@ class StreamTest extends TestCase
     /**
      * @test
      */
-    public function seek_FseekSetsValidPointer(): void
+    public function seekFseekSetsValidPointer(): void
     {
         $this->stream = Stream::fromString('content');
         $this->stream->seek(2);
@@ -412,7 +413,7 @@ class StreamTest extends TestCase
     /**
      * @test
      */
-    public function rewind_IsDetached_ThrowsException(): void
+    public function rewindIsDetachedThrowsException(): void
     {
         $this->stream = Stream::fromString('content');
         $this->stream->detach();
@@ -424,7 +425,7 @@ class StreamTest extends TestCase
     /**
      * @test
      */
-    public function rewind_IsNotSeekable_ThrowsException(): void
+    public function rewindIsNotSeekableThrowsException(): void
     {
         $this->stream = Stream::fromFile($this->filesystem->url() . '/generated.json', 'a');
         $this->expectException(RuntimeException::class);
@@ -435,7 +436,7 @@ class StreamTest extends TestCase
     /**
      * @test
      */
-    public function rewind_ShouldResetFilePointerToZero(): void
+    public function rewindShouldResetFilePointerToZero(): void
     {
         $this->stream = Stream::fromFile($this->filesystem->url() . '/generated.json', 'r+');
         $this->stream->getContents();
@@ -447,7 +448,7 @@ class StreamTest extends TestCase
     /**
      * @test
      */
-    public function isWritable_IsDetached_ReturnsFalse(): void
+    public function isWritableIsDetachedReturnsFalse(): void
     {
         $this->stream = Stream::fromString('content');
         $this->stream->detach();
@@ -459,7 +460,7 @@ class StreamTest extends TestCase
      * @test
      * @dataProvider provideIsModeWriteable
      */
-    public function isWritable_ReturnsExpectedValue(string $mode, bool $isWritable, string $file): void
+    public function isWritableReturnsExpectedValue(string $mode, bool $isWritable, string $file): void
     {
         $file = $this->filesystem->url() . '/' . $file;
         $this->stream = Stream::fromFile($file, $mode);
@@ -470,7 +471,7 @@ class StreamTest extends TestCase
     /**
      * @test
      */
-    public function isReadable_IsDetached_ReturnsFalse(): void
+    public function isReadableIsDetachedReturnsFalse(): void
     {
         $this->stream = Stream::fromString('content');
         $this->stream->detach();
@@ -482,7 +483,7 @@ class StreamTest extends TestCase
      * @test
      * @dataProvider provideIsReadable
      */
-    public function isReadable_ReturnsExpectedValue(string $mode, bool $isReadable, string $file): void
+    public function isReadableReturnsExpectedValue(string $mode, bool $isReadable, string $file): void
     {
         $file = $this->filesystem->url() . '/' . $file;
         $this->stream = Stream::fromFile($file, $mode);
@@ -493,7 +494,7 @@ class StreamTest extends TestCase
     /**
      * @test
      */
-    public function write_IsDetached_ThrowsException(): void
+    public function writeIsDetachedThrowsException(): void
     {
         $this->stream = Stream::fromFileMode('r+');
         $this->stream->detach();
@@ -505,7 +506,7 @@ class StreamTest extends TestCase
     /**
      * @test
      */
-    public function write_IsNotWriteable_ThrowsException(): void
+    public function writeIsNotWriteableThrowsException(): void
     {
         $this->stream = Stream::fromFileMode('r');
         $this->expectException(RuntimeException::class);
@@ -518,7 +519,7 @@ class StreamTest extends TestCase
      * @test
      * @runInSeparateProcess
      */
-    public function write_FWriteReturnFalse_ThrowsException(): void
+    public function writeFWriteReturnFalseThrowsException(): void
     {
         $this->globalProphecy->fwrite(Argument::type('resource'), 'test')
             ->willReturn(false)
@@ -535,7 +536,7 @@ class StreamTest extends TestCase
     /**
      * @test
      */
-    public function write_ReturnNumberOfBytesWritten(): void
+    public function writeReturnNumberOfBytesWritten(): void
     {
         $expectedString = 'Some content string';
         $expectedBytes = strlen($expectedString);
@@ -548,7 +549,7 @@ class StreamTest extends TestCase
     /**
      * @test
      */
-    public function read_IsDetached_ThrowsException(): void
+    public function readIsDetachedThrowsException(): void
     {
         $this->stream = Stream::fromFile($this->filesystem->url() . '/generated.json');
         $this->stream->detach();
@@ -561,7 +562,7 @@ class StreamTest extends TestCase
     /**
      * @test
      */
-    public function read_IsNotReadable_ThrowsException(): void
+    public function readIsNotReadableThrowsException(): void
     {
         $this->stream = Stream::fromFile($this->filesystem->url() . '/generated.json', 'w');
         $this->expectException(RuntimeException::class);
@@ -574,7 +575,7 @@ class StreamTest extends TestCase
      * @test
      * @runInSeparateProcess
      */
-    public function read_FReadReturnsFalse_ThrowsException(): void
+    public function readFReadReturnsFalseThrowsException(): void
     {
         $this->globalProphecy->fread(Argument::type('resource'), 100)
             ->willReturn(false)
@@ -592,7 +593,7 @@ class StreamTest extends TestCase
     /**
      * @test
      */
-    public function read_ReturnValidNumberOfBytes(): void
+    public function readReturnValidNumberOfBytes(): void
     {
         $this->stream = Stream::fromFile($this->filesystem->url() . '/generated.json', 'r');
         self::assertSame(100, strlen($this->stream->read(100)));
@@ -601,7 +602,7 @@ class StreamTest extends TestCase
     /**
      * @test
      */
-    public function getContent_IsDetached_ThrowsException(): void
+    public function getContentIsDetachedThrowsException(): void
     {
         $this->stream = Stream::fromFile($this->filesystem->url() . '/generated.json');
         $this->stream->detach();
@@ -614,7 +615,7 @@ class StreamTest extends TestCase
     /**
      * @test
      */
-    public function getContent_IsNotReadable_ThrowsException(): void
+    public function getContentIsNotReadableThrowsException(): void
     {
         $this->stream = Stream::fromFile($this->filesystem->url() . '/generated.json', 'w');
         $this->expectException(RuntimeException::class);
@@ -627,7 +628,7 @@ class StreamTest extends TestCase
      * @test
      * @runInSeparateProcess
      */
-    public function getContent_StreamReturnsFalse_ThrowsException(): void
+    public function getContentStreamReturnsFalseThrowsException(): void
     {
         $this->globalProphecy->stream_get_contents(Argument::type('resource'))
             ->willReturn(false)
@@ -645,7 +646,7 @@ class StreamTest extends TestCase
     /**
      * @test
      */
-    public function getMetadata_KeyIsNull_ReturnsCompleteArray(): void
+    public function getMetadataKeyIsNullReturnsCompleteArray(): void
     {
         $this->stream = Stream::fromFile($this->filesystem->url() . '/generated.json', 'r+');
         $metaData = $this->stream->getMetadata();
@@ -665,7 +666,7 @@ class StreamTest extends TestCase
     /**
      * @test
      */
-    public function getMetadata_WithValidKey_ReturnsKeyValue(): void
+    public function getMetadataWithValidKeyReturnsKeyValue(): void
     {
         $this->stream = Stream::fromFile($this->filesystem->url() . '/generated.json', 'r+');
         $mode = $this->stream->getMetadata('mode');
@@ -676,7 +677,7 @@ class StreamTest extends TestCase
     /**
      * @test
      */
-    public function getMetadata_WithNonExistentKey_ReturnsNull(): void
+    public function getMetadataWithNonExistentKeyReturnsNull(): void
     {
         $this->stream = Stream::fromFile($this->filesystem->url() . '/generated.json', 'r+');
 
@@ -684,7 +685,7 @@ class StreamTest extends TestCase
     }
 
     /**
-     * All fopen modes for the status isWriteable
+     * All fopen modes for the status isWriteable.
      */
     public function provideIsModeWriteable(): array
     {
@@ -703,7 +704,7 @@ class StreamTest extends TestCase
     }
 
     /**
-     * All fopen modes for the status isReadable
+     * All fopen modes for the status isReadable.
      */
     public function provideIsReadable(): array
     {
@@ -720,5 +721,4 @@ class StreamTest extends TestCase
             ['c+', true, 'generated.json'],
         ];
     }
-
 }

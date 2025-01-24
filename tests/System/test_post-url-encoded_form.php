@@ -27,8 +27,8 @@ require '../../vendor/autoload.php';
 try {
     $request = Request::forPost(
         Uri::fromString('http://apache/endpoints/upload.php'),
-        Body::fromEncoder(FormUrlEncoder::fromArray(["username" => 'john.doe'])),
-        Headers::fromFields([Authorization::forAuthBasic('john.doe', 'geheim')])
+        Body::fromEncoder(FormUrlEncoder::fromArray(['username' => 'john.doe'])),
+        Headers::fromFields([Authorization::forAuthBasic('john.doe', 'geheim')]),
     );
 
     HttpClientTestFactory::withTransactionLog()->send($request);
@@ -36,4 +36,3 @@ try {
 } catch (HttpClientException $exception) {
     print_r($exception);
 }
-

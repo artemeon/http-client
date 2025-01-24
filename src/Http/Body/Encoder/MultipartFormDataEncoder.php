@@ -20,7 +20,7 @@ use Artemeon\HttpClient\Stream\Stream;
 use Psr\Http\Message\StreamInterface;
 
 /**
- * Encoder for "multipart/form-data" encoded body content
+ * Encoder for "multipart/form-data" encoded body content.
  */
 class MultipartFormDataEncoder implements Encoder
 {
@@ -39,18 +39,19 @@ class MultipartFormDataEncoder implements Encoder
     }
 
     /**
-     * Named constructor to create an instance
+     * Named constructor to create an instance.
      *
      * @throws RuntimeException
      */
     public static function create(): self
     {
         $boundary = uniqid('');
+
         return new self($boundary);
     }
 
     /**
-     * Add a new multipart section for form fields
+     * Add a new multipart section for form fields.
      *
      * @param string $fieldName Name of the form field
      * @param string $value Value of the form field
@@ -72,7 +73,7 @@ class MultipartFormDataEncoder implements Encoder
     }
 
     /**
-     * Add a new multipart section for file upload fields
+     * Add a new multipart section for file upload fields.
      *
      * @param string $name Name of the form field
      * @param string $fileName Name of the file, with a valid file extension
@@ -117,9 +118,8 @@ class MultipartFormDataEncoder implements Encoder
     }
 
     /**
-     * Detects the encoding of the given string
+     * Detects the encoding of the given string.
      *
-     * @param string $value
      * @throws RuntimeException
      */
     private function detectEncoding(string $value): string

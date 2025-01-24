@@ -19,6 +19,7 @@ use Prophecy\PhpUnit\ProphecyTrait;
 
 /**
  * @covers \Artemeon\HttpClient\Client\Options\ClientOptions
+ * @internal
  */
 class ClientOptionsTest extends TestCase
 {
@@ -38,7 +39,7 @@ class ClientOptionsTest extends TestCase
     /**
      * @test
      */
-    public function fromDefaults_setValidValues(): void
+    public function fromDefaultsSetValidValues(): void
     {
         self::assertTrue($this->clientOptions->isRedirectAllowed());
         self::assertSame(10, $this->clientOptions->getTimeout());
@@ -52,7 +53,7 @@ class ClientOptionsTest extends TestCase
     /**
      * @test
      */
-    public function ChangedOptions_SetValidValues(): void
+    public function changedOptionsSetValidValues(): void
     {
         $this->clientOptions->optDisableRedirects();
         $this->clientOptions->optSetTimeout(50);

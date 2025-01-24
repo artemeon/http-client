@@ -14,7 +14,7 @@ declare(strict_types=1);
 namespace Artemeon\HttpClient\Client\Decorator\OAuth2;
 
 /**
- * Class to generate client credentials for OAuth2 Access Token Request's
+ * Class to generate client credentials for OAuth2 Access Token Request's.
  */
 class ClientCredentials
 {
@@ -38,9 +38,9 @@ class ClientCredentials
     }
 
     /**
-     * Named constructor to create an instance based on the given credentials
+     * Named constructor to create an instance based on the given credentials.
      *
-     * @param string $clientId  The 'client_id'
+     * @param string $clientId The 'client_id'
      * @param string $clientSecret The 'client_secret'
      * @param string $scope The scope
      */
@@ -50,7 +50,7 @@ class ClientCredentials
     }
 
     /**
-     * Creates the required key => value pairs for the Access Token Request
+     * Creates the required key => value pairs for the Access Token Request.
      */
     public function toArray(): array
     {

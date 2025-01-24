@@ -19,7 +19,7 @@ use Countable;
 use IteratorAggregate;
 
 /**
- * Header collection class for http requests and responses
+ * Header collection class for http requests and responses.
  */
 class Headers implements Countable, IteratorAggregate
 {
@@ -27,7 +27,7 @@ class Headers implements Countable, IteratorAggregate
     private array $headers = [];
 
     /**
-     * Named constructor to create an instance based on the given array of HeaderField objects
+     * Named constructor to create an instance based on the given array of HeaderField objects.
      *
      * @param HeaderField[] $headerFields
      * @throws InvalidArgumentException
@@ -44,7 +44,7 @@ class Headers implements Countable, IteratorAggregate
     }
 
     /**
-     * Named constructor to create an empty collection instance
+     * Named constructor to create an empty collection instance.
      */
     public static function create(): self
     {
@@ -52,7 +52,7 @@ class Headers implements Countable, IteratorAggregate
     }
 
     /**
-     * Adds a header to the collection, throws an exception if the header already exists
+     * Adds a header to the collection, throws an exception if the header already exists.
      *
      * @param Header $header The Header to add
      * @throws InvalidArgumentException
@@ -74,7 +74,7 @@ class Headers implements Countable, IteratorAggregate
     }
 
     /**
-     * Adds a header to the collection or replaces an already existing header
+     * Adds a header to the collection or replaces an already existing header.
      *
      * @param Header $header The header to replace
      */
@@ -91,18 +91,19 @@ class Headers implements Countable, IteratorAggregate
     }
 
     /**
-     * Checks case incentive for a specific header field
+     * Checks case incentive for a specific header field.
      *
      * @param string $headerField The header field to check
      */
     public function has(string $headerField): bool
     {
         $headerField = strtolower($headerField);
+
         return isset($this->headers[$headerField]);
     }
 
     /**
-     * Checks if the header with given headerField contains an empty value string
+     * Checks if the header with given headerField contains an empty value string.
      *
      * @param string $headerField The header field to check
      */
@@ -116,7 +117,7 @@ class Headers implements Countable, IteratorAggregate
     }
 
     /**
-     * Removes the header with the given header field name
+     * Removes the header with the given header field name.
      *
      * @param string $headerField The header field to remove
      */
@@ -132,7 +133,7 @@ class Headers implements Countable, IteratorAggregate
     }
 
     /**
-     * Return a Header object for the given header field name
+     * Return a Header object for the given header field name.
      *
      * @param string $headerField The header to get
      * @throws InvalidArgumentException

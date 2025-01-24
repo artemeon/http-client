@@ -19,14 +19,12 @@ use Artemeon\HttpClient\Http\Request;
 use Artemeon\HttpClient\Http\Response;
 
 /**
- * Abstract base class for the decorator pattern
+ * Abstract base class for the decorator pattern.
  */
 abstract class HttpClientDecorator implements HttpClient
 {
     /**
      * HttpClientDecorator constructor.
-     *
-     * @param HttpClient $httpClient
      */
     public function __construct(protected HttpClient $httpClient)
     {

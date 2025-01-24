@@ -16,7 +16,7 @@ namespace Artemeon\HttpClient\Http\Header;
 use Artemeon\HttpClient\Exception\InvalidArgumentException;
 
 /**
- * Value object for parsed http header fields
+ * Value object for parsed http header fields.
  */
 class Header
 {
@@ -35,7 +35,7 @@ class Header
     }
 
     /**
-     * Named constructor to create an instance based on the given string value
+     * Named constructor to create an instance based on the given string value.
      *
      * @param string $name Name of the http header field
      * @param string $value Value of the http header field
@@ -47,7 +47,7 @@ class Header
     }
 
     /**
-     * Named constructor to create an instance based on the given string[] values
+     * Named constructor to create an instance based on the given string[] values.
      *
      * @param string $name Name of the http header field
      * @param array $values Array of header values
@@ -59,9 +59,8 @@ class Header
     }
 
     /**
-     * Named constructor to create an instance based on the HeaderField object
+     * Named constructor to create an instance based on the HeaderField object.
      *
-     * @param HeaderField $headerField
      * @throws InvalidArgumentException
      */
     public static function fromField(HeaderField $headerField): self
@@ -70,7 +69,7 @@ class Header
     }
 
     /**
-     * Return the http header field name like "Accept-Encoding"
+     * Return the http header field name like "Accept-Encoding".
      */
     public function getFieldName(): string
     {
@@ -78,7 +77,7 @@ class Header
     }
 
     /**
-     * Add a value to the header
+     * Add a value to the header.
      *
      * @param string $value The string value to add
      */
@@ -88,7 +87,7 @@ class Header
     }
 
     /**
-     * Add an array of values to the header, doublets will be skipped
+     * Add an array of values to the header, doublets will be skipped.
      *
      * @param array $values The string value to add
      */
@@ -105,7 +104,7 @@ class Header
     }
 
     /**
-     * Returns all value of the http header field
+     * Returns all value of the http header field.
      */
     public function getValues(): array
     {
@@ -113,7 +112,7 @@ class Header
     }
 
     /**
-     * Returns all values as a concatenated comma separated string
+     * Returns all values as a concatenated comma separated string.
      */
     public function getValue(): string
     {
@@ -121,9 +120,8 @@ class Header
     }
 
     /**
-     * Check and normalize header values
+     * Check and normalize header values.
      *
-     * @param array $values
      * @throws InvalidArgumentException
      */
     private function assertValues(array $values): array
@@ -135,7 +133,7 @@ class Header
         foreach ($values as &$value) {
             $value = trim((string) $value);
             $isInvalidValue = !is_numeric($value) && !is_string($value);
-            $containsInvalidCharacters = preg_match("@^[ \t\x21-\x7E\x80-\xFF]*$@", (string)$value) !== 1;
+            $containsInvalidCharacters = preg_match("@^[ \t\x21-\x7E\x80-\xFF]*$@", (string) $value) !== 1;
 
             if ($isInvalidValue || $containsInvalidCharacters) {
                 throw new InvalidArgumentException('Header values must be RFC 7230 compatible strings.');
@@ -146,16 +144,15 @@ class Header
     }
 
     /**
-     * Check vor valid header name
+     * Check vor valid header name.
      *
-     * @param string $name
      * @throws InvalidArgumentException
      */
     private function assertName(string $name): string
     {
         $name = trim($name);
 
-        if (1 !== preg_match("@^[!#$%&'*+.^_`|~0-9A-Za-z-]+$@", $name)) {
+        if (preg_match("@^[!#$%&'*+.^_`|~0-9A-Za-z-]+$@", $name) !== 1) {
             throw new InvalidArgumentException('Header name must be an RFC 7230 compatible string.');
         }
 

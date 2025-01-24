@@ -19,7 +19,7 @@ use Artemeon\HttpClient\Stream\Stream;
 use Psr\Http\Message\StreamInterface;
 
 /**
- * Encoder for "application/json" encoded body content
+ * Encoder for "application/json" encoded body content.
  */
 class JsonEncoder implements Encoder
 {
@@ -28,12 +28,12 @@ class JsonEncoder implements Encoder
      * @param int $options Optional json encode options: @see https://www.php.net/manual/de/function.json-encode.php
      * @param string $mimeType Optional custom mime type
      */
-    private function __construct(private readonly array|object $value, private readonly int $options = 0, private readonly string $mimeType = MediaType::JSON)
+    private function __construct(private readonly array | object $value, private readonly int $options = 0, private readonly string $mimeType = MediaType::JSON)
     {
     }
 
     /**
-     * Named constructor to create an instance based on the given array
+     * Named constructor to create an instance based on the given array.
      *
      * ```php
      * # Associative arrays are always encoded as json object:
@@ -58,7 +58,7 @@ class JsonEncoder implements Encoder
     }
 
     /**
-     * Named constructor to create an instance based on the given object
+     * Named constructor to create an instance based on the given object.
      *
      * @param object $value Object to encode
      * @param int $options Bitmask of json constants:
@@ -80,6 +80,7 @@ class JsonEncoder implements Encoder
 
         if ($json === false) {
             $error = json_last_error_msg();
+
             throw new RuntimeException("Can't encode to json: $error");
         }
 

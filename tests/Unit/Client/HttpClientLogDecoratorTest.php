@@ -31,13 +31,14 @@ use Psr\Log\LoggerInterface;
 
 /**
  * @covers \Artemeon\HttpClient\Client\Decorator\Logger\LoggerDecorator
+ * @internal
  */
 class HttpClientLogDecoratorTest extends TestCase
 {
     use ProphecyTrait;
 
-    private LoggerInterface|ObjectProphecy $logger;
-    private HttpClient|ObjectProphecy $httpClient;
+    private LoggerInterface | ObjectProphecy $logger;
+    private HttpClient | ObjectProphecy $httpClient;
     private LoggerDecorator $httpClientLogDecorator;
     private ClientOptions $clientOptions;
 
@@ -53,14 +54,14 @@ class HttpClientLogDecoratorTest extends TestCase
 
         $this->httpClientLogDecorator = new LoggerDecorator(
             $this->httpClient->reveal(),
-            $this->logger->reveal()
+            $this->logger->reveal(),
         );
     }
 
     /**
      * @test
      */
-    public function send_WillCallDecoratedClass(): void
+    public function sendWillCallDecoratedClass(): void
     {
         $request = Request::forGet(Uri::fromString('http://apache'));
         $response = new Response(200, '1.1');
@@ -76,7 +77,7 @@ class HttpClientLogDecoratorTest extends TestCase
     /**
      * @test
      */
-    public function send_ClientThrowsClientResponseException_ShouldBeLogged(): void
+    public function sendClientThrowsClientResponseExceptionShouldBeLogged(): void
     {
         $request = Request::forGet(Uri::fromString('http://apache'));
         $response = new Response(500, '1.1');
@@ -92,7 +93,7 @@ class HttpClientLogDecoratorTest extends TestCase
     /**
      * @test
      */
-    public function send_ClientThrowsServerResponseException_ShouldBeLogged(): void
+    public function sendClientThrowsServerResponseExceptionShouldBeLogged(): void
     {
         $request = Request::forGet(Uri::fromString('http://apache'));
         $response = new Response(500, '1.1');
@@ -108,7 +109,7 @@ class HttpClientLogDecoratorTest extends TestCase
     /**
      * @test
      */
-    public function send_ClientThrowsHttpClientException_ShouldBeLogged(): void
+    public function sendClientThrowsHttpClientExceptionShouldBeLogged(): void
     {
         $request = Request::forGet(Uri::fromString('http://apache'));
         $exception = InvalidArgumentException::forAlreadyRegisteredHeaderFields('Host');

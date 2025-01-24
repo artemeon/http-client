@@ -21,13 +21,14 @@ use function http_build_query;
 
 /**
  * @covers \Artemeon\HttpClient\Http\Body\Encoder\FormUrlEncoder
+ * @internal
  */
 class FormUrlEncoderTest extends TestCase
 {
     /**
      * @test
      */
-    public function encode_ReturnsExpectedString(): void
+    public function encodeReturnsExpectedString(): void
     {
         $values = ['user' => 'Ernst Müller'];
         $encoder = FormUrlEncoder::fromArray($values);

@@ -22,7 +22,7 @@ use Psr\Http\Message\MessageInterface;
 use Psr\Http\Message\StreamInterface;
 
 /**
- * Abstract class to describe a http message
+ * Abstract class to describe a http message.
  *
  * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Messages
  */
@@ -41,7 +41,7 @@ abstract class Message implements MessageInterface
     }
 
     /**
-     * Return the Header collection as an array
+     * Return the Header collection as an array.
      */
     #[\Override]
     public function getHeaders(): array
@@ -85,7 +85,7 @@ abstract class Message implements MessageInterface
     #[\Override]
     public function hasHeader($name): bool
     {
-        return $this->headers->has(strval($name));
+        return $this->headers->has((string) $name);
     }
 
     /**
@@ -95,7 +95,7 @@ abstract class Message implements MessageInterface
     public function getHeader($name): array
     {
         try {
-            return $this->headers->get(strval($name))->getValues();
+            return $this->headers->get((string) $name)->getValues();
         } catch (InvalidArgumentException) {
             return [];
         }
@@ -108,7 +108,7 @@ abstract class Message implements MessageInterface
     public function getHeaderLine($name): string
     {
         try {
-            return $this->headers->get(strval($name))->getValue();
+            return $this->headers->get((string) $name)->getValue();
         } catch (InvalidArgumentException) {
             return '';
         }
@@ -139,7 +139,7 @@ abstract class Message implements MessageInterface
     public function withProtocolVersion($version): self
     {
         $cloned = clone $this;
-        $cloned->version = strval($version);
+        $cloned->version = (string) $version;
 
         return $cloned;
     }
@@ -197,10 +197,8 @@ abstract class Message implements MessageInterface
     }
 
     /**
-     * Checks the header data
+     * Checks the header data.
      *
-     * @param $name
-     * @param $value
      * @throws InvalidArgumentException
      */
     private function assertHeader($name, $value): void

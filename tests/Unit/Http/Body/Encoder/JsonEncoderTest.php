@@ -23,6 +23,7 @@ use stdClass;
 
 /**
  * @covers \Artemeon\HttpClient\Http\Body\Encoder\JsonEncoder
+ * @internal
  */
 class JsonEncoderTest extends TestCase
 {
@@ -30,7 +31,7 @@ class JsonEncoderTest extends TestCase
      * @test
      * @runInSeparateProcess
      */
-    public function fromArray_JsonEncodeFailsThrows_Exception()
+    public function fromArrayJsonEncodeFailsThrowsException(): void
     {
         $globalProphet = new PHPProphet();
         $globalProphecy = $globalProphet->prophesize("\Artemeon\HttpClient\Http\Body\Encoder");
@@ -51,7 +52,7 @@ class JsonEncoderTest extends TestCase
     /**
      * @test
      */
-    public function fromObject_ReturnExpectedValue(): void
+    public function fromObjectReturnExpectedValue(): void
     {
         $class = new stdClass();
         $class->name = 'name';
@@ -66,13 +67,13 @@ class JsonEncoderTest extends TestCase
     /**
      * @test
      */
-    public function fromArray_ReturnExpectedValue(): void
+    public function fromArrayReturnExpectedValue(): void
     {
         $encoder = JsonEncoder::fromArray(
             [
                 'name' => 'name',
-                'test' => 1
-            ]
+                'test' => 1,
+            ],
         );
 
         self::assertSame('{"name":"name","test":1}', $encoder->encode()->__toString());

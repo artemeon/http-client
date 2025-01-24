@@ -1,5 +1,6 @@
-## 1.1.0 - 2024-01-20
-* make library php 8.4 ready
+## 1.0.0 - 2025-01-20
+- Drop support for PHP 8.1, PHP 8.2 and PHP 8.3.
+- Add Support for PHP 8.4.
 
 ## 0.1.0 - 2020-02-12
 * Initial release

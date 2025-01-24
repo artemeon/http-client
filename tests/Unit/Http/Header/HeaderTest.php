@@ -20,13 +20,14 @@ use PHPUnit\Framework\TestCase;
 
 /**
  * @covers \Artemeon\HttpClient\Http\Header\Header
+ * @internal
  */
 class HeaderTest extends TestCase
 {
     /**
      * @test
      */
-    public function getValue_ReturnStringWithoutComma(): void
+    public function getValueReturnStringWithoutComma(): void
     {
         $header = Header::fromString(HeaderField::REFERER, 'some-referer');
         self::assertSame('some-referer', $header->getValue());
@@ -35,7 +36,7 @@ class HeaderTest extends TestCase
     /**
      * @test
      */
-    public function getValue_ReturnCommaSeparatedString(): void
+    public function getValueReturnCommaSeparatedString(): void
     {
         $header = Header::fromArray(HeaderField::REFERER, ['some-referer', 'more-stuff']);
         self::assertSame('some-referer, more-stuff', $header->getValue());
@@ -44,7 +45,7 @@ class HeaderTest extends TestCase
     /**
      * @test
      */
-    public function addValue_AddToArray(): void
+    public function addValueAddToArray(): void
     {
         $header = Header::fromString(HeaderField::REFERER, 'some-referer');
         $header->addValue('added-string');
@@ -54,7 +55,7 @@ class HeaderTest extends TestCase
     /**
      * @test
      */
-    public function getValues_ReturnsExceptedArray(): void
+    public function getValuesReturnsExceptedArray(): void
     {
         $header = Header::fromArray(HeaderField::REFERER, ['some-referer', 'more-stuff']);
         self::assertSame('some-referer', $header->getValues()[0]);
@@ -64,7 +65,7 @@ class HeaderTest extends TestCase
     /**
      * @test
      */
-    public function getFieldName_ReturnsExpectedValue(): void
+    public function getFieldNameReturnsExpectedValue(): void
     {
         $header = Header::fromField(UserAgent::fromString());
         self::assertSame(HeaderField::USER_AGENT, $header->getFieldName());

@@ -21,6 +21,7 @@ use Prophecy\PhpUnit\ProphecyTrait;
 
 /**
  * @covers \Artemeon\HttpClient\Client\Options\ClientOptionsConverter
+ * @internal
  */
 class ClientOptionsConverterTest extends TestCase
 {
@@ -42,7 +43,7 @@ class ClientOptionsConverterTest extends TestCase
     /**
      * @test
      */
-    public function verifyKey_IsFalse(): void
+    public function verifyKeyIsFalse(): void
     {
         $this->clientOptions->optDisableSslVerification();
         $options = $this->clientOptionConverter->toGuzzleOptionsArray($this->clientOptions);
@@ -53,7 +54,7 @@ class ClientOptionsConverterTest extends TestCase
     /**
      * @test
      */
-    public function verifyKey_IsTrue(): void
+    public function verifyKeyIsTrue(): void
     {
         $options = $this->clientOptionConverter->toGuzzleOptionsArray($this->clientOptions);
 
@@ -63,7 +64,7 @@ class ClientOptionsConverterTest extends TestCase
     /**
      * @test
      */
-    public function verifyKey_IsCaBundlePathString(): void
+    public function verifyKeyIsCaBundlePathString(): void
     {
         $expected = '/path/ca/bundle';
         $this->clientOptions->optSetCustomCaBundlePath($expected);
@@ -75,7 +76,7 @@ class ClientOptionsConverterTest extends TestCase
     /**
      * @test
      */
-    public function allowRedirectsKey_ReturnFalse(): void
+    public function allowRedirectsKeyReturnFalse(): void
     {
         $this->clientOptions->optDisableRedirects();
         $options = $this->clientOptionConverter->toGuzzleOptionsArray($this->clientOptions);
@@ -86,7 +87,7 @@ class ClientOptionsConverterTest extends TestCase
     /**
      * @test
      */
-    public function allowRedirectsKey_ReturnsValidArray(): void
+    public function allowRedirectsKeyReturnsValidArray(): void
     {
         $expectedMax = 10;
         $expectedReferer = true;
@@ -102,7 +103,7 @@ class ClientOptionsConverterTest extends TestCase
     /**
      * @test
      */
-    public function timeoutKey_HasExpectedIntValue(): void
+    public function timeoutKeyHasExpectedIntValue(): void
     {
         $expected = 22;
         $this->clientOptions->optSetTimeout($expected);

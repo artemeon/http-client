@@ -16,14 +16,12 @@ namespace Artemeon\HttpClient\Client\Options;
 use GuzzleHttp\RequestOptions as GuzzleRequestOptions;
 
 /**
- * Class to convert http-client options object to the guzzle options array format
+ * Class to convert http-client options object to the guzzle options array format.
  */
 class ClientOptionsConverter
 {
     /**
-     * Converts the given ClientOptions to the guzzle options array format
-     *
-     * @param ClientOptions $clientOptions
+     * Converts the given ClientOptions to the guzzle options array format.
      */
     public function toGuzzleOptionsArray(ClientOptions $clientOptions): array
     {
@@ -46,7 +44,6 @@ class ClientOptionsConverter
 
     /**
      * @see http://docs.guzzlephp.org/en/6.5/request-options.html#verify
-     * @param ClientOptions $clientOptions
      * @return string|bool
      */
     private function createVerifyKey(ClientOptions $clientOptions)
@@ -54,16 +51,16 @@ class ClientOptionsConverter
         if ($clientOptions->isSslVerificationEnabled()) {
             if ($clientOptions->hasCustomCaBundlePath()) {
                 return $clientOptions->getCustomCaBundlePath();
-            } else {
-                return true;
             }
+
+            return true;
         }
+
         return false;
     }
 
     /**
      * @see http://docs.guzzlephp.org/en/6.5/request-options.html#allow-redirects
-     * @param ClientOptions $clientOptions
      * @return array|bool
      */
     private function createAllowRedirectsKey(ClientOptions $clientOptions)
@@ -74,6 +71,7 @@ class ClientOptionsConverter
                 'referer' => $clientOptions->isRefererForRedirectsEnabled(),
             ];
         }
+
         return false;
     }
 }

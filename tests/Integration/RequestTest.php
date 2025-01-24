@@ -11,11 +11,12 @@ use Http\Psr7Test\RequestIntegrationTest;
 
 /**
  * @covers \Artemeon\HttpClient\Http\Request
+ * @internal
  */
 class RequestTest extends RequestIntegrationTest
 {
     /**
-     * Overwrite, parent code doesn't work witz Guzzle > 7.2, remove when paren code is fixed
+     * Overwrite, parent code doesn't work witz Guzzle > 7.2, remove when paren code is fixed.
      */
     #[\Override]
     protected function buildStream($data)
@@ -29,7 +30,8 @@ class RequestTest extends RequestIntegrationTest
     #[\Override]
     public function createSubject()
     {
-        $this->skippedTests['testMethodIsExtendable'] = "";
+        $this->skippedTests['testMethodIsExtendable'] = '';
+
         return Request::forGet(Uri::fromString('/'));
     }
 }

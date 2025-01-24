@@ -14,42 +14,42 @@ declare(strict_types=1);
 namespace Artemeon\HttpClient\Http;
 
 /**
- * Static class to describe media type MIME types
+ * Static class to describe media type MIME types.
  */
 class MediaType
 {
     /** @var string */
-    public const JSON = "application/json";
+    public const JSON = 'application/json';
 
     /** @var string */
-    public const JSON_API = "application/vnd.api+json";
+    public const JSON_API = 'application/vnd.api+json';
 
     /** @var string */
-    public const FORM_URL_ENCODED = "application/x-www-form-urlencoded";
+    public const FORM_URL_ENCODED = 'application/x-www-form-urlencoded';
 
     /** @var string */
-    public const MULTIPART_FORM_DATA = "multipart/form-data";
+    public const MULTIPART_FORM_DATA = 'multipart/form-data';
 
     /** @var string */
-    public const PDF = "application/pdf";
+    public const PDF = 'application/pdf';
 
     /** @var string */
-    public const XML = "application/xml";
+    public const XML = 'application/xml';
 
     /** @var string */
-    public const BMP = "image/x-ms-bmp";
+    public const BMP = 'image/x-ms-bmp';
 
     /** @var string */
-    public const GIF = "image/gif";
-
-    /** @var string  */
-    public const JPG = "image/jpeg";
-
-    /** @var string  */
-    public const PNG = "image/png";
+    public const GIF = 'image/gif';
 
     /** @var string */
-    public const UNKNOWN = "application/octet-stream";
+    public const JPG = 'image/jpeg';
+
+    /** @var string */
+    public const PNG = 'image/png';
+
+    /** @var string */
+    public const UNKNOWN = 'application/octet-stream';
 
     /** @var string[] */
     private static array $extensionToType = [
@@ -63,7 +63,7 @@ class MediaType
     ];
 
     /**
-     * Static helper function to map a file extension to the related MIME type
+     * Static helper function to map a file extension to the related MIME type.
      *
      * @param string $fileExtension The file extension string
      */

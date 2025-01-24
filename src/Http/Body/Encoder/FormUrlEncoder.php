@@ -18,7 +18,7 @@ use Artemeon\HttpClient\Stream\Stream;
 use Psr\Http\Message\StreamInterface;
 
 /**
- * Encoder for "application/x-www-form-urlencoded" encoded body content
+ * Encoder for "application/x-www-form-urlencoded" encoded body content.
  */
 class FormUrlEncoder implements Encoder
 {
@@ -32,7 +32,7 @@ class FormUrlEncoder implements Encoder
     }
 
     /**
-     * Named constructor to create an instance based on the given array
+     * Named constructor to create an instance based on the given array.
      *
      * ```php
      * $encoder = FormUrlEncoder->fromArray(['username' = 'John.Doe'])

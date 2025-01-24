@@ -24,24 +24,24 @@ use InvalidArgumentException;
 use Psr\Log\LoggerInterface;
 
 /**
- * Static factory class for production environment
+ * Static factory class for production environment.
  */
 class HttpClientFactory
 {
     /**
-     * Named constructor to create an instance for production environments without logging
+     * Named constructor to create an instance for production environments without logging.
      */
     public static function create(): HttpClient
     {
         return new ArtemeonHttpClient(
             new GuzzleClient(),
-            new ClientOptionsConverter()
+            new ClientOptionsConverter(),
         );
     }
 
     /**
      * Named constructor to create an instance for production with a PSR 3 logger for
-     * request/response calls and all occurred exceptions
+     * request/response calls and all occurred exceptions.
      *
      * @param LoggerInterface $logger PSR-3 logger @see https://www.php-fig.org/psr/psr-3/
      * @param string $format @see \GuzzleHttp\MessageFormatter for all allowed options
@@ -55,7 +55,7 @@ class HttpClientFactory
             $handlerStack->push(Middleware::log($logger, $formatter));
             $httpClient = new ArtemeonHttpClient(
                 new GuzzleClient(['handler' => $handlerStack]),
-                new ClientOptionsConverter()
+                new ClientOptionsConverter(),
             );
         } catch (InvalidArgumentException $exception) {
             throw RuntimeException::fromPreviousException($exception);

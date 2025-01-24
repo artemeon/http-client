@@ -21,7 +21,7 @@ use Artemeon\HttpClient\Stream\Stream;
 use Psr\Http\Message\StreamInterface;
 
 /**
- * Value object to cover all http body related content
+ * Value object to cover all http body related content.
  */
 class Body
 {
@@ -37,7 +37,7 @@ class Body
     }
 
     /**
-     * Named constructor to create an instance based on the given values
+     * Named constructor to create an instance based on the given values.
      *
      * @param string $mimeType MIME-Type of the content
      * @param string $value String to set the content
@@ -49,7 +49,7 @@ class Body
     }
 
     /**
-     * Named constructor to create an instance based on the given Encoder
+     * Named constructor to create an instance based on the given Encoder.
      *
      * @param Encoder $encoder Body Encoder implementation
      * @throws RuntimeException
@@ -60,9 +60,7 @@ class Body
     }
 
     /**
-     * Named constructor to create an instance based on the given Reader
-     *
-     * @param Reader $reader
+     * Named constructor to create an instance based on the given Reader.
      */
     public static function fromReader(Reader $reader): self
     {
@@ -73,7 +71,7 @@ class Body
     }
 
     /**
-     * Returns the calculated content length
+     * Returns the calculated content length.
      */
     public function getContentLength(): int
     {
@@ -81,7 +79,7 @@ class Body
     }
 
     /**
-     * Returns the associated mime type string
+     * Returns the associated mime type string.
      */
     public function getMimeType(): string
     {
@@ -89,7 +87,7 @@ class Body
     }
 
     /**
-     * Returns the content string
+     * Returns the content string.
      */
     public function getStream(): StreamInterface
     {

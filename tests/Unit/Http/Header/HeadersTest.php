@@ -25,6 +25,7 @@ use PHPUnit\Framework\TestCase;
 
 /**
  * @covers \Artemeon\HttpClient\Http\Header\Headers
+ * @internal
  */
 class HeadersTest extends TestCase
 {
@@ -40,7 +41,7 @@ class HeadersTest extends TestCase
     /**
      * @test
      */
-    public function fromFields_CreatesValidHeaders(): void
+    public function fromFieldsCreatesValidHeaders(): void
     {
         $this->headers = Headers::fromFields([UserAgent::fromString('test')]);
         $userAgent = $this->headers->get(HeaderField::USER_AGENT);
@@ -53,7 +54,7 @@ class HeadersTest extends TestCase
     /**
      * @test
      */
-    public function has_IsCaseIncentive_ReturnsTrue(): void
+    public function hasIsCaseIncentiveReturnsTrue(): void
     {
         $this->headers->add(Header::fromField(UserAgent::fromString()));
         self::assertTrue($this->headers->has('USER-AGENT'));
@@ -62,7 +63,7 @@ class HeadersTest extends TestCase
     /**
      * @test
      */
-    public function has_NotExists_ReturnsFalse(): void
+    public function hasNotExistsReturnsFalse(): void
     {
         $this->headers->add(Header::fromField(UserAgent::fromString()));
         self::assertFalse($this->headers->has('not-exists'));
@@ -71,7 +72,7 @@ class HeadersTest extends TestCase
     /**
      * @test
      */
-    public function get_NotExists_ThrowsException(): void
+    public function getNotExistsThrowsException(): void
     {
         $this->expectException(InvalidArgumentException::class);
         $this->headers->get('not-exists');
@@ -80,7 +81,7 @@ class HeadersTest extends TestCase
     /**
      * @test
      */
-    public function get_Exists_ReturnsValue(): void
+    public function getExistsReturnsValue(): void
     {
         $expected = Header::fromField(Authorization::forAuthBasic('john.doe', 'geheim'));
         $this->headers->add($expected);
@@ -91,7 +92,7 @@ class HeadersTest extends TestCase
     /**
      * @test
      */
-    public function get_ExistsCaseIncentive_ReturnsValue(): void
+    public function getExistsCaseIncentiveReturnsValue(): void
     {
         $expected = Header::fromField(Authorization::forAuthBasic('john.doe', 'geheim'));
         $this->headers->add($expected);
@@ -102,7 +103,7 @@ class HeadersTest extends TestCase
     /**
      * @test
      */
-    public function add_Exists_ThrowsException(): void
+    public function addExistsThrowsException(): void
     {
         $header = Header::fromField(Authorization::forAuthBasic('john.doe', 'geheim'));
 
@@ -114,7 +115,7 @@ class HeadersTest extends TestCase
     /**
      * @test
      */
-    public function add_IsHostHeader_ShouldBeFirstHeader(): void
+    public function addIsHostHeaderShouldBeFirstHeader(): void
     {
         $AuthHeader = Header::fromField(Authorization::forAuthBasic('john.doe', 'geheim'));
         $hostHeader = Header::fromField(Host::fromUri(Uri::fromString('ftp://www.artemeon.de')));
@@ -128,7 +129,7 @@ class HeadersTest extends TestCase
     /**
      * @test
      */
-    public function replace_CaseIncentive_ReplaceHeader(): void
+    public function replaceCaseIncentiveReplaceHeader(): void
     {
         $AuthHeader = Header::fromField(Authorization::forAuthBasic('john.doe', 'geheim'));
         $hostHeader = Header::fromField(Host::fromUri(Uri::fromString('ftp://www.artemeon.de')));
@@ -146,7 +147,7 @@ class HeadersTest extends TestCase
     /**
      * @test
      */
-    public function replace_IsNotExistentHostHeader_ReplaceAsFirstHeader(): void
+    public function replaceIsNotExistentHostHeaderReplaceAsFirstHeader(): void
     {
         $AuthHeader = Header::fromField(Authorization::forAuthBasic('john.doe', 'geheim'));
         $hostHeader = Header::fromField(UserAgent::fromString());
@@ -165,7 +166,7 @@ class HeadersTest extends TestCase
     /**
      * @test
      */
-    public function isEmpty_FieldExists_ReturnsTrue(): void
+    public function isEmptyFieldExistsReturnsTrue(): void
     {
         $expected = Header::fromString(HeaderField::AUTHORIZATION, '');
         $this->headers->add($expected);
@@ -176,7 +177,7 @@ class HeadersTest extends TestCase
     /**
      * @test
      */
-    public function isEmpty_FieldDoesNotExists_ReturnsTrue(): void
+    public function isEmptyFieldDoesNotExistsReturnsTrue(): void
     {
         $expected = Header::fromString(HeaderField::AUTHORIZATION, 'some-credentials');
         $this->headers->add($expected);
@@ -184,11 +185,10 @@ class HeadersTest extends TestCase
         self::assertTrue($this->headers->isEmpty('does-not-exists'));
     }
 
-
     /**
      * @test
      */
-    public function isEmpty_FieldExistsCaseIncentive_ReturnsTrue(): void
+    public function isEmptyFieldExistsCaseIncentiveReturnsTrue(): void
     {
         $expected = Header::fromString('Authorization', '');
         $this->headers->add($expected);
@@ -199,43 +199,43 @@ class HeadersTest extends TestCase
     /**
      * @test
      */
-    public function remove_FieldDoesNotExists_DoesNothing(): void
+    public function removeFieldDoesNotExistsDoesNothing(): void
     {
         $expected = Header::fromField(UserAgent::fromString());
         $this->headers->add($expected);
         $this->headers->remove('does-not-exists');
 
-        self::assertCount(1 , $this->headers);
+        self::assertCount(1, $this->headers);
     }
 
     /**
      * @test
      */
-    public function remove_FieldExists_RemovesField(): void
+    public function removeFieldExistsRemovesField(): void
     {
         $expected = Header::fromField(UserAgent::fromString());
         $this->headers->add($expected);
         $this->headers->remove(HeaderField::USER_AGENT);
 
-        self::assertCount(0 , $this->headers);
+        self::assertCount(0, $this->headers);
     }
 
     /**
      * @test
      */
-    public function remove_FieldExistsCaseIncentive_RemovesField(): void
+    public function removeFieldExistsCaseIncentiveRemovesField(): void
     {
         $expected = Header::fromField(UserAgent::fromString());
         $this->headers->add($expected);
         $this->headers->remove('USER-AGENT');
 
-        self::assertCount(0 , $this->headers);
+        self::assertCount(0, $this->headers);
     }
 
     /**
      * @test
      */
-    public function getIterator_ReturnsArrayIterator(): void
+    public function getIteratorReturnsArrayIterator(): void
     {
         $expected = Header::fromField(Authorization::forAuthBasic('john.doe', 'geheim'));
         $this->headers->add($expected);

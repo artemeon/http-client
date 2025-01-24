@@ -14,7 +14,7 @@ declare(strict_types=1);
 namespace Artemeon\HttpClient\Client\Options;
 
 /**
- * Class with all possible client configuration options on the network layer
+ * Class with all possible client configuration options on the network layer.
  */
 class ClientOptions
 {
@@ -34,7 +34,7 @@ class ClientOptions
     private $handler;
 
     /**
-     * Named constructor to create an instance based on the default values
+     * Named constructor to create an instance based on the default values.
      */
     public static function fromDefaults(): self
     {
@@ -61,7 +61,7 @@ class ClientOptions
     }
 
     /**
-     * Is redirect allowed
+     * Is redirect allowed.
      */
     public function isRedirectAllowed(): bool
     {
@@ -69,7 +69,7 @@ class ClientOptions
     }
 
     /**
-     * Option to disable SSL certificate verification
+     * Option to disable SSL certificate verification.
      */
     public function optDisableSslVerification(): void
     {
@@ -77,7 +77,7 @@ class ClientOptions
     }
 
     /**
-     * Is SSL certificate verification enabled
+     * Is SSL certificate verification enabled.
      */
     public function isSslVerificationEnabled(): bool
     {
@@ -87,8 +87,6 @@ class ClientOptions
     /**
      * Option to set a custom CA bundle certificates path. As default we use the CA bundle
      * provided by the operating system.
-     *
-     * @param string $customCaBundlePath
      */
     public function optSetCustomCaBundlePath(string $customCaBundlePath): void
     {
@@ -96,7 +94,7 @@ class ClientOptions
     }
 
     /**
-     * Returns the custom CA bundle path or an empty string (Default)
+     * Returns the custom CA bundle path or an empty string (Default).
      */
     public function getCustomCaBundlePath(): string
     {
@@ -104,9 +102,7 @@ class ClientOptions
     }
 
     /**
-     * Option to set the timeout in seconds for requests
-     *
-     * @param int $timeout
+     * Option to set the timeout in seconds for requests.
      */
     public function optSetTimeout(int $timeout): void
     {
@@ -114,7 +110,7 @@ class ClientOptions
     }
 
     /**
-     * Returns the connect timeout
+     * Returns the connect timeout.
      */
     public function getTimeout(): int
     {
@@ -122,9 +118,7 @@ class ClientOptions
     }
 
     /**
-     * Option to set the amount of maximal allowed redirects
-     *
-     * @param int $maxRedirects
+     * Option to set the amount of maximal allowed redirects.
      */
     public function optSetMaxRedirects(int $maxRedirects): void
     {
@@ -132,7 +126,7 @@ class ClientOptions
     }
 
     /**
-     * Returns the amount of max allowed redirects
+     * Returns the amount of max allowed redirects.
      */
     public function getMaxAllowedRedirects(): int
     {
@@ -140,7 +134,7 @@ class ClientOptions
     }
 
     /**
-     * Option to disable the referer for redirects
+     * Option to disable the referer for redirects.
      */
     public function optDisableRefererForRedirects(): void
     {

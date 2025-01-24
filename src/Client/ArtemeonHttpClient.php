@@ -41,15 +41,14 @@ use GuzzleHttp\Exception\TransferException as GuzzleTransferException;
 use Psr\Http\Message\ResponseInterface as GuzzleResponse;
 
 /**
- * HttpClient implementation with guzzle
+ * HttpClient implementation with guzzle.
  */
 class ArtemeonHttpClient implements HttpClient
 {
     public function __construct(
-        private readonly GuzzleClient           $guzzleClient,
-        private readonly ClientOptionsConverter $clientOptionsConverter
-    )
-    {
+        private readonly GuzzleClient $guzzleClient,
+        private readonly ClientOptionsConverter $clientOptionsConverter,
+    ) {
     }
 
     #[\Override]
@@ -115,7 +114,7 @@ class ArtemeonHttpClient implements HttpClient
     }
 
     /**
-     * Checks the Guzzle exception for a response object and converts it to a Artemeon response object
+     * Checks the Guzzle exception for a response object and converts it to a Artemeon response object.
      */
     private function getResponseFromGuzzleException(GuzzleRequestException $guzzleRequestException): ?Response
     {
@@ -127,7 +126,7 @@ class ArtemeonHttpClient implements HttpClient
     }
 
     /**
-     * Converts a GuzzleResponse object to our Response object
+     * Converts a GuzzleResponse object to our Response object.
      */
     private function convertGuzzleResponse(GuzzleResponse $guzzleResponse): Response
     {
@@ -142,7 +141,7 @@ class ArtemeonHttpClient implements HttpClient
             $guzzleResponse->getProtocolVersion(),
             $guzzleResponse->getBody(),
             $headers,
-            $guzzleResponse->getReasonPhrase()
+            $guzzleResponse->getReasonPhrase(),
         );
     }
 }

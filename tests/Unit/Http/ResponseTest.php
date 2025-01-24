@@ -21,19 +21,20 @@ use PHPUnit\Framework\TestCase;
 
 /**
  * @covers \Artemeon\HttpClient\Http\Response
+ * @internal
  */
 class ResponseTest extends TestCase
 {
     /**
      * @test
      */
-    public function getStatusCode_ReturnValidCode()
+    public function getStatusCodeReturnValidCode(): void
     {
         $response = new Response(
             200,
             '1.1',
             Stream::fromString('test'),
-            Headers::fromFields([UserAgent::fromString()])
+            Headers::fromFields([UserAgent::fromString()]),
         );
 
         self::assertSame(200, $response->getStatusCode());

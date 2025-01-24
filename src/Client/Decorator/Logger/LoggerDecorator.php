@@ -24,7 +24,7 @@ use Artemeon\HttpClient\Http\Response;
 use Psr\Log\LoggerInterface;
 
 /**
- * Decorator class to add Psr logging to the httpClient
+ * Decorator class to add Psr logging to the httpClient.
  */
 class LoggerDecorator extends HttpClientDecorator
 {
@@ -43,9 +43,11 @@ class LoggerDecorator extends HttpClientDecorator
             return $this->httpClient->send($request, $clientOptions);
         } catch (ClientResponseException | ServerResponseException $exception) {
             $this->logger->error($exception->getMessage(), ['exception' => $exception]);
+
             throw $exception;
         } catch (HttpClientException $exception) {
             $this->logger->info($exception->getMessage(), ['exception' => $exception]);
+
             throw $exception;
         }
     }

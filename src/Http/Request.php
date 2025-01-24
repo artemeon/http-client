@@ -26,7 +26,7 @@ use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UriInterface;
 
 /**
- * Implementation of the psr7 RequestInterface
+ * Implementation of the psr7 RequestInterface.
  */
 class Request extends Message implements RequestInterface
 {
@@ -42,11 +42,6 @@ class Request extends Message implements RequestInterface
     private string $requestTarget;
 
     /**
-     * @param string $method
-     * @param UriInterface $uri
-     * @param Headers|null $headers
-     * @param StreamInterface|null $body
-     * @param string $version
      * @throws InvalidArgumentException
      */
     private function __construct(
@@ -54,7 +49,7 @@ class Request extends Message implements RequestInterface
         private UriInterface $uri,
         ?Headers $headers = null,
         ?StreamInterface $body = null,
-        string $version = '1.1'
+        string $version = '1.1',
     ) {
         $this->requestTarget = $this->parseRequestTarget($this->uri);
         $this->assertValidMethod($method);
@@ -63,12 +58,12 @@ class Request extends Message implements RequestInterface
         parent::__construct(
             $this->addHostHeader($this->uri, $headers),
             $body,
-            $version
+            $version,
         );
     }
 
     /**
-     * Named constructor to create an instance for post requests
+     * Named constructor to create an instance for post requests.
      *
      * @param Uri $uri The Url object
      * @param Headers|null $headers Optional: Headers collection or null
@@ -82,12 +77,12 @@ class Request extends Message implements RequestInterface
             $uri,
             $headers,
             null,
-            $version
+            $version,
         );
     }
 
     /**
-     * Named constructor to create an instance for OPTIONS requests
+     * Named constructor to create an instance for OPTIONS requests.
      *
      * @param Uri $uri The Url object
      * @param Headers|null $headers Optional: Headers collection or null
@@ -101,12 +96,12 @@ class Request extends Message implements RequestInterface
             $uri,
             $headers,
             null,
-            $version
+            $version,
         );
     }
 
     /**
-     * Named constructor to create an instance for POST requests
+     * Named constructor to create an instance for POST requests.
      *
      * @param Uri $uri The Url object
      * @param Body $body The Body object
@@ -123,12 +118,12 @@ class Request extends Message implements RequestInterface
             $uri,
             $headers,
             $body->getStream(),
-            $version
+            $version,
         );
     }
 
     /**
-     * Named constructor to create an instance for PUT requests
+     * Named constructor to create an instance for PUT requests.
      *
      * @param Uri $uri The Url object
      * @param Body $body The Body object
@@ -145,12 +140,12 @@ class Request extends Message implements RequestInterface
             $uri,
             $headers,
             $body->getStream(),
-            $version
+            $version,
         );
     }
 
     /**
-     * Named constructor to create an instance for PATCH requests
+     * Named constructor to create an instance for PATCH requests.
      *
      * @param Uri $uri The Url object
      * @param Body $body The Body object
@@ -167,12 +162,12 @@ class Request extends Message implements RequestInterface
             $uri,
             $headers,
             $body->getStream(),
-            $version
+            $version,
         );
     }
 
     /**
-     * Named constructor to create an instance for DELETE requests
+     * Named constructor to create an instance for DELETE requests.
      *
      * @param Uri $uri The Url object
      * @param Headers|null $headers Optional: Headers collection or null
@@ -186,7 +181,7 @@ class Request extends Message implements RequestInterface
             $uri,
             $headers,
             null,
-            $version
+            $version,
         );
     }
 
@@ -267,16 +262,14 @@ class Request extends Message implements RequestInterface
     public function withRequestTarget($requestTarget): self
     {
         $cloned = clone $this;
-        $cloned->requestTarget = trim(strval($requestTarget));
+        $cloned->requestTarget = trim((string) $requestTarget);
 
         return $cloned;
     }
 
     /**
-     * Add the calculated header fields from the body to the headers collection
+     * Add the calculated header fields from the body to the headers collection.
      *
-     * @param Body $body
-     * @param Headers|null $headers
      * @throws InvalidArgumentException
      */
     private static function addHeaderFromBody(Body $body, ?Headers $headers): Headers
@@ -289,10 +282,8 @@ class Request extends Message implements RequestInterface
     }
 
     /**
-     * Add the host header based on the given Url
+     * Add the host header based on the given Url.
      *
-     * @param UriInterface $uri
-     * @param Headers|null $headers
      * @throws InvalidArgumentException
      */
     private function addHostHeader(UriInterface $uri, ?Headers $headers): Headers
@@ -307,9 +298,8 @@ class Request extends Message implements RequestInterface
     }
 
     /**
-     * Checks for valid request methods
+     * Checks for valid request methods.
      *
-     * @param string $method
      * @throws InvalidArgumentException
      */
     private function assertValidMethod(string $method): void
@@ -330,10 +320,7 @@ class Request extends Message implements RequestInterface
     }
 
     /**
-     * Parse the standard request target from the given Uri
-     *
-     * @param UriInterface $uri
-     * @return string
+     * Parse the standard request target from the given Uri.
      */
     private function parseRequestTarget(UriInterface $uri): string
     {

@@ -16,7 +16,7 @@ namespace Artemeon\HttpClient\Stream;
 use Artemeon\HttpClient\Exception\RuntimeException;
 
 /**
- * Stream interface implementation for large strings and files
+ * Stream interface implementation for large strings and files.
  *
  * @see https://www.php.net/manual/de/intro.stream.php
  */
@@ -44,7 +44,7 @@ class Stream implements AppendableStream
     }
 
     /**
-     * Force to close the file handle
+     * Force to close the file handle.
      */
     public function __destruct()
     {
@@ -52,7 +52,7 @@ class Stream implements AppendableStream
     }
 
     /**
-     * Named constructor to create an instance based on the given string
+     * Named constructor to create an instance based on the given string.
      *
      * @param string $string String content
      * @param string $mode @see https://www.php.net/manual/de/function.fopen.php
@@ -60,7 +60,7 @@ class Stream implements AppendableStream
      */
     public static function fromString(string $string, string $mode = 'r+'): self
     {
-        $resource = fopen("php://temp", $mode);
+        $resource = fopen('php://temp', $mode);
         $instance = new self($resource);
         $instance->write($string);
 
@@ -68,19 +68,20 @@ class Stream implements AppendableStream
     }
 
     /**
-     * Named constructor to create an instance based on the given file mode
+     * Named constructor to create an instance based on the given file mode.
      *
      * @param string $mode Stream Modes: @see https://www.php.net/manual/de/function.fopen.php
      * @throws RuntimeException
      */
     public static function fromFileMode(string $mode): self
     {
-        $resource = fopen("php://temp", $mode);
+        $resource = fopen('php://temp', $mode);
+
         return new self($resource);
     }
 
     /**
-     * Named constructor to create an instance based on the given file and read/write mode
+     * Named constructor to create an instance based on the given file and read/write mode.
      *
      * @param string $file Path to the file
      * @param string $mode Stream Modes: @see https://www.php.net/manual/de/function.fopen.php
@@ -130,7 +131,7 @@ class Stream implements AppendableStream
         $bytes = stream_copy_to_stream($stream->getResource(), $this->resource);
 
         if ($bytes === false) {
-            throw new RuntimeException("Append failed");
+            throw new RuntimeException('Append failed');
         }
 
         return $bytes;
@@ -149,7 +150,7 @@ class Stream implements AppendableStream
      * @inheritDoc
      */
     #[\Override]
-    public function close()
+    public function close(): void
     {
         if (!is_resource($this->resource)) {
             return;
@@ -162,7 +163,7 @@ class Stream implements AppendableStream
      * @inheritDoc
      */
     #[\Override]
-    public function detach()
+    public function detach(): void
     {
         $this->close();
         $this->metaData = [];
@@ -181,7 +182,7 @@ class Stream implements AppendableStream
 
         $fstat = fstat($this->resource);
 
-        return ($fstat['size']);
+        return $fstat['size'];
     }
 
     /**
@@ -197,7 +198,7 @@ class Stream implements AppendableStream
             throw new RuntimeException("Can't determine position");
         }
 
-        return (int)$position;
+        return (int) $position;
     }
 
     /**
@@ -226,19 +227,19 @@ class Stream implements AppendableStream
 
         // According to the fopen manual mode 'a' and 'a+' are not seekable
         foreach (['a', 'a+'] as $mode) {
-            if (str_contains((string) $this->metaData["mode"], $mode)) {
+            if (str_contains((string) $this->metaData['mode'], $mode)) {
                 return false;
             }
         }
 
-        return (bool)$this->getMetadata('seekable');
+        return (bool) $this->getMetadata('seekable');
     }
 
     /**
      * @inheritDoc
      */
     #[\Override]
-    public function seek($offset, $whence = SEEK_SET)
+    public function seek($offset, $whence = SEEK_SET): void
     {
         $this->assertStreamIsNotDetached();
         $result = fseek($this->resource, $offset, $whence);
@@ -252,7 +253,7 @@ class Stream implements AppendableStream
      * @inheritDoc
      */
     #[\Override]
-    public function rewind()
+    public function rewind(): void
     {
         $this->assertStreamIsNotDetached();
 
@@ -272,7 +273,7 @@ class Stream implements AppendableStream
         $this->assertStreamIsNotDetached();
         $this->assertStreamIsWriteable();
 
-        $bytes = fwrite($this->resource, strval($string));
+        $bytes = fwrite($this->resource, (string) $string);
 
         if ($bytes === false) {
             throw new RuntimeException("Cant't write to stream");
@@ -294,7 +295,7 @@ class Stream implements AppendableStream
         $writeModes = ['r+', 'w', 'w+', 'a', 'a+', 'x', 'x+', 'c', 'c+'];
 
         foreach ($writeModes as $mode) {
-            if (str_contains((string) $this->metaData["mode"], $mode)) {
+            if (str_contains((string) $this->metaData['mode'], $mode)) {
                 return true;
             }
         }
@@ -315,7 +316,7 @@ class Stream implements AppendableStream
         $readModes = ['r', 'r+', 'w+', 'a+', 'x+', 'c+'];
 
         foreach ($readModes as $mode) {
-            if (str_contains((string) $this->metaData["mode"], $mode)) {
+            if (str_contains((string) $this->metaData['mode'], $mode)) {
                 return true;
             }
         }
@@ -332,10 +333,10 @@ class Stream implements AppendableStream
         $this->assertStreamIsNotDetached();
         $this->assertStreamIsReadable();
 
-        $string = fread($this->resource, intval($length));
+        $string = fread($this->resource, (int) $length);
 
         if ($string === false) {
-            throw  new RuntimeException("Can't read from stream");
+            throw new RuntimeException("Can't read from stream");
         }
 
         return $string;
@@ -356,7 +357,7 @@ class Stream implements AppendableStream
         $content = stream_get_contents($this->resource);
 
         if ($content === false) {
-            throw  new RuntimeException("Can't read content from stream");
+            throw new RuntimeException("Can't read content from stream");
         }
 
         return $content;

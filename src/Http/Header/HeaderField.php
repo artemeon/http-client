@@ -14,24 +14,24 @@ declare(strict_types=1);
 namespace Artemeon\HttpClient\Http\Header;
 
 /**
- * Interface for http header fields
+ * Interface for http header fields.
  */
 interface HeaderField
 {
     public const AUTHORIZATION = 'Authorization';
-    public const REFERER = "Referer";
-    public const USER_AGENT = "User-Agent";
+    public const REFERER = 'Referer';
+    public const USER_AGENT = 'User-Agent';
     public const CONTENT_TYPE = 'Content-Type';
     public const CONTENT_LENGTH = 'Content-Length';
     public const HOST = 'Host';
 
     /**
-     * Returns the name of the field
+     * Returns the name of the field.
      */
     public function getName(): string;
 
     /**
-     * Returns the value of the field
+     * Returns the value of the field.
      */
     public function getValue(): string;
 }

@@ -19,7 +19,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
 
 /**
- * PSR-7 Response class
+ * PSR-7 Response class.
  */
 class Response extends Message implements ResponseInterface
 {
@@ -35,7 +35,7 @@ class Response extends Message implements ResponseInterface
         string $version,
         ?StreamInterface $body = null,
         ?Headers $headers = null,
-        private string $reasonPhrase = ''
+        private string $reasonPhrase = '',
     ) {
         parent::__construct($headers, $body, $version);
     }
@@ -60,7 +60,7 @@ class Response extends Message implements ResponseInterface
         }
 
         if (!is_int($code)) {
-            throw  new InvalidArgumentException('code must be a integer value');
+            throw new InvalidArgumentException('code must be a integer value');
         }
 
         if ($code < 100 || $code >= 600) {

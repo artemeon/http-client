@@ -17,7 +17,7 @@ use Artemeon\HttpClient\Http\Header\HeaderField;
 use Psr\Http\Message\UriInterface;
 
 /**
- * Class to describe the header field 'Host'
+ * Class to describe the header field 'Host'.
  */
 class Host implements HeaderField
 {
@@ -29,9 +29,7 @@ class Host implements HeaderField
     }
 
     /**
-     * Named constructor to create an instance based on the given Url
-     *
-     * @param UriInterface $uri
+     * Named constructor to create an instance based on the given Url.
      */
     public static function fromUri(UriInterface $uri): self
     {

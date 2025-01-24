@@ -16,7 +16,7 @@ namespace Artemeon\HttpClient\Http\Header\Fields;
 use Artemeon\HttpClient\Http\Header\HeaderField;
 
 /**
- * Class to describe the header field 'Authorisation'
+ * Class to describe the header field 'Authorisation'.
  *
  * Example:
  * ```php
@@ -34,7 +34,7 @@ class Authorization implements HeaderField
     }
 
     /**
-     * Name constructor to create an 'Authorisation: Bearer' field
+     * Name constructor to create an 'Authorisation: Bearer' field.
      *
      * @param string $credentials String with credentials for Bearer authorisation
      */
@@ -44,7 +44,7 @@ class Authorization implements HeaderField
     }
 
     /**
-     * Name constructor to create an 'Authorisation: Basic' field
+     * Name constructor to create an 'Authorisation: Basic' field.
      *
      * @param string $user String for the username
      * @param string $password String for the password

@@ -16,21 +16,16 @@ namespace Artemeon\HttpClient\Http\Header\Fields;
 use Artemeon\HttpClient\Http\Header\HeaderField;
 
 /**
- * Class to describe the header field 'Content-Length'
+ * Class to describe the header field 'Content-Length'.
  */
 class ContentLength implements HeaderField
 {
-    /**
-     * @param int $contentLength
-     */
     public function __construct(private readonly int $contentLength)
     {
     }
 
     /**
-     * Named constructor to create an instance from the given int value
-     *
-     * @param int $contentLength
+     * Named constructor to create an instance from the given int value.
      */
     public static function fromInt(int $contentLength): self
     {
@@ -52,6 +47,6 @@ class ContentLength implements HeaderField
     #[\Override]
     public function getValue(): string
     {
-        return strval($this->contentLength);
+        return (string) ($this->contentLength);
     }
 }

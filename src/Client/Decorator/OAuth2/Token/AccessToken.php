@@ -16,7 +16,7 @@ namespace Artemeon\HttpClient\Client\Decorator\OAuth2\Token;
 use Artemeon\HttpClient\Exception\RuntimeException;
 
 /**
- * Class to describe a OAuth2 access token
+ * Class to describe a OAuth2 access token.
  */
 class AccessToken
 {
@@ -37,7 +37,7 @@ class AccessToken
     {
         if (empty($token) || empty($expires) || empty($type)) {
             throw new RuntimeException(
-                "Access token fields: 'access_token', 'expires_in', 'token_type' are mandatory"
+                "Access token fields: 'access_token', 'expires_in', 'token_type' are mandatory",
             );
         }
 
@@ -47,7 +47,7 @@ class AccessToken
     }
 
     /**
-     * Named constructor to create an instance based on the given json encoded body string
+     * Named constructor to create an instance based on the given json encoded body string.
      *
      * @param string $json Json encoded response string
      * @throws RuntimeException
@@ -60,12 +60,12 @@ class AccessToken
             (string) $data['access_token'] ?? '',
             (int) $data['expires_in'] ?? 0,
             (string) $data['token_type'] ?? '',
-            (string) $data['scope'] ?? ''
+            (string) $data['scope'] ?? '',
         );
     }
 
     /**
-     * Returns the access token string
+     * Returns the access token string.
      */
     public function getToken(): string
     {
@@ -73,7 +73,7 @@ class AccessToken
     }
 
     /**
-     * Returns the expires in integer value
+     * Returns the expires in integer value.
      */
     public function getExpires(): int
     {
@@ -81,7 +81,7 @@ class AccessToken
     }
 
     /**
-     * Return the type of the authorization
+     * Return the type of the authorization.
      */
     public function getType(): string
     {
@@ -89,7 +89,7 @@ class AccessToken
     }
 
     /**
-     * Return the scope of the authorization
+     * Return the scope of the authorization.
      */
     public function getScope(): string
     {

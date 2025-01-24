@@ -16,11 +16,11 @@ namespace Artemeon\HttpClient\Http\Header\Fields;
 use Artemeon\HttpClient\Http\Header\HeaderField;
 
 /**
- * Class to describe the header field 'User-Agent'
+ * Class to describe the header field 'User-Agent'.
  */
 class UserAgent implements HeaderField
 {
-    public const DEFAULT = "Artemeon/HttpClient/Guzzle6";
+    public const DEFAULT = 'Artemeon/HttpClient/Guzzle6';
 
     /**
      * @param string $userAgent The user agent string
@@ -30,7 +30,7 @@ class UserAgent implements HeaderField
     }
 
     /**
-     * Named constructor to create an instance based on the given user agent string
+     * Named constructor to create an instance based on the given user agent string.
      *
      * @param string $userAgent User agent string
      */

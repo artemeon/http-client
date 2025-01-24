@@ -17,7 +17,7 @@ use Artemeon\HttpClient\Exception\InvalidArgumentException;
 use Psr\Http\Message\UriInterface;
 
 /**
- * Class Url implements the PSR-7 UriInterface
+ * Class Url implements the PSR-7 UriInterface.
  */
 class Uri implements UriInterface
 {
@@ -65,7 +65,7 @@ class Uri implements UriInterface
     }
 
     /**
-     * Named constructor to create an instance based on the given url and query params
+     * Named constructor to create an instance based on the given url and query params.
      *
      * @param string $uri Url string with protocol
      * @param array $queryParams Query params array: ["varName" => value]
@@ -132,8 +132,10 @@ class Uri implements UriInterface
             if ($this->password !== '') {
                 return $this->user . ':' . $this->password;
             }
+
             return $this->user;
         }
+
         return '';
     }
 
@@ -226,8 +228,8 @@ class Uri implements UriInterface
     #[\Override]
     public function withUserInfo($user, $password = null): self
     {
-        $user = trim(strval($user));
-        $password = trim(strval($password));
+        $user = trim((string) $user);
+        $password = trim((string) $password);
         $cloned = clone $this;
 
         // Empty string for the user is equivalent to removing user
@@ -308,9 +310,8 @@ class Uri implements UriInterface
     }
 
     /**
-     * Filter and validate the port
+     * Filter and validate the port.
      *
-     * @param $port
      * @throws InvalidArgumentException
      */
     private function filterPort($port): ?int
@@ -329,9 +330,8 @@ class Uri implements UriInterface
     }
 
     /**
-     * Filter and validate the scheme
+     * Filter and validate the scheme.
      *
-     * @param $scheme
      * @throws InvalidArgumentException
      */
     private function filterScheme($scheme): string
@@ -344,9 +344,8 @@ class Uri implements UriInterface
     }
 
     /**
-     * Filter and validate the host
+     * Filter and validate the host.
      *
-     * @param $host
      * @throws InvalidArgumentException
      */
     private function filterHost($host): string
@@ -359,9 +358,8 @@ class Uri implements UriInterface
     }
 
     /**
-     * Filter, validate and encode the path
+     * Filter, validate and encode the path.
      *
-     * @param $path
      * @throws InvalidArgumentException
      */
     private function filterPath($path): string
@@ -370,15 +368,14 @@ class Uri implements UriInterface
             throw new InvalidArgumentException('path must be a string');
         }
 
-        $pattern = "/(?:[^" . self::UNRESERVED . self::DELIMITER . "%:@\/]++|%(?![A-Fa-f0-9]{2}))/";
+        $pattern = '/(?:[^' . self::UNRESERVED . self::DELIMITER . "%:@\/]++|%(?![A-Fa-f0-9]{2}))/";
 
         return preg_replace_callback($pattern, [$this, 'encode'], $path);
     }
 
     /**
-     * * Filter, validate and encode the query or fragment
+     * * Filter, validate and encode the query or fragment.
      *
-     * @param $fragment
      * @throws InvalidArgumentException
      */
     private function filterQueryOrFragment($fragment): string
@@ -393,10 +390,7 @@ class Uri implements UriInterface
     }
 
     /**
-     * Checks if the given scheme uses their standard port
-     *
-     * @param string $scheme
-     * @param int $port
+     * Checks if the given scheme uses their standard port.
      */
     private function isStandardPort(string $scheme, ?int $port): bool
     {
@@ -408,10 +402,9 @@ class Uri implements UriInterface
     }
 
     /**
-     * Encoding for path, query and fragment characters
+     * Encoding for path, query and fragment characters.
      *
      * @param string[] $matches
-     * @return string
      */
     private function encode(array $matches): string
     {

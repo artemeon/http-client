@@ -48,13 +48,13 @@ class ClientCredentialsDecorator extends HttpClientDecorator
     public function __construct(
         HttpClient $httpClient,
         private readonly Request $accessTokenRequest,
-        private readonly AccessTokenCache $accessTokenCache
+        private readonly AccessTokenCache $accessTokenCache,
     ) {
         parent::__construct($httpClient);
     }
 
     /**
-     * Named constructor to create an instance based on the given ClientCredentials
+     * Named constructor to create an instance based on the given ClientCredentials.
      *
      * @param ClientCredentials $clientCredentials The OAuth2 client credential object
      * @param Uri $uri The Uri object
@@ -68,7 +68,7 @@ class ClientCredentialsDecorator extends HttpClientDecorator
         ClientCredentials $clientCredentials,
         Uri $uri,
         HttpClient $httpClient,
-        ?AccessTokenCache $accessTokenCache = null
+        ?AccessTokenCache $accessTokenCache = null,
     ): self {
         // Ensure default cache strategy
         if ($accessTokenCache === null) {
@@ -99,17 +99,16 @@ class ClientCredentialsDecorator extends HttpClientDecorator
     }
 
     /**
-     * Fetches the access token
+     * Fetches the access token.
      *
-     * @param ClientOptions|null $clientOptions
      * @throws RuntimeException
      */
     private function requestAccessToken(?ClientOptions $clientOptions = null): AccessToken
     {
         try {
             $response = $this->httpClient->send($this->accessTokenRequest, $clientOptions);
-        } catch (HttpClientException | Exception $exception) {
-            throw new RuntimeException("Cant request access token", 0, $exception);
+        } catch (Exception | HttpClientException $exception) {
+            throw new RuntimeException('Cant request access token', 0, $exception);
         }
 
         $this->assertIsValidJsonResponse($response);
@@ -118,9 +117,8 @@ class ClientCredentialsDecorator extends HttpClientDecorator
     }
 
     /**
-     * Checks for a valid access token response with valid json body
+     * Checks for a valid access token response with valid json body.
      *
-     * @param Response $response
      * @throws RuntimeException
      */
     private function assertIsValidJsonResponse(Response $response): void
@@ -128,10 +126,10 @@ class ClientCredentialsDecorator extends HttpClientDecorator
         if ($response->getStatusCode() !== 200) {
             throw new RuntimeException(
                 sprintf(
-                    "Invalid status code: s% for access token request, Body: %s",
+                    'Invalid status code: s% for access token request, Body: %s',
                     $response->getStatusCode(),
-                    $response->getBody()->__toString()
-                )
+                    $response->getBody()->__toString(),
+                ),
             );
         }
 

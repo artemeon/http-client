@@ -16,7 +16,7 @@ namespace Artemeon\HttpClient\Http\Header\Fields;
 use Artemeon\HttpClient\Http\Header\HeaderField;
 
 /**
- * Class to describe the header field 'Content-Type'
+ * Class to describe the header field 'Content-Type'.
  */
 class ContentType implements HeaderField
 {
@@ -28,7 +28,7 @@ class ContentType implements HeaderField
     }
 
     /**
-     * Named constructor to create an instance from the given string value
+     * Named constructor to create an instance from the given string value.
      *
      * @param string $mimeType MIME type string @see \Artemeon\HttpClient\Http\MediaType
      */
