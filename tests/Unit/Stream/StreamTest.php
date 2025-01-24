@@ -20,6 +20,7 @@ use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamDirectory;
 use Override;
 use PHPUnit\Framework\TestCase;
+
 /**
  * @internal
  */
@@ -111,7 +112,8 @@ class StreamTest extends TestCase
         $this->expectExceptionMessage('Append failed');
 
         $writeOnlyStream = Stream::fromFile($this->filesystem->url() . '/generated.json');
-        $this->stream->appendStream($writeOnlyStream);    }
+        $this->stream->appendStream($writeOnlyStream);
+    }
 
     public function testAppendStreamReturnsAppendedStream(): void
     {
@@ -129,7 +131,7 @@ class StreamTest extends TestCase
             ->andReturn(false);
 
         $this->expectException(\PHPUnit\Framework\Error\Warning::class);
-        //$this->expectException(RuntimeException::class);
+        // $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('fopen(/does/not/exists.txt): Failed to open stream: No such file or directory');
 
         $this->stream = Stream::fromFile('/does/not/exists.txt');

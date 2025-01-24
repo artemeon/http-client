@@ -19,7 +19,6 @@ use Artemeon\HttpClient\Http\Header\Fields\UserAgent;
 use Artemeon\HttpClient\Http\Header\HeaderField;
 use Artemeon\HttpClient\Http\Header\Headers;
 use Artemeon\HttpClient\Http\MediaType;
-use Artemeon\HttpClient\Http\Message;
 use Artemeon\HttpClient\Http\Request;
 use Artemeon\HttpClient\Http\Uri;
 use PHPUnit\Framework\TestCase;

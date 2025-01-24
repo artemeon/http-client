@@ -16,9 +16,10 @@ namespace Artemeon\HttpClient\Tests\Unit\Http\Body\Encoder;
 use Artemeon\HttpClient\Exception\RuntimeException;
 use Artemeon\HttpClient\Http\Body\Encoder\JsonEncoder;
 use Artemeon\HttpClient\Http\MediaType;
+use Mockery;
 use PHPUnit\Framework\TestCase;
 use stdClass;
-use Mockery;
+
 /**
  * @internal
  */
@@ -44,7 +45,7 @@ class JsonEncoderTest extends TestCase
 
     public function testFromObjectReturnExpectedValue(): void
     {
-        $class = new stdClass;
+        $class = new stdClass();
         $class->name = 'name';
         $class->password = 'password';
 
