@@ -17,20 +17,21 @@ use Artemeon\HttpClient\Exception\RuntimeException;
 use Artemeon\HttpClient\Http\Body\Encoder\JsonEncoder;
 use Artemeon\HttpClient\Http\MediaType;
 use phpmock\prophecy\PHPProphet;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\RunInSeparateProcess;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 use stdClass;
 
 /**
- * @covers \Artemeon\HttpClient\Http\Body\Encoder\JsonEncoder
  * @internal
  */
+#[CoversClass(JsonEncoder::class)]
 class JsonEncoderTest extends TestCase
 {
-    /**
-     * @test
-     * @runInSeparateProcess
-     */
+    #[Test]
+    #[RunInSeparateProcess]
     public function fromArrayJsonEncodeFailsThrowsException(): void
     {
         $globalProphet = new PHPProphet();
@@ -49,9 +50,7 @@ class JsonEncoderTest extends TestCase
         $globalProphet->checkPredictions();
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function fromObjectReturnExpectedValue(): void
     {
         $class = new stdClass();
@@ -64,9 +63,7 @@ class JsonEncoderTest extends TestCase
         self::assertSame(MediaType::JSON, $encoder->getMimeType());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function fromArrayReturnExpectedValue(): void
     {
         $encoder = JsonEncoder::fromArray(

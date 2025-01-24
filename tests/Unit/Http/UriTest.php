@@ -15,6 +15,7 @@ namespace Artemeon\HttpClient\Tests\Unit\Http;
 
 use Artemeon\HttpClient\Exception\InvalidArgumentException;
 use Artemeon\HttpClient\Http\Uri;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -22,9 +23,7 @@ use PHPUnit\Framework\TestCase;
  */
 class UriTest extends TestCase
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function fromStringSetValidValues(): void
     {
         $expected = 'http://www.artemeon.de';
@@ -32,9 +31,7 @@ class UriTest extends TestCase
         self::assertSame($expected, $url->__toString());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function getQueryReturnExpectedValue(): void
     {
         $expected = 'user=john.doe';
@@ -42,9 +39,7 @@ class UriTest extends TestCase
         self::assertSame($expected, $url->getQuery());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function getFragmentReturnExpectedValue(): void
     {
         $expected = 'anker';
@@ -52,99 +47,77 @@ class UriTest extends TestCase
         self::assertSame($expected, $url->getFragment());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function getFragmentReturnsEmptyString(): void
     {
         $url = Uri::fromString('http://www.artemeon.de/pfad/test.html');
         self::assertSame('', $url->getFragment());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function getUserInfoReturnUserPassword(): void
     {
         $url = Uri::fromString('https://dsi:topsecret@www.artemeon.de');
         self::assertSame('dsi:topsecret', $url->getUserInfo());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function getUserInfoReturnOnlyUser(): void
     {
         $url = Uri::fromString('https://dsi@www.artemeon.de');
         self::assertSame('dsi', $url->getUserInfo());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function getUserInfoReturnEmptyString(): void
     {
         $url = Uri::fromString('https://www.artemeon.de');
         self::assertSame('', $url->getUserInfo());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function getSchemeReturnExpectedValue(): void
     {
         $url = Uri::fromString('ftp://dsi:topsecret@www.artemeon.de');
         self::assertSame('ftp', $url->getScheme());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function getHostReturnExpectedValue(): void
     {
         $url = Uri::fromString('http://www.artemeon.de:8080/path/to/file.html');
         self::assertSame('www.artemeon.de', $url->getHost());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function getPortReturnExpectedNull(): void
     {
         $url = Uri::fromString('http://www.artemeon.de/path/to/file.html');
         self::assertNull($url->getPort());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function getPortReturnExpectedInt(): void
     {
         $url = Uri::fromString('http://www.artemeon.de:8080/path/to/file.html');
         self::assertSame(8080, $url->getPort());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function getPathReturnExpectedString(): void
     {
         $url = Uri::fromString('http://www.artemeon.de:8080/path/to/file.html');
         self::assertSame('/path/to/file.html', $url->getPath());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function getPathReturnExpectedEmptyString(): void
     {
         $url = Uri::fromString('http://www.artemeon.de:8080');
         self::assertSame('', $url->getPath());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function withSchemeIsNotStringThroesException(): void
     {
         $this->expectException(InvalidArgumentException::class);
@@ -152,9 +125,7 @@ class UriTest extends TestCase
         $url->withScheme(0);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function withSchemeReturnsUpdatedInstance(): void
     {
         $url = Uri::fromString('http://www.artemeon.de:8080');
@@ -165,9 +136,7 @@ class UriTest extends TestCase
         self::assertSame('ftp://www.artemeon.de:8080', $cloned->__toString());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function withUserInfoEmptyUserStringRemovesUserData(): void
     {
         $url = Uri::fromString('http://dietmar.simons:password@www.artemeon.de:8080');
@@ -178,9 +147,7 @@ class UriTest extends TestCase
         self::assertEmpty($cloned->getUserInfo());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function withUserInfoWithUserStringSetsValidUserInfo(): void
     {
         $url = Uri::fromString('http://dietmar.simons:password@www.artemeon.de');
@@ -191,9 +158,7 @@ class UriTest extends TestCase
         self::assertSame('user', $cloned->getUserInfo());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function withUserInfoWithUserStringAndPasswordSetsValidUserInfo(): void
     {
         $url = Uri::fromString('http://dietmar.simons:password@www.artemeon.de');
@@ -204,9 +169,7 @@ class UriTest extends TestCase
         self::assertSame('user:password', $cloned->getUserInfo());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function withHostIsNotStringThrowsException(): void
     {
         $url = Uri::fromString('http://dietmar.simons:password@www.artemeon.de');
@@ -215,9 +178,7 @@ class UriTest extends TestCase
         $url->withHost(123);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function withHostIsUpperCaseWillConvertedToLoweCase(): void
     {
         $url = Uri::fromString('http://www.artemeon.de');

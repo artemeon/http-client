@@ -23,6 +23,9 @@ use Artemeon\HttpClient\Exception\Request\Http\ServerResponseException;
 use Artemeon\HttpClient\Http\Request;
 use Artemeon\HttpClient\Http\Response;
 use Artemeon\HttpClient\Http\Uri;
+use Override;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 use Prophecy\PhpUnit\ProphecyTrait;
@@ -30,9 +33,9 @@ use Prophecy\Prophecy\ObjectProphecy;
 use Psr\Log\LoggerInterface;
 
 /**
- * @covers \Artemeon\HttpClient\Client\Decorator\Logger\LoggerDecorator
  * @internal
  */
+#[CoversClass(LoggerDecorator::class)]
 class HttpClientLogDecoratorTest extends TestCase
 {
     use ProphecyTrait;
@@ -45,7 +48,7 @@ class HttpClientLogDecoratorTest extends TestCase
     /**
      * @inheritDoc
      */
-    #[\Override]
+    #[Override]
     public function setUp(): void
     {
         $this->logger = $this->prophesize(LoggerInterface::class);
@@ -58,9 +61,7 @@ class HttpClientLogDecoratorTest extends TestCase
         );
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function sendWillCallDecoratedClass(): void
     {
         $request = Request::forGet(Uri::fromString('http://apache'));
@@ -74,9 +75,7 @@ class HttpClientLogDecoratorTest extends TestCase
         self::assertSame($response, $result);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function sendClientThrowsClientResponseExceptionShouldBeLogged(): void
     {
         $request = Request::forGet(Uri::fromString('http://apache'));
@@ -90,9 +89,7 @@ class HttpClientLogDecoratorTest extends TestCase
         $this->httpClientLogDecorator->send($request, $this->clientOptions);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function sendClientThrowsServerResponseExceptionShouldBeLogged(): void
     {
         $request = Request::forGet(Uri::fromString('http://apache'));
@@ -106,9 +103,7 @@ class HttpClientLogDecoratorTest extends TestCase
         $this->httpClientLogDecorator->send($request, $this->clientOptions);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function sendClientThrowsHttpClientExceptionShouldBeLogged(): void
     {
         $request = Request::forGet(Uri::fromString('http://apache'));

@@ -17,17 +17,17 @@ use Artemeon\HttpClient\Http\Header\Fields\UserAgent;
 use Artemeon\HttpClient\Http\Header\Headers;
 use Artemeon\HttpClient\Http\Response;
 use Artemeon\HttpClient\Stream\Stream;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @covers \Artemeon\HttpClient\Http\Response
  * @internal
  */
+#[CoversClass(Response::class)]
 class ResponseTest extends TestCase
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function getStatusCodeReturnValidCode(): void
     {
         $response = new Response(
