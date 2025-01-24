@@ -32,7 +32,7 @@ class JsonEncoderTest extends TestCase
 {
     #[Test]
     #[RunInSeparateProcess]
-    public function fromArrayJsonEncodeFailsThrowsException(): void
+    public function testFromArrayJsonEncodeFailsThrowsException(): void
     {
         $globalProphet = new PHPProphet();
         $globalProphecy = $globalProphet->prophesize("\Artemeon\HttpClient\Http\Body\Encoder");
@@ -51,7 +51,7 @@ class JsonEncoderTest extends TestCase
     }
 
     #[Test]
-    public function fromObjectReturnExpectedValue(): void
+    public function testFromObjectReturnExpectedValue(): void
     {
         $class = new stdClass();
         $class->name = 'name';
@@ -64,7 +64,7 @@ class JsonEncoderTest extends TestCase
     }
 
     #[Test]
-    public function fromArrayReturnExpectedValue(): void
+    public function testFromArrayReturnExpectedValue(): void
     {
         $encoder = JsonEncoder::fromArray(
             [

@@ -28,7 +28,7 @@ use PHPUnit\Framework\TestCase;
 class ResponseTest extends TestCase
 {
     #[Test]
-    public function getStatusCodeReturnValidCode(): void
+    public function testGetStatusCodeReturnValidCode(): void
     {
         $response = new Response(
             200,

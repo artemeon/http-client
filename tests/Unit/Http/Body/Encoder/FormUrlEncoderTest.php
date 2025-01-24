@@ -28,7 +28,7 @@ use function http_build_query;
 class FormUrlEncoderTest extends TestCase
 {
     #[Test]
-    public function encodeReturnsExpectedString(): void
+    public function testEncodeReturnsExpectedString(): void
     {
         $values = ['user' => 'Ernst Müller'];
         $encoder = FormUrlEncoder::fromArray($values);

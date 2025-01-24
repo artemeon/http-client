@@ -40,7 +40,7 @@ class ClientOptionsTest extends TestCase
     }
 
     #[Test]
-    public function fromDefaultsSetValidValues(): void
+    public function testFromDefaultsSetValidValues(): void
     {
         self::assertTrue($this->clientOptions->isRedirectAllowed());
         self::assertSame(10, $this->clientOptions->getTimeout());
@@ -52,7 +52,7 @@ class ClientOptionsTest extends TestCase
     }
 
     #[Test]
-    public function changedOptionsSetValidValues(): void
+    public function testChangedOptionsSetValidValues(): void
     {
         $this->clientOptions->optDisableRedirects();
         $this->clientOptions->optSetTimeout(50);

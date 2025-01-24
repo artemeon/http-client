@@ -35,7 +35,7 @@ use Psr\Http\Message\StreamInterface;
 class RequestTest extends TestCase
 {
     #[Test]
-    public function forOptionsSetValidRequestMethod(): void
+    public function testForOptionsSetValidRequestMethod(): void
     {
         $expectedUrl = Uri::fromString('http://apache/endpoints/upload.php');
         $expectedProtocol = '1.1';
@@ -52,7 +52,7 @@ class RequestTest extends TestCase
     }
 
     #[Test]
-    public function forPostSetValidRequestMethod(): void
+    public function testForPostSetValidRequestMethod(): void
     {
         $expectedUrl = Uri::fromString('http://apache/endpoints/upload.php');
         $expectedProtocol = '2.0';
@@ -70,7 +70,7 @@ class RequestTest extends TestCase
     }
 
     #[Test]
-    public function forPostWillCreateAndAddContentHeader(): void
+    public function testForPostWillCreateAndAddContentHeader(): void
     {
         $request = Request::forPost(
             Uri::fromString('http://apache/endpoints/upload.php'),
@@ -83,7 +83,7 @@ class RequestTest extends TestCase
     }
 
     #[Test]
-    public function forPostWillAddContentHeader(): void
+    public function testForPostWillAddContentHeader(): void
     {
         $request = Request::forPost(
             Uri::fromString('http://apache/endpoints/upload.php'),
@@ -97,7 +97,7 @@ class RequestTest extends TestCase
     }
 
     #[Test]
-    public function forDeleteSetValidRequestMethod(): void
+    public function testForDeleteSetValidRequestMethod(): void
     {
         $expectedUrl = Uri::fromString('http://apache/endpoints/upload.php');
         $expectedProtocol = '1.1';
@@ -114,7 +114,7 @@ class RequestTest extends TestCase
     }
 
     #[Test]
-    public function forGetSetValidRequestMethod(): void
+    public function testForGetSetValidRequestMethod(): void
     {
         $expectedUrl = Uri::fromString('http://apache/endpoints/upload.php');
         $expectedProtocol = '1.1';
@@ -131,7 +131,7 @@ class RequestTest extends TestCase
     }
 
     #[Test]
-    public function forGetUrlWillCreateAndSetHostHeader(): void
+    public function testForGetUrlWillCreateAndSetHostHeader(): void
     {
         $expectedUrl = Uri::fromString('http://artemeon.de/endpoints/upload.php');
         $request = Request::forGet($expectedUrl);
@@ -140,7 +140,7 @@ class RequestTest extends TestCase
     }
 
     #[Test]
-    public function forGetUrlWillAddHostHeader(): void
+    public function testForGetUrlWillAddHostHeader(): void
     {
         $expectedUrl = Uri::fromString('http://artemeon.de/endpoints/upload.php');
         $request = Request::forGet($expectedUrl, Headers::fromFields([UserAgent::fromString()]));
@@ -149,7 +149,7 @@ class RequestTest extends TestCase
     }
 
     #[Test]
-    public function forPutSetValidRequestMethod(): void
+    public function testForPutSetValidRequestMethod(): void
     {
         $expectedUrl = Uri::fromString('http://apache/endpoints/upload.php');
         $expectedProtocol = '1.1';
@@ -167,7 +167,7 @@ class RequestTest extends TestCase
     }
 
     #[Test]
-    public function forPatchSetValidRequestMethod(): void
+    public function testForPatchSetValidRequestMethod(): void
     {
         $expectedUrl = Uri::fromString('http://apache/endpoints/upload.php');
         $expectedProtocol = '1.1';
@@ -185,7 +185,7 @@ class RequestTest extends TestCase
     }
 
     #[Test]
-    public function getBodyBodyIsNullWillReturnEmptyStreamObject(): void
+    public function testGetBodyBodyIsNullWillReturnEmptyStreamObject(): void
     {
         $request = Request::forGet(Uri::fromString('http://artemeon.de/endpoints/upload.php'));
 
@@ -194,7 +194,7 @@ class RequestTest extends TestCase
     }
 
     #[Test]
-    public function getBodyBodyIsSetWillReturnStreamObject(): void
+    public function testGetBodyBodyIsSetWillReturnStreamObject(): void
     {
         $request = Request::forPost(
             Uri::fromString('http://artemeon.de/endpoints/upload.php'),
@@ -206,49 +206,49 @@ class RequestTest extends TestCase
     }
 
     #[Test]
-    public function hasHeaderReturnsTrue(): void
+    public function testHasHeaderReturnsTrue(): void
     {
         $request = Request::forGet(Uri::fromString('http://artemeon.de/endpoints/upload.php'));
         self::assertTrue($request->hasHeader(HeaderField::HOST));
     }
 
     #[Test]
-    public function hasHeaderReturnsFalse(): void
+    public function testHasHeaderReturnsFalse(): void
     {
         $request = Request::forGet(Uri::fromString('http://artemeon.de/endpoints/upload.php'));
         self::assertFalse($request->hasHeader('nit_exists'));
     }
 
     #[Test]
-    public function getHeaderNotExistsReturnsEmptyArray(): void
+    public function testGetHeaderNotExistsReturnsEmptyArray(): void
     {
         $request = Request::forGet(Uri::fromString('http://artemeon.de/endpoints/upload.php'));
         self::assertSame([], $request->getHeader('not_exists'));
     }
 
     #[Test]
-    public function getHeaderExistsReturnsValidArray(): void
+    public function testGetHeaderExistsReturnsValidArray(): void
     {
         $request = Request::forGet(Uri::fromString('http://artemeon.de/endpoints/upload.php'));
         self::assertSame(['artemeon.de'], $request->getHeader(HeaderField::HOST));
     }
 
     #[Test]
-    public function getHeaderLineNotExistsReturnsEmptyString(): void
+    public function testGetHeaderLineNotExistsReturnsEmptyString(): void
     {
         $request = Request::forGet(Uri::fromString('http://artemeon.de/endpoints/upload.php'));
         self::assertSame('', $request->getHeaderLine('not_exists'));
     }
 
     #[Test]
-    public function getHeaderLineExistsReturnsValidString(): void
+    public function testGetHeaderLineExistsReturnsValidString(): void
     {
         $request = Request::forGet(Uri::fromString('http://www.artemeon.de/endpoints/upload.php'));
         self::assertSame('www.artemeon.de', $request->getHeaderLine(HeaderField::HOST));
     }
 
     #[Test]
-    public function getHeadersReturnsValidArray(): void
+    public function testGetHeadersReturnsValidArray(): void
     {
         $request = Request::forGet(Uri::fromString('http://artemeon.de/endpoints/upload.php'));
 
@@ -258,21 +258,21 @@ class RequestTest extends TestCase
     }
 
     #[Test]
-    public function getRequestTargetWithoutPathReturnsSlash(): void
+    public function testGetRequestTargetWithoutPathReturnsSlash(): void
     {
         $request = Request::forGet(Uri::fromString('http://www.artemeon.de'));
         self::assertSame('/', $request->getRequestTarget());
     }
 
     #[Test]
-    public function getRequestTargetWithPathReturnsPath(): void
+    public function testGetRequestTargetWithPathReturnsPath(): void
     {
         $request = Request::forGet(Uri::fromString('http://www.artemeon.de/some/Path/index.html'));
         self::assertSame('/some/Path/index.html', $request->getRequestTarget());
     }
 
     #[Test]
-    public function getRequestTargetWithPathAndQueryReturnsPathAnsQuery(): void
+    public function testGetRequestTargetWithPathAndQueryReturnsPathAnsQuery(): void
     {
         $request = Request::forGet(Uri::fromString('http://www.artemeon.de/index.html?User=john.doe'));
         self::assertSame('/index.html?User=john.doe', $request->getRequestTarget());

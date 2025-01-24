@@ -44,7 +44,7 @@ class ClientOptionsConverterTest extends TestCase
     }
 
     #[Test]
-    public function verifyKeyIsFalse(): void
+    public function testVerifyKeyIsFalse(): void
     {
         $this->clientOptions->optDisableSslVerification();
         $options = $this->clientOptionConverter->toGuzzleOptionsArray($this->clientOptions);
@@ -53,7 +53,7 @@ class ClientOptionsConverterTest extends TestCase
     }
 
     #[Test]
-    public function verifyKeyIsTrue(): void
+    public function testVerifyKeyIsTrue(): void
     {
         $options = $this->clientOptionConverter->toGuzzleOptionsArray($this->clientOptions);
 
@@ -61,7 +61,7 @@ class ClientOptionsConverterTest extends TestCase
     }
 
     #[Test]
-    public function verifyKeyIsCaBundlePathString(): void
+    public function testVerifyKeyIsCaBundlePathString(): void
     {
         $expected = '/path/ca/bundle';
         $this->clientOptions->optSetCustomCaBundlePath($expected);
@@ -71,7 +71,7 @@ class ClientOptionsConverterTest extends TestCase
     }
 
     #[Test]
-    public function allowRedirectsKeyReturnFalse(): void
+    public function testAllowRedirectsKeyReturnFalse(): void
     {
         $this->clientOptions->optDisableRedirects();
         $options = $this->clientOptionConverter->toGuzzleOptionsArray($this->clientOptions);
@@ -80,7 +80,7 @@ class ClientOptionsConverterTest extends TestCase
     }
 
     #[Test]
-    public function allowRedirectsKeyReturnsValidArray(): void
+    public function testAllowRedirectsKeyReturnsValidArray(): void
     {
         $expectedMax = 10;
         $expectedReferer = true;
@@ -94,7 +94,7 @@ class ClientOptionsConverterTest extends TestCase
     }
 
     #[Test]
-    public function timeoutKeyHasExpectedIntValue(): void
+    public function testTimeoutKeyHasExpectedIntValue(): void
     {
         $expected = 22;
         $this->clientOptions->optSetTimeout($expected);

@@ -24,7 +24,7 @@ use PHPUnit\Framework\TestCase;
 class UriTest extends TestCase
 {
     #[Test]
-    public function fromStringSetValidValues(): void
+    public function testFromStringSetValidValues(): void
     {
         $expected = 'http://www.artemeon.de';
         $url = Uri::fromString($expected);
@@ -32,7 +32,7 @@ class UriTest extends TestCase
     }
 
     #[Test]
-    public function getQueryReturnExpectedValue(): void
+    public function testGetQueryReturnExpectedValue(): void
     {
         $expected = 'user=john.doe';
         $url = Uri::fromQueryParams('http://www.artemeon.de', ['user' => 'john.doe']);
@@ -40,7 +40,7 @@ class UriTest extends TestCase
     }
 
     #[Test]
-    public function getFragmentReturnExpectedValue(): void
+    public function testGetFragmentReturnExpectedValue(): void
     {
         $expected = 'anker';
         $url = Uri::fromString('http://www.artemeon.de/pfad/test.html#' . $expected);
@@ -48,77 +48,77 @@ class UriTest extends TestCase
     }
 
     #[Test]
-    public function getFragmentReturnsEmptyString(): void
+    public function testGetFragmentReturnsEmptyString(): void
     {
         $url = Uri::fromString('http://www.artemeon.de/pfad/test.html');
         self::assertSame('', $url->getFragment());
     }
 
     #[Test]
-    public function getUserInfoReturnUserPassword(): void
+    public function testGetUserInfoReturnUserPassword(): void
     {
         $url = Uri::fromString('https://dsi:topsecret@www.artemeon.de');
         self::assertSame('dsi:topsecret', $url->getUserInfo());
     }
 
     #[Test]
-    public function getUserInfoReturnOnlyUser(): void
+    public function testGetUserInfoReturnOnlyUser(): void
     {
         $url = Uri::fromString('https://dsi@www.artemeon.de');
         self::assertSame('dsi', $url->getUserInfo());
     }
 
     #[Test]
-    public function getUserInfoReturnEmptyString(): void
+    public function testGetUserInfoReturnEmptyString(): void
     {
         $url = Uri::fromString('https://www.artemeon.de');
         self::assertSame('', $url->getUserInfo());
     }
 
     #[Test]
-    public function getSchemeReturnExpectedValue(): void
+    public function testGetSchemeReturnExpectedValue(): void
     {
         $url = Uri::fromString('ftp://dsi:topsecret@www.artemeon.de');
         self::assertSame('ftp', $url->getScheme());
     }
 
     #[Test]
-    public function getHostReturnExpectedValue(): void
+    public function testGetHostReturnExpectedValue(): void
     {
         $url = Uri::fromString('http://www.artemeon.de:8080/path/to/file.html');
         self::assertSame('www.artemeon.de', $url->getHost());
     }
 
     #[Test]
-    public function getPortReturnExpectedNull(): void
+    public function testGetPortReturnExpectedNull(): void
     {
         $url = Uri::fromString('http://www.artemeon.de/path/to/file.html');
         self::assertNull($url->getPort());
     }
 
     #[Test]
-    public function getPortReturnExpectedInt(): void
+    public function testGetPortReturnExpectedInt(): void
     {
         $url = Uri::fromString('http://www.artemeon.de:8080/path/to/file.html');
         self::assertSame(8080, $url->getPort());
     }
 
     #[Test]
-    public function getPathReturnExpectedString(): void
+    public function testGetPathReturnExpectedString(): void
     {
         $url = Uri::fromString('http://www.artemeon.de:8080/path/to/file.html');
         self::assertSame('/path/to/file.html', $url->getPath());
     }
 
     #[Test]
-    public function getPathReturnExpectedEmptyString(): void
+    public function testGetPathReturnExpectedEmptyString(): void
     {
         $url = Uri::fromString('http://www.artemeon.de:8080');
         self::assertSame('', $url->getPath());
     }
 
     #[Test]
-    public function withSchemeIsNotStringThroesException(): void
+    public function testWithSchemeIsNotStringThroesException(): void
     {
         $this->expectException(InvalidArgumentException::class);
         $url = Uri::fromString('http://www.artemeon.de:8080');
@@ -126,7 +126,7 @@ class UriTest extends TestCase
     }
 
     #[Test]
-    public function withSchemeReturnsUpdatedInstance(): void
+    public function testWithSchemeReturnsUpdatedInstance(): void
     {
         $url = Uri::fromString('http://www.artemeon.de:8080');
         $cloned = $url->withScheme('FTP');
@@ -137,7 +137,7 @@ class UriTest extends TestCase
     }
 
     #[Test]
-    public function withUserInfoEmptyUserStringRemovesUserData(): void
+    public function testWithUserInfoEmptyUserStringRemovesUserData(): void
     {
         $url = Uri::fromString('http://dietmar.simons:password@www.artemeon.de:8080');
         $cloned = $url->withUserInfo('');
@@ -148,7 +148,7 @@ class UriTest extends TestCase
     }
 
     #[Test]
-    public function withUserInfoWithUserStringSetsValidUserInfo(): void
+    public function testWithUserInfoWithUserStringSetsValidUserInfo(): void
     {
         $url = Uri::fromString('http://dietmar.simons:password@www.artemeon.de');
         $cloned = $url->withUserInfo('user');
@@ -159,7 +159,7 @@ class UriTest extends TestCase
     }
 
     #[Test]
-    public function withUserInfoWithUserStringAndPasswordSetsValidUserInfo(): void
+    public function testWithUserInfoWithUserStringAndPasswordSetsValidUserInfo(): void
     {
         $url = Uri::fromString('http://dietmar.simons:password@www.artemeon.de');
         $cloned = $url->withUserInfo('user', 'password');
@@ -170,7 +170,7 @@ class UriTest extends TestCase
     }
 
     #[Test]
-    public function withHostIsNotStringThrowsException(): void
+    public function testWithHostIsNotStringThrowsException(): void
     {
         $url = Uri::fromString('http://dietmar.simons:password@www.artemeon.de');
         $this->expectException(InvalidArgumentException::class);
@@ -179,7 +179,7 @@ class UriTest extends TestCase
     }
 
     #[Test]
-    public function withHostIsUpperCaseWillConvertedToLoweCase(): void
+    public function testWithHostIsUpperCaseWillConvertedToLoweCase(): void
     {
         $url = Uri::fromString('http://www.artemeon.de');
         $cloned = $url->withHost('ARTEMEON.COM');

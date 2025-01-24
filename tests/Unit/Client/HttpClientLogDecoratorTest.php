@@ -62,7 +62,7 @@ class HttpClientLogDecoratorTest extends TestCase
     }
 
     #[Test]
-    public function sendWillCallDecoratedClass(): void
+    public function testSendWillCallDecoratedClass(): void
     {
         $request = Request::forGet(Uri::fromString('http://apache'));
         $response = new Response(200, '1.1');
@@ -76,7 +76,7 @@ class HttpClientLogDecoratorTest extends TestCase
     }
 
     #[Test]
-    public function sendClientThrowsClientResponseExceptionShouldBeLogged(): void
+    public function testSendClientThrowsClientResponseExceptionShouldBeLogged(): void
     {
         $request = Request::forGet(Uri::fromString('http://apache'));
         $response = new Response(500, '1.1');
@@ -90,7 +90,7 @@ class HttpClientLogDecoratorTest extends TestCase
     }
 
     #[Test]
-    public function sendClientThrowsServerResponseExceptionShouldBeLogged(): void
+    public function testSendClientThrowsServerResponseExceptionShouldBeLogged(): void
     {
         $request = Request::forGet(Uri::fromString('http://apache'));
         $response = new Response(500, '1.1');
@@ -104,7 +104,7 @@ class HttpClientLogDecoratorTest extends TestCase
     }
 
     #[Test]
-    public function sendClientThrowsHttpClientExceptionShouldBeLogged(): void
+    public function testSendClientThrowsHttpClientExceptionShouldBeLogged(): void
     {
         $request = Request::forGet(Uri::fromString('http://apache'));
         $exception = InvalidArgumentException::forAlreadyRegisteredHeaderFields('Host');

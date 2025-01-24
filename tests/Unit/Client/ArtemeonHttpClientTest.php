@@ -86,7 +86,7 @@ class ArtemeonHttpClientTest extends TestCase
     }
 
     #[Test]
-    public function sendWithoutOptionsUsesEmptyOptionsArray(): void
+    public function testSendWithoutOptionsUsesEmptyOptionsArray(): void
     {
         $this->mockHandler->append(new GuzzleResponse(200, [], 'Some body content'));
         $this->clientOptionsConverter->toGuzzleOptionsArray(Argument::any())->shouldNotBeCalled();
@@ -98,7 +98,7 @@ class ArtemeonHttpClientTest extends TestCase
     }
 
     #[Test]
-    public function sendWithOptionsConvertOptions(): void
+    public function testSendWithOptionsConvertOptions(): void
     {
         $this->mockHandler->append(new GuzzleResponse(200, [], 'Some body content'));
         $this->clientOptionsConverter->toGuzzleOptionsArray($this->clientOptions)
@@ -112,7 +112,7 @@ class ArtemeonHttpClientTest extends TestCase
     }
 
     #[Test]
-    public function sendConvertsGuzzleResponseToValidResponse(): void
+    public function testSendConvertsGuzzleResponseToValidResponse(): void
     {
         $request = Request::forGet(Uri::fromString('http://apache/endpoints/upload.php'));
         $expectedContent = 'Some body content';
@@ -126,9 +126,11 @@ class ArtemeonHttpClientTest extends TestCase
         self::assertSame($expectedHeaders, $response->getHeaders());
     }
 
-    #[DataProvider('provideExceptionMappings')]
     #[Test]
-    public function sendGuzzleThrowsExceptionMappedToHttpClientException(
+    /**
+     * @dataProvider provideExceptionMappings
+     */
+    public function testSendGuzzleThrowsExceptionMappedToHttpClientException(
         \RuntimeException $guzzleException,
         string $httpClientException,
     ): void {
@@ -142,7 +144,7 @@ class ArtemeonHttpClientTest extends TestCase
     /**
      * Data provider for exception mappings from guzzle to httpClient exceptions.
      */
-    public function provideExceptionMappings(): array
+    public static function provideExceptionMappings(): array
     {
         $fakeResponse = new GuzzleResponse(200);
         $fakeRequest = new GuzzleRequest('GET', 'test');
