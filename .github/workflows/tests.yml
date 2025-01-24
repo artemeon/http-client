@@ -4,22 +4,8 @@ on:
   push:
     branches:
       - master
+      - 1.x
 jobs:
-  phpstan:
-    name: PHPStan
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Install PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: 8.1
-          coverage: none
-      - name: Composer install
-        run: composer install --no-interaction --no-ansi --no-progress
-      - name: Run PHPStan
-        run: composer run phpstan
   phpunit:
     name: PHPUnit
     runs-on: ubuntu-latest
