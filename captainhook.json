@@ -1,0 +1,131 @@
+{
+    "config": {
+        "ansi-colors": false,
+        "fail-on-first-error": true
+    },
+    "commit-msg": {
+        "enabled": true,
+        "actions": [
+            {
+                "action": "\\CaptainHook\\App\\Hook\\Branch\\Action\\EnsureNaming",
+                "options": {
+                    "regex": "/(main|master)|((chore|deps|dev|docs|epic|feat|fix|refactor|release)\\/.+)/",
+                    "error": "Branch name does not match the naming convention.\n\nThe branch name has to follow the convention found under:\nhttps://artemeon.atlassian.net/wiki/spaces/AGP/pages/298549563/Konventionen+und+Prozesse#Branch-Names-%5BinlineExtension%5D"
+                }
+            },
+            {
+                "action": "\\CaptainHook\\App\\Hook\\Message\\Action\\CacheOnFail",
+                "options": {
+                    "file": ".git/CH_MSG.temp"
+                }
+            }
+        ]
+    },
+    "pre-push": {
+        "enabled": true,
+        "actions": [
+            {
+                "action": "php -dxdebug.mode=off ./vendor/bin/phpstan analyse --memory-limit=4G --no-ansi --no-interaction",
+                "conditions": [
+                    {
+                        "exec": "\\CaptainHook\\App\\Hook\\Condition\\FileChanged\\OfType",
+                        "args": [
+                            "php"
+                        ]
+                    }
+                ]
+            },
+            {
+                "action": "php -dxdebug.mode=off ./vendor/bin/deptrac analyse --no-ansi --no-interaction",
+                "conditions": [
+                    {
+                        "exec": "\\CaptainHook\\App\\Hook\\Condition\\FileChanged\\OfType",
+                        "args": [
+                            "php"
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "pre-commit": {
+        "enabled": true,
+        "actions": [
+            {
+                "action": "php -dxdebug.mode=off ./vendor/bin/pint --no-ansi --config pint.json {$STAGED_FILES|of-type:php|separated-by: } && git add {$STAGED_FILES|of-type:php|separated-by: }",
+                "conditions": [
+                    {
+                        "exec": "\\CaptainHook\\App\\Hook\\Condition\\FileStaged\\OfType",
+                        "args": [
+                            "php"
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "prepare-commit-msg": {
+        "enabled": true,
+        "actions": [
+            {
+                "action": "\\CaptainHook\\App\\Hook\\Message\\Action\\PrepareFromFile",
+                "options": {
+                    "file": ".git/CH_MSG.temp"
+                }
+            },
+            {
+                "action": "\\CaptainHook\\App\\Hook\\Message\\Action\\InjectIssueKeyFromBranch",
+                "conditions": [
+                    {
+                        "exec": "\\CaptainHook\\App\\Hook\\Condition\\Branch\\OnMatching",
+                        "args": [
+                            "/\\/#[1-9][0-9]*[^_-]/"
+                        ]
+                    }
+                ],
+                "options": {
+                    "force": false,
+                    "into": "subject",
+                    "mode": "prepend",
+                    "prefix": "#",
+                    "regex": "/\\/#([1-9][0-9]*[^_-])/"
+                }
+            }
+        ]
+    },
+    "post-commit": {
+        "enabled": false,
+        "actions": [ ]
+    },
+    "post-merge": {
+        "enabled": false,
+        "actions": [ ]
+    },
+    "post-checkout": {
+        "enabled": false,
+        "actions": [ ]
+    },
+    "post-rewrite": {
+        "enabled": false,
+        "actions": [ ]
+    },
+    "post-change": {
+        "enabled": true,
+        "actions": [
+            {
+                "action": "composer install --no-interaction",
+                "conditions": [
+                    {
+                        "exec": "\\CaptainHook\\App\\Hook\\Condition\\FileChanged\\Any",
+                        "args": [
+                            [
+                                "composer.json",
+                                "composer.lock"
+                            ]
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+}
