@@ -174,7 +174,7 @@ class Stream implements AppendableStream
      * @inheritDoc
      */
     #[\Override]
-    public function getSize()
+    public function getSize(): ?int
     {
         if (!is_resource($this->resource)) {
             return null;
@@ -189,7 +189,7 @@ class Stream implements AppendableStream
      * @inheritDoc
      */
     #[\Override]
-    public function tell()
+    public function tell(): int
     {
         $this->assertStreamIsNotDetached();
         $position = ftell($this->resource);
@@ -205,7 +205,7 @@ class Stream implements AppendableStream
      * @inheritDoc
      */
     #[\Override]
-    public function eof()
+    public function eof(): bool
     {
         if (!is_resource($this->resource)) {
             // php.net doc: feof returns TRUE if the file pointer is at EOF or an error occurs
@@ -219,7 +219,7 @@ class Stream implements AppendableStream
      * @inheritDoc
      */
     #[\Override]
-    public function isSeekable()
+    public function isSeekable(): bool
     {
         if (!is_resource($this->resource)) {
             return false;
@@ -268,7 +268,7 @@ class Stream implements AppendableStream
      * @inheritDoc
      */
     #[\Override]
-    public function write($string)
+    public function write($string): int
     {
         $this->assertStreamIsNotDetached();
         $this->assertStreamIsWriteable();
@@ -286,7 +286,7 @@ class Stream implements AppendableStream
      * @inheritDoc
      */
     #[\Override]
-    public function isWritable()
+    public function isWritable(): bool
     {
         if (!is_resource($this->resource)) {
             return false;
@@ -307,7 +307,7 @@ class Stream implements AppendableStream
      * @inheritDoc
      */
     #[\Override]
-    public function isReadable()
+    public function isReadable(): bool
     {
         if (!is_resource($this->resource)) {
             return false;
@@ -328,7 +328,7 @@ class Stream implements AppendableStream
      * @inheritDoc
      */
     #[\Override]
-    public function read($length)
+    public function read($length): string
     {
         $this->assertStreamIsNotDetached();
         $this->assertStreamIsReadable();
@@ -349,7 +349,7 @@ class Stream implements AppendableStream
      * want ensure to read the complete stream use __toString() instead.
      */
     #[\Override]
-    public function getContents()
+    public function getContents(): string
     {
         $this->assertStreamIsNotDetached();
         $this->assertStreamIsReadable();

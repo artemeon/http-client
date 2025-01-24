@@ -57,13 +57,14 @@ abstract class Message implements MessageInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
+     *
      * @throws RuntimeException
      */
     #[\Override]
     public function getBody(): StreamInterface
     {
-        if (!$this->body instanceof StreamInterface) {
+        if (! $this->body instanceof StreamInterface) {
             return Stream::fromFileMode('r+');
         }
 
@@ -71,7 +72,7 @@ abstract class Message implements MessageInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     #[\Override]
     public function getProtocolVersion(): string
@@ -80,7 +81,7 @@ abstract class Message implements MessageInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     #[\Override]
     public function hasHeader($name): bool
@@ -89,7 +90,7 @@ abstract class Message implements MessageInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     #[\Override]
     public function getHeader($name): array
@@ -102,7 +103,7 @@ abstract class Message implements MessageInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     #[\Override]
     public function getHeaderLine($name): string
@@ -115,7 +116,7 @@ abstract class Message implements MessageInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     #[\Override]
     public function withHeader($name, $value): self
@@ -133,7 +134,7 @@ abstract class Message implements MessageInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     #[\Override]
     public function withProtocolVersion($version): self
@@ -145,7 +146,7 @@ abstract class Message implements MessageInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     #[\Override]
     public function withAddedHeader($name, $value): self
@@ -169,10 +170,10 @@ abstract class Message implements MessageInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     #[\Override]
-    public function withoutHeader($name)
+    public function withoutHeader(string $name): MessageInterface
     {
         $cloned = clone $this;
         $cloned->headers->remove($name);
@@ -181,12 +182,12 @@ abstract class Message implements MessageInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     #[\Override]
-    public function withBody(StreamInterface $body)
+    public function withBody(StreamInterface $body): MessageInterface
     {
-        if (!$body->isReadable()) {
+        if (! $body->isReadable()) {
             throw new InvalidArgumentException('Body stream must be readable');
         }
 
@@ -203,17 +204,17 @@ abstract class Message implements MessageInterface
      */
     private function assertHeader($name, $value): void
     {
-        if (!is_string($name) || $name === '') {
+        if (! is_string($name) || $name === '') {
             throw new InvalidArgumentException('Header must be a non empty string');
         }
 
         if (is_array($value)) {
             foreach ($value as &$val) {
-                if (!is_string($val) && !is_numeric($val)) {
+                if (! is_string($val) && ! is_numeric($val)) {
                     throw new InvalidArgumentException('Values must a string or numeric');
                 }
             }
-        } elseif (!is_string($value) && !is_numeric($value)) {
+        } elseif (! is_string($value) && ! is_numeric($value)) {
             throw new InvalidArgumentException('Values must a string or numeric');
         }
     }

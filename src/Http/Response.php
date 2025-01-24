@@ -53,7 +53,7 @@ class Response extends Message implements ResponseInterface
      * @inheritDoc
      */
     #[\Override]
-    public function withStatus($code, $reasonPhrase = '')
+    public function withStatus($code, $reasonPhrase = ''): ResponseInterface
     {
         if (!is_string($reasonPhrase)) {
             throw new InvalidArgumentException('reasonPhrase must be a string value');
