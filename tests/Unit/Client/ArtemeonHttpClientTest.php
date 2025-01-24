@@ -39,9 +39,6 @@ use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Request as GuzzleRequest;
 use GuzzleHttp\Psr7\Response as GuzzleResponse;
 use Override;
-use PHPUnit\Framework\Attributes\CoversClass;
-use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 use Prophecy\PhpUnit\ProphecyTrait;
@@ -50,14 +47,6 @@ use Prophecy\Prophecy\ObjectProphecy;
 /**
  * @internal
  */
-#[CoversClass(ArtemeonHttpClient::class)]
-#[CoversClass(RuntimeException::class)]
-#[CoversClass(TransferException::class)]
-#[CoversClass(ConnectException::class)]
-#[CoversClass(ResponseException::class)]
-#[CoversClass(ServerResponseException::class)]
-#[CoversClass(ClientResponseException::class)]
-#[CoversClass(RedirectResponseException::class)]
 class ArtemeonHttpClientTest extends TestCase
 {
     use ProphecyTrait;
@@ -85,7 +74,6 @@ class ArtemeonHttpClientTest extends TestCase
         );
     }
 
-    #[Test]
     public function testSendWithoutOptionsUsesEmptyOptionsArray(): void
     {
         $this->mockHandler->append(new GuzzleResponse(200, [], 'Some body content'));
@@ -97,7 +85,6 @@ class ArtemeonHttpClientTest extends TestCase
         self::assertInstanceOf(Response::class, $response);
     }
 
-    #[Test]
     public function testSendWithOptionsConvertOptions(): void
     {
         $this->mockHandler->append(new GuzzleResponse(200, [], 'Some body content'));
@@ -111,7 +98,6 @@ class ArtemeonHttpClientTest extends TestCase
         self::assertInstanceOf(Response::class, $response);
     }
 
-    #[Test]
     public function testSendConvertsGuzzleResponseToValidResponse(): void
     {
         $request = Request::forGet(Uri::fromString('http://apache/endpoints/upload.php'));
@@ -126,7 +112,6 @@ class ArtemeonHttpClientTest extends TestCase
         self::assertSame($expectedHeaders, $response->getHeaders());
     }
 
-    #[Test]
     /**
      * @dataProvider provideExceptionMappings
      */

@@ -17,15 +17,12 @@ use Artemeon\HttpClient\Client\Options\ClientOptions;
 use Artemeon\HttpClient\Client\Options\ClientOptionsConverter;
 use GuzzleHttp\RequestOptions as GuzzleRequestOptions;
 use Override;
-use PHPUnit\Framework\Attributes\CoversClass;
-use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Prophecy\PhpUnit\ProphecyTrait;
 
 /**
  * @internal
  */
-#[CoversClass(ClientOptionsConverter::class)]
 class ClientOptionsConverterTest extends TestCase
 {
     use ProphecyTrait;
@@ -43,7 +40,6 @@ class ClientOptionsConverterTest extends TestCase
         $this->clientOptionConverter = new ClientOptionsConverter();
     }
 
-    #[Test]
     public function testVerifyKeyIsFalse(): void
     {
         $this->clientOptions->optDisableSslVerification();
@@ -52,7 +48,6 @@ class ClientOptionsConverterTest extends TestCase
         self::assertFalse($options[GuzzleRequestOptions::VERIFY]);
     }
 
-    #[Test]
     public function testVerifyKeyIsTrue(): void
     {
         $options = $this->clientOptionConverter->toGuzzleOptionsArray($this->clientOptions);
@@ -60,7 +55,6 @@ class ClientOptionsConverterTest extends TestCase
         self::assertTrue($options[GuzzleRequestOptions::VERIFY]);
     }
 
-    #[Test]
     public function testVerifyKeyIsCaBundlePathString(): void
     {
         $expected = '/path/ca/bundle';
@@ -70,7 +64,6 @@ class ClientOptionsConverterTest extends TestCase
         self::assertSame($expected, $options[GuzzleRequestOptions::VERIFY]);
     }
 
-    #[Test]
     public function testAllowRedirectsKeyReturnFalse(): void
     {
         $this->clientOptions->optDisableRedirects();
@@ -79,7 +72,6 @@ class ClientOptionsConverterTest extends TestCase
         self::assertFalse($options[GuzzleRequestOptions::ALLOW_REDIRECTS]);
     }
 
-    #[Test]
     public function testAllowRedirectsKeyReturnsValidArray(): void
     {
         $expectedMax = 10;
@@ -93,7 +85,6 @@ class ClientOptionsConverterTest extends TestCase
         self::assertSame($expectedMax, $options[GuzzleRequestOptions::ALLOW_REDIRECTS]['max']);
     }
 
-    #[Test]
     public function testTimeoutKeyHasExpectedIntValue(): void
     {
         $expected = 22;

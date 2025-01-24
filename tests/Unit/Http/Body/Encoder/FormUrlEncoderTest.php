@@ -15,8 +15,6 @@ namespace Artemeon\HttpClient\Tests\Unit\Http\Body\Encoder;
 
 use Artemeon\HttpClient\Http\Body\Encoder\FormUrlEncoder;
 use Artemeon\HttpClient\Http\MediaType;
-use PHPUnit\Framework\Attributes\CoversClass;
-use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
 use function http_build_query;
@@ -24,10 +22,8 @@ use function http_build_query;
 /**
  * @internal
  */
-#[CoversClass(FormUrlEncoder::class)]
 class FormUrlEncoderTest extends TestCase
 {
-    #[Test]
     public function testEncodeReturnsExpectedString(): void
     {
         $values = ['user' => 'Ernst Müller'];

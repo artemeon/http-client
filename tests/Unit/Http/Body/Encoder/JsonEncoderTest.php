@@ -16,44 +16,35 @@ namespace Artemeon\HttpClient\Tests\Unit\Http\Body\Encoder;
 use Artemeon\HttpClient\Exception\RuntimeException;
 use Artemeon\HttpClient\Http\Body\Encoder\JsonEncoder;
 use Artemeon\HttpClient\Http\MediaType;
-use phpmock\prophecy\PHPProphet;
-use PHPUnit\Framework\Attributes\CoversClass;
-use PHPUnit\Framework\Attributes\RunInSeparateProcess;
-use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
-use Prophecy\Argument;
 use stdClass;
-
+use Mockery;
 /**
  * @internal
  */
-#[CoversClass(JsonEncoder::class)]
 class JsonEncoderTest extends TestCase
 {
-    #[Test]
-    #[RunInSeparateProcess]
-    public function testFromArrayJsonEncodeFailsThrowsException(): void
+    public function tearDown(): void
     {
-        $globalProphet = new PHPProphet();
-        $globalProphecy = $globalProphet->prophesize("\Artemeon\HttpClient\Http\Body\Encoder");
-
-        $globalProphecy->json_encode(Argument::any(), Argument::any())->willReturn(false);
-        $globalProphecy->reveal();
-
-        $this->expectException(RuntimeException::class);
-        $value = ['test' => 12];
-        $options = 0;
-
-        $encoder = JsonEncoder::fromArray($value, $options);
-        $encoder->encode();
-
-        $globalProphet->checkPredictions();
+        Mockery::close(); // Mockery aufräumen
     }
 
-    #[Test]
+    public function testFromArrayJsonEncodeFailsThrowsException(): void
+    {
+        $mockJsonEncode = Mockery::mock('overload:json_encode');
+        $mockJsonEncode->shouldReceive('__invoke')->andReturn(false);
+
+        $encoder = JsonEncoder::fromArray(['invalid' => "\xB1\x31"], 0);
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage("Can't encode to json: Malformed UTF-8 characters, possibly incorrectly encoded");
+
+        $encoder->encode();
+    }
+
     public function testFromObjectReturnExpectedValue(): void
     {
-        $class = new stdClass();
+        $class = new stdClass;
         $class->name = 'name';
         $class->password = 'password';
 
@@ -63,7 +54,6 @@ class JsonEncoderTest extends TestCase
         self::assertSame(MediaType::JSON, $encoder->getMimeType());
     }
 
-    #[Test]
     public function testFromArrayReturnExpectedValue(): void
     {
         $encoder = JsonEncoder::fromArray(

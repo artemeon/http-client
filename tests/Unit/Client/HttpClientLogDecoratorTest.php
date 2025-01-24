@@ -24,8 +24,6 @@ use Artemeon\HttpClient\Http\Request;
 use Artemeon\HttpClient\Http\Response;
 use Artemeon\HttpClient\Http\Uri;
 use Override;
-use PHPUnit\Framework\Attributes\CoversClass;
-use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 use Prophecy\PhpUnit\ProphecyTrait;
@@ -35,7 +33,6 @@ use Psr\Log\LoggerInterface;
 /**
  * @internal
  */
-#[CoversClass(LoggerDecorator::class)]
 class HttpClientLogDecoratorTest extends TestCase
 {
     use ProphecyTrait;
@@ -61,7 +58,6 @@ class HttpClientLogDecoratorTest extends TestCase
         );
     }
 
-    #[Test]
     public function testSendWillCallDecoratedClass(): void
     {
         $request = Request::forGet(Uri::fromString('http://apache'));
@@ -75,7 +71,6 @@ class HttpClientLogDecoratorTest extends TestCase
         self::assertSame($response, $result);
     }
 
-    #[Test]
     public function testSendClientThrowsClientResponseExceptionShouldBeLogged(): void
     {
         $request = Request::forGet(Uri::fromString('http://apache'));
@@ -89,7 +84,6 @@ class HttpClientLogDecoratorTest extends TestCase
         $this->httpClientLogDecorator->send($request, $this->clientOptions);
     }
 
-    #[Test]
     public function testSendClientThrowsServerResponseExceptionShouldBeLogged(): void
     {
         $request = Request::forGet(Uri::fromString('http://apache'));
@@ -103,7 +97,6 @@ class HttpClientLogDecoratorTest extends TestCase
         $this->httpClientLogDecorator->send($request, $this->clientOptions);
     }
 
-    #[Test]
     public function testSendClientThrowsHttpClientExceptionShouldBeLogged(): void
     {
         $request = Request::forGet(Uri::fromString('http://apache'));
