@@ -362,7 +362,7 @@ class Uri implements UriInterface
      *
      * @throws InvalidArgumentException
      */
-    private function filterPath(int|string|array|bool $path): string
+    private function filterPath(array | bool | int | string $path): string
     {
         if (!is_string($path)) {
             throw new InvalidArgumentException('path must be a string');
