@@ -8,9 +8,11 @@ use Artemeon\HttpClient\Http\Request;
 use Artemeon\HttpClient\Http\Uri;
 use GuzzleHttp\Psr7\Utils;
 use Http\Psr7Test\RequestIntegrationTest;
+use Override;
 
 /**
  * @covers \Artemeon\HttpClient\Http\Request
+ *
  * @internal
  */
 class RequestTest extends RequestIntegrationTest
@@ -18,16 +20,16 @@ class RequestTest extends RequestIntegrationTest
     /**
      * Overwrite, parent code doesn't work witz Guzzle > 7.2, remove when paren code is fixed.
      */
-    #[\Override]
+    #[Override]
     protected function buildStream($data)
     {
         return Utils::streamFor($data);
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
-    #[\Override]
+    #[Override]
     public function createSubject()
     {
         $this->skippedTests['testMethodIsExtendable'] = '';

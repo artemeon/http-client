@@ -181,6 +181,7 @@ class StreamTest extends TestCase
         $this->stream->close();
 
         Mockery::close();
+        $this->addToAssertionCount(1);
     }
 
     public function testCloseShouldCallClose(): void
@@ -192,7 +193,9 @@ class StreamTest extends TestCase
 
         $this->stream = Stream::fromString('content');
         $this->stream->close();
-        $this->stream->eof();
+
+        Mockery::close();
+        $this->addToAssertionCount(1);
     }
 
     public function testDetachShouldCallClose(): void

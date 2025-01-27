@@ -31,15 +31,22 @@ use Psr\Http\Message\UriInterface;
 class Request extends Message implements RequestInterface
 {
     public const METHOD_POST = 'POST';
+
     public const METHOD_GET = 'GET';
+
     public const METHOD_PUT = 'PUT';
+
     public const METHOD_DELETE = 'DELETE';
+
     public const METHOD_OPTIONS = 'OPTIONS';
+
     public const METHOD_PATCH = 'PATCH';
+
     public const METHOD_HEAD = 'HEAD';
 
     private string $method;
-    private string $requestTarget;
+
+    private ?string $requestTarget = null;
 
     /**
      * @throws InvalidArgumentException
@@ -51,7 +58,6 @@ class Request extends Message implements RequestInterface
         ?StreamInterface $body = null,
         string $version = '1.1',
     ) {
-        $this->requestTarget = $this->parseRequestTarget($this->uri);
         $this->assertValidMethod($method);
         $this->method = $method;
 
@@ -63,11 +69,12 @@ class Request extends Message implements RequestInterface
     }
 
     /**
-     * Named constructor to create an instance for post requests.
+     * Named constructor to create an instance for GET requests.
      *
      * @param Uri $uri The Url object
      * @param Headers|null $headers Optional: Headers collection or null
      * @param string $version Optional: http protocol version string
+     *
      * @throws InvalidArgumentException
      */
     public static function forGet(Uri $uri, ?Headers $headers = null, string $version = '1.1'): self
@@ -87,6 +94,7 @@ class Request extends Message implements RequestInterface
      * @param Uri $uri The Url object
      * @param Headers|null $headers Optional: Headers collection or null
      * @param string $version Optional: the http protocol version string
+     *
      * @throws InvalidArgumentException
      */
     public static function forOptions(Uri $uri, ?Headers $headers = null, string $version = '1.1'): self
@@ -107,6 +115,7 @@ class Request extends Message implements RequestInterface
      * @param Body $body The Body object
      * @param Headers|null $headers Optional: Headers collection or null
      * @param string $version Optional: the http protocol version string
+     *
      * @throws InvalidArgumentException
      */
     public static function forPost(Uri $uri, Body $body, ?Headers $headers = null, string $version = '1.1'): self
@@ -129,6 +138,7 @@ class Request extends Message implements RequestInterface
      * @param Body $body The Body object
      * @param Headers|null $headers Optional: Headers collection or null
      * @param string $version Optional: the http protocol version string
+     *
      * @throws InvalidArgumentException
      */
     public static function forPut(Uri $uri, Body $body, ?Headers $headers = null, string $version = '1.1'): self
@@ -151,6 +161,7 @@ class Request extends Message implements RequestInterface
      * @param Body $body The Body object
      * @param Headers|null $headers Optional: Headers collection or null
      * @param string $version Optional: the http protocol version string
+     *
      * @throws InvalidArgumentException
      */
     public static function forPatch(Uri $uri, Body $body, ?Headers $headers = null, string $version = '1.1'): self
@@ -172,6 +183,7 @@ class Request extends Message implements RequestInterface
      * @param Uri $uri The Url object
      * @param Headers|null $headers Optional: Headers collection or null
      * @param string $version Optional: http protocol version string
+     *
      * @throws InvalidArgumentException
      */
     public static function forDelete(Uri $uri, ?Headers $headers = null, string $version = '1.1'): self
@@ -186,7 +198,7 @@ class Request extends Message implements RequestInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     #[\Override]
     public function getMethod(): string
@@ -195,12 +207,12 @@ class Request extends Message implements RequestInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     #[\Override]
     public function withMethod($method): self
     {
-        if (!is_string($method)) {
+        if (! is_string($method)) {
             throw new InvalidArgumentException('method must be a string value');
         }
 
@@ -213,7 +225,7 @@ class Request extends Message implements RequestInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     #[\Override]
     public function getUri(): UriInterface
@@ -222,23 +234,29 @@ class Request extends Message implements RequestInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
+     *
      * @throws InvalidArgumentException
      */
     #[\Override]
     public function withUri(UriInterface $uri, $preserveHost = false): self
     {
+        if ($uri === $this->uri) {
+            return $this;
+        }
+
+        $normalizedPath = preg_replace('#^/+#', '/', $uri->getPath());
         $cloned = clone $this;
-        $cloned->uri = $uri;
+        $cloned->uri = $uri->withPath($normalizedPath);
 
         $newHost = Header::fromString(HeaderField::HOST, $uri->getHost());
 
         if ($preserveHost === true) {
             // Update only if the Host header is missing or empty, and the new URI contains a host component
-            if ($cloned->headers->isEmpty(HeaderField::HOST) && !empty($uri->getHost())) {
+            if ($cloned->headers->isEmpty(HeaderField::HOST) && ! empty($uri->getHost())) {
                 $cloned->headers->replace($newHost);
             }
-        } elseif (!empty($uri->getHost())) {
+        } elseif (! empty($uri->getHost())) {
             // Default: Update the Host header if the URI contains a host component
             $cloned->headers->replace($newHost);
         }
@@ -247,20 +265,30 @@ class Request extends Message implements RequestInterface
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     #[\Override]
     public function getRequestTarget(): string
     {
-        return $this->requestTarget;
+        if ($this->requestTarget !== null) {
+            return $this->requestTarget;
+        }
+
+        return $this->parseRequestTarget($this->uri);
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     #[\Override]
     public function withRequestTarget($requestTarget): self
     {
+        if (preg_match('#\s#', $requestTarget)) {
+            throw new InvalidArgumentException(
+                'Invalid request target provided; cannot contain whitespace',
+            );
+        }
+
         $cloned = clone $this;
         $cloned->requestTarget = trim((string) $requestTarget);
 
@@ -314,7 +342,7 @@ class Request extends Message implements RequestInterface
             self::METHOD_HEAD,
         ];
 
-        if (!in_array(strtoupper($method), $validMethods)) {
+        if (! in_array(strtoupper($method), $validMethods)) {
             throw new InvalidArgumentException("method: $method is invalid");
         }
     }

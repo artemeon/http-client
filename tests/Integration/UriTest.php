@@ -9,12 +9,13 @@ use Http\Psr7Test\UriIntegrationTest;
 
 /**
  * @covers \Artemeon\HttpClient\Http\Uri
+ *
  * @internal
  */
 class UriTest extends UriIntegrationTest
 {
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     #[\Override]
     public function createUri($uri)

@@ -52,16 +52,18 @@ class Uri implements UriInterface
      */
     private function __construct(string $uri)
     {
-        if ($uri !== '') {
-            $this->query = $this->filterQueryOrFragment(parse_url($uri, PHP_URL_QUERY) ?? '');
-            $this->scheme = $this->filterScheme(parse_url($uri, PHP_URL_SCHEME) ?? '');
-            $this->host = $this->filterHost(parse_url($uri, PHP_URL_HOST) ?? '');
-            $this->port = $this->filterPort(parse_url($uri, PHP_URL_PORT) ?? null);
-            $this->fragment = $this->filterQueryOrFragment(parse_url($uri, PHP_URL_FRAGMENT) ?? '');
-            $this->path = $this->filterPath(parse_url($uri, PHP_URL_PATH) ?? '');
-            $this->user = parse_url($uri, PHP_URL_USER) ?? '';
-            $this->password = parse_url($uri, PHP_URL_PASS) ?? '';
+        if ($uri === '') {
+            return;
         }
+
+        $this->query = $this->filterQueryOrFragment(parse_url($uri, PHP_URL_QUERY) ?? '');
+        $this->scheme = $this->filterScheme(parse_url($uri, PHP_URL_SCHEME) ?? '');
+        $this->host = $this->filterHost(parse_url($uri, PHP_URL_HOST) ?? '');
+        $this->port = $this->filterPort(parse_url($uri, PHP_URL_PORT) ?? null);
+        $this->fragment = $this->filterQueryOrFragment(parse_url($uri, PHP_URL_FRAGMENT) ?? '');
+        $this->path = $this->filterPath(parse_url($uri, PHP_URL_PATH) ?? '');
+        $this->user = parse_url($uri, PHP_URL_USER) ?? '';
+        $this->password = parse_url($uri, PHP_URL_PASS) ?? '';
     }
 
     /**
@@ -145,7 +147,7 @@ class Uri implements UriInterface
     #[\Override]
     public function getPath(): string
     {
-        return $this->path;
+        return preg_replace('#^/+#', '/', $this->path);
     }
 
     /**
@@ -178,8 +180,9 @@ class Uri implements UriInterface
             $uri .= '//' . $this->getAuthority();
         }
 
-        if ($this->getPath() !== '') {
-            $uri .= $this->getPath();
+        // not normalized like //valid/path
+        if ($this->path !== '') {
+            $uri .= $this->path;
         }
 
         if ($this->getQuery() !== '') {
@@ -226,10 +229,13 @@ class Uri implements UriInterface
      * @inheritDoc
      */
     #[\Override]
-    public function withUserInfo($user, $password = null): self
+    public function withUserInfo(string $user, ?string $password = null): self
     {
-        $user = trim((string) $user);
-        $password = trim((string) $password);
+        $user = $this->filterUserInfoComponent($user);
+        if ($password !== null) {
+            $password = $this->filterUserInfoComponent($password);
+        }
+
         $cloned = clone $this;
 
         // Empty string for the user is equivalent to removing user
@@ -238,10 +244,28 @@ class Uri implements UriInterface
             $cloned->password = '';
         } else {
             $cloned->user = $user;
-            $cloned->password = $password;
+            $cloned->password = $password ?? '';
         }
 
         return $cloned;
+    }
+
+    private function filterUserInfoComponent($component): string
+    {
+        if (!is_string($component)) {
+            throw new \InvalidArgumentException('User info must be a string');
+        }
+
+        return preg_replace_callback(
+            '/(?:[^%'.self::UNRESERVED.self::DELIMITER.']+|%(?![A-Fa-f0-9]{2}))/',
+            [$this, 'rawurlencodeMatchZero'],
+            $component
+        );
+    }
+
+    private function rawurlencodeMatchZero(array $match): string
+    {
+        return rawurlencode($match[0]);
     }
 
     /**
@@ -369,7 +393,6 @@ class Uri implements UriInterface
         }
 
         $pattern = '/(?:[^' . self::UNRESERVED . self::DELIMITER . "%:@\/]++|%(?![A-Fa-f0-9]{2}))/";
-
         return preg_replace_callback($pattern, [$this, 'encode'], $path);
     }
 

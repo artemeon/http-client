@@ -18,6 +18,7 @@ use Artemeon\HttpClient\Exception\RuntimeException;
 use Artemeon\HttpClient\Http\Header\Header;
 use Artemeon\HttpClient\Http\Header\Headers;
 use Artemeon\HttpClient\Stream\Stream;
+use Override;
 use Psr\Http\Message\MessageInterface;
 use Psr\Http\Message\StreamInterface;
 
@@ -43,7 +44,7 @@ abstract class Message implements MessageInterface
     /**
      * Return the Header collection as an array.
      */
-    #[\Override]
+    #[Override]
     public function getHeaders(): array
     {
         $headers = [];
@@ -61,7 +62,7 @@ abstract class Message implements MessageInterface
      *
      * @throws RuntimeException
      */
-    #[\Override]
+    #[Override]
     public function getBody(): StreamInterface
     {
         if (! $this->body instanceof StreamInterface) {
@@ -74,7 +75,7 @@ abstract class Message implements MessageInterface
     /**
      * {@inheritDoc}
      */
-    #[\Override]
+    #[Override]
     public function getProtocolVersion(): string
     {
         return $this->version;
@@ -83,7 +84,7 @@ abstract class Message implements MessageInterface
     /**
      * {@inheritDoc}
      */
-    #[\Override]
+    #[Override]
     public function hasHeader($name): bool
     {
         return $this->headers->has((string) $name);
@@ -92,7 +93,7 @@ abstract class Message implements MessageInterface
     /**
      * {@inheritDoc}
      */
-    #[\Override]
+    #[Override]
     public function getHeader($name): array
     {
         try {
@@ -105,7 +106,7 @@ abstract class Message implements MessageInterface
     /**
      * {@inheritDoc}
      */
-    #[\Override]
+    #[Override]
     public function getHeaderLine($name): string
     {
         try {
@@ -118,7 +119,7 @@ abstract class Message implements MessageInterface
     /**
      * {@inheritDoc}
      */
-    #[\Override]
+    #[Override]
     public function withHeader($name, $value): self
     {
         $cloned = clone $this;
@@ -136,7 +137,7 @@ abstract class Message implements MessageInterface
     /**
      * {@inheritDoc}
      */
-    #[\Override]
+    #[Override]
     public function withProtocolVersion($version): self
     {
         $cloned = clone $this;
@@ -148,7 +149,7 @@ abstract class Message implements MessageInterface
     /**
      * {@inheritDoc}
      */
-    #[\Override]
+    #[Override]
     public function withAddedHeader($name, $value): self
     {
         $cloned = clone $this;
@@ -172,7 +173,7 @@ abstract class Message implements MessageInterface
     /**
      * {@inheritDoc}
      */
-    #[\Override]
+    #[Override]
     public function withoutHeader(string $name): MessageInterface
     {
         $cloned = clone $this;
@@ -184,7 +185,7 @@ abstract class Message implements MessageInterface
     /**
      * {@inheritDoc}
      */
-    #[\Override]
+    #[Override]
     public function withBody(StreamInterface $body): MessageInterface
     {
         if (! $body->isReadable()) {

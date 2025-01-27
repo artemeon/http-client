@@ -7,6 +7,7 @@ namespace Artemeon\HttpClient\Tests\Integration;
 use Artemeon\HttpClient\Http\Response;
 use GuzzleHttp\Psr7\Utils;
 use Http\Psr7Test\ResponseIntegrationTest;
+use Override;
 
 /**
  * @covers \Artemeon\HttpClient\Http\Response
@@ -17,7 +18,7 @@ class ResponseTest extends ResponseIntegrationTest
     /**
      * Overwrite, parent code doesn't work witz Guzzle > 7.2, remove when paren code is fixed.
      */
-    #[\Override]
+    #[Override]
     protected function buildStream($data)
     {
         return Utils::streamFor($data);
@@ -26,7 +27,7 @@ class ResponseTest extends ResponseIntegrationTest
     /**
      * @inheritDoc
      */
-    #[\Override]
+    #[Override]
     public function createSubject()
     {
         return new Response(200, '1.1');
