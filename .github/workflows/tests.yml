@@ -19,4 +19,4 @@ jobs:
       - name: Composer install
         run: composer install --no-interaction --no-ansi --no-progress
       - name: Run Tests
-        run: composer test
+        run: composer test:coverage
