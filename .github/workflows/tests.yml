@@ -5,8 +5,8 @@ on:
     branches:
       - 1.x
 jobs:
-  phpunit:
-    name: PHPUnit
+  tests:
+    name: Tests
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -15,8 +15,8 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: 8.4
-          coverage: none
+          coverage: xdebug
       - name: Composer install
         run: composer install --no-interaction --no-ansi --no-progress
-      - name: Run PHPUnit
-        run: vendor/phpunit/phpunit/phpunit -c tests/phpunit.xml
+      - name: Run Tests
+        run: composer test

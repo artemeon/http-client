@@ -96,7 +96,7 @@ class Stream implements AppendableStream
         $resource = fopen($file, $mode);
 
         if (! is_resource($resource)) {
-            throw new RuntimeException("Cam't open file $file");
+            throw new RuntimeException("Can't open file $file");
         }
 
         return new self($resource);

@@ -154,9 +154,8 @@ class StreamTest extends TestCase
             ->with(Mockery::any(), Mockery::any())
             ->andReturn(false);
 
-        $this->expectException(\PHPUnit\Framework\Error\Warning::class);
-        // $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('fopen(/does/not/exists.txt): Failed to open stream: No such file or directory');
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Can\'t open file /does/not/exists.txt');
 
         $this->stream = Stream::fromFile('/does/not/exists.txt');
         $this->fail('Expected RuntimeException was not thrown.');
