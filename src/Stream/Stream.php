@@ -156,7 +156,8 @@ class Stream implements AppendableStream
             return;
         }
 
-        fclose($this->resource);
+        fclose
+        ($this->resource);
     }
 
     /**
@@ -192,7 +193,7 @@ class Stream implements AppendableStream
     public function tell(): int
     {
         $this->assertStreamIsNotDetached();
-        $position = ftell($this->resource);
+        $position = ftell($this->getResource());
 
         if ($position === false) {
             throw new RuntimeException("Can't determine position");

@@ -38,46 +38,47 @@ use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Request as GuzzleRequest;
 use GuzzleHttp\Psr7\Response as GuzzleResponse;
+use Mockery;
+use Mockery\MockInterface;
 use Override;
 use PHPUnit\Framework\TestCase;
-use Prophecy\Argument;
-use Prophecy\PhpUnit\ProphecyTrait;
-use Prophecy\Prophecy\ObjectProphecy;
 
 /**
  * @internal
  */
 class ArtemeonHttpClientTest extends TestCase
 {
-    use ProphecyTrait;
-
     private GuzzleClient $guzzleClient;
+
     private MockHandler $mockHandler;
+
     private ArtemeonHttpClient $httpClient;
+
     private ClientOptions $clientOptions;
-    private ClientOptionsConverter | ObjectProphecy $clientOptionsConverter;
+
+    private ClientOptionsConverter | MockInterface $clientOptionsConverter;
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     #[Override]
-    public function setUp(): void
+    protected function setUp(): void
     {
-        $this->mockHandler = new MockHandler();
+        $this->mockHandler = new MockHandler;
         $this->guzzleClient = new GuzzleClient(['handler' => HandlerStack::create($this->mockHandler)]);
-        $this->clientOptionsConverter = $this->prophesize(ClientOptionsConverter::class);
+        $this->clientOptionsConverter = Mockery::mock(ClientOptionsConverter::class);
         $this->clientOptions = ClientOptions::fromDefaults();
 
         $this->httpClient = new ArtemeonHttpClient(
             $this->guzzleClient,
-            $this->clientOptionsConverter->reveal(),
+            $this->clientOptionsConverter,
         );
     }
 
     public function testSendWithoutOptionsUsesEmptyOptionsArray(): void
     {
         $this->mockHandler->append(new GuzzleResponse(200, [], 'Some body content'));
-        $this->clientOptionsConverter->toGuzzleOptionsArray(Argument::any())->shouldNotBeCalled();
+        $this->clientOptionsConverter->shouldNotReceive('toGuzzleOptionsArray');
 
         $request = Request::forGet(Uri::fromString('http://apache/'));
         $response = $this->httpClient->send($request);
@@ -88,9 +89,10 @@ class ArtemeonHttpClientTest extends TestCase
     public function testSendWithOptionsConvertOptions(): void
     {
         $this->mockHandler->append(new GuzzleResponse(200, [], 'Some body content'));
-        $this->clientOptionsConverter->toGuzzleOptionsArray($this->clientOptions)
-            ->shouldBeCalled()
-            ->willReturn([]);
+        $this->clientOptionsConverter->shouldReceive('toGuzzleOptionsArray')
+            ->withArgs([$this->clientOptions])
+            ->once()
+            ->andReturn([]);
 
         $request = Request::forGet(Uri::fromString('http://apache/'));
         $response = $this->httpClient->send($request, $this->clientOptions);

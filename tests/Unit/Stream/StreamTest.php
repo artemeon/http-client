@@ -36,7 +36,7 @@ class StreamTest extends TestCase
     #[Override]
     protected function setUp(): void
     {
-        parent::setUp(); // Falls Test-Framework-spezifische Logik benötigt wird
+        parent::setUp();
 
         $this->filesystem = vfsStream::setup('stream');
         file_put_contents($this->filesystem->url() . '/generated.json', '');
@@ -101,24 +101,67 @@ class StreamTest extends TestCase
     public function testAppendStreamCantCopyStreamThrowsException(): void
     {
         $this->markTestIncomplete('mock');
+        $testString = 'test';
+        $streamMock = $this->createMock(Stream::class);
+        $resourceMock = fopen('php://memory', 'r+');
+        $streamFeature = Stream::fromString($testString);
+
         $mock = Mockery::mock('overload:stream_copy_to_stream');
         $mock->shouldReceive('__invoke')
-            ->with(Mockery::any(), Mockery::any())
+            ->withArgs([Mockery::any(), Mockery::any()])
             ->andReturn(false);
 
-        $this->stream = Stream::fromString('test');
+        $streamMock->expects($this->once())
+            ->method('getResource')
+            ->willReturn($resourceMock);
+
+        $streamMock->expects($this->once())
+            ->method('isReadable')
+            ->willReturn(true);
+
+        $streamMock->expects($this->once())
+            ->method('rewind');
 
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('Append failed');
 
-        $writeOnlyStream = Stream::fromFile($this->filesystem->url() . '/generated.json');
-        $this->stream->appendStream($writeOnlyStream);
+        $streamFeature->appendStream($streamMock);
+    }
+
+    public function mockedStreamCopyToStream($source, $destination)
+    {
+        return call_user_func_array($GLOBALS['originalStreamCopyToStream'], func_get_args());
     }
 
     public function testAppendStreamReturnsAppendedStream(): void
     {
-        $this->stream = Stream::fromString('test');
-        $this->stream->appendStream(Stream::fromString('_appended'));
+        $this->markTestIncomplete('mock');
+
+        $testString = 'test';
+        $streamMock = $this->createMock(Stream::class);
+        $resourceMock = fopen('php://memory', 'r+');
+        $streamFeature = Stream::fromString($testString);
+
+        $mock = Mockery::mock('overload:stream_copy_to_stream');
+        $mock->shouldReceive('__invoke')
+            ->withArgs([Mockery::any(), Mockery::any()])
+            ->andReturn(false);
+
+        $streamMock->expects($this->once())
+            ->method('getResource')
+            ->willReturn($resourceMock);
+
+        $streamMock->expects($this->exactly(2))
+            ->method('isReadable')
+            ->willReturn(true);
+
+        $streamMock->expects($this->exactly(2))
+            ->method('rewind');
+
+        $streamFeature->appendStream($streamMock);
+
+        $this->stream = Stream::fromString($testString);
+        $this->stream->appendStream($streamMock);
 
         self::assertSame('test_appended', $this->stream->__toString());
     }

@@ -18,15 +18,12 @@ use Artemeon\HttpClient\Client\Options\ClientOptionsConverter;
 use GuzzleHttp\RequestOptions as GuzzleRequestOptions;
 use Override;
 use PHPUnit\Framework\TestCase;
-use Prophecy\PhpUnit\ProphecyTrait;
 
 /**
  * @internal
  */
 class ClientOptionsConverterTest extends TestCase
 {
-    use ProphecyTrait;
-
     private ClientOptionsConverter $clientOptionConverter;
     private ClientOptions $clientOptions;
 

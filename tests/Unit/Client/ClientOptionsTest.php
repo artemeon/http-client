@@ -16,14 +16,12 @@ namespace Artemeon\HttpClient\Tests\Unit\Client;
 use Artemeon\HttpClient\Client\Options\ClientOptions;
 use Override;
 use PHPUnit\Framework\TestCase;
-use Prophecy\PhpUnit\ProphecyTrait;
 
 /**
  * @internal
  */
 class ClientOptionsTest extends TestCase
 {
-    use ProphecyTrait;
 
     private ClientOptions $clientOptions;
 
