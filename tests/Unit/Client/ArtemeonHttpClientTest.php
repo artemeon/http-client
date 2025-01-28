@@ -64,7 +64,7 @@ class ArtemeonHttpClientTest extends TestCase
     #[Override]
     protected function setUp(): void
     {
-        $this->mockHandler = new MockHandler;
+        $this->mockHandler = new MockHandler();
         $this->guzzleClient = new GuzzleClient(['handler' => HandlerStack::create($this->mockHandler)]);
         $this->clientOptionsConverter = Mockery::mock(ClientOptionsConverter::class);
         $this->clientOptions = ClientOptions::fromDefaults();

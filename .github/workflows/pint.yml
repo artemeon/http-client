@@ -24,4 +24,4 @@ jobs:
       - name: Composer install
         run: composer install --no-interaction --no-ansi --no-progress
       - name: Run Pint
-        run: ./vendor/bin/pint --test -v
+        run: composer pint

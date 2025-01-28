@@ -257,9 +257,9 @@ class Uri implements UriInterface
         }
 
         return preg_replace_callback(
-            '/(?:[^%'.self::UNRESERVED.self::DELIMITER.']+|%(?![A-Fa-f0-9]{2}))/',
+            '/(?:[^%' . self::UNRESERVED . self::DELIMITER . ']+|%(?![A-Fa-f0-9]{2}))/',
             [$this, 'rawurlencodeMatchZero'],
-            $component
+            $component,
         );
     }
 
@@ -393,6 +393,7 @@ class Uri implements UriInterface
         }
 
         $pattern = '/(?:[^' . self::UNRESERVED . self::DELIMITER . "%:@\/]++|%(?![A-Fa-f0-9]{2}))/";
+
         return preg_replace_callback($pattern, [$this, 'encode'], $path);
     }
 

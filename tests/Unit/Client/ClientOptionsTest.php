@@ -22,7 +22,6 @@ use PHPUnit\Framework\TestCase;
  */
 class ClientOptionsTest extends TestCase
 {
-
     private ClientOptions $clientOptions;
 
     /**
