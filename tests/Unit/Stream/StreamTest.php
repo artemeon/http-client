@@ -103,13 +103,10 @@ class StreamTest extends TestCase
         $this->markTestIncomplete('mock');
         $testString = 'test';
         $streamMock = $this->createMock(Stream::class);
-        $resourceMock = fopen('php://memory', 'r+');
-        $streamFeature = Stream::fromString($testString);
+        $resourceMock = fopen('php://memory', 'r');
+        $resourceAppendMock = fopen('php://memory', 'r');
 
-        $mock = Mockery::mock('overload:stream_copy_to_stream');
-        $mock->shouldReceive('__invoke')
-            ->withArgs([Mockery::any(), Mockery::any()])
-            ->andReturn(false);
+        $streamFeature = Stream::fromString($testString);
 
         $streamMock->expects($this->once())
             ->method('getResource')
@@ -122,10 +119,19 @@ class StreamTest extends TestCase
         $streamMock->expects($this->once())
             ->method('rewind');
 
+        $streamAppendMock = $this->createMock(Stream::class);
+        $streamAppendMock->expects($this->once())
+            ->method('getResource')
+            ->willReturn($resourceAppendMock);
+
+        $streamAppendMock->expects($this->once())
+            ->method('isReadable')
+            ->willReturn(true);
+
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('Append failed');
 
-        $streamFeature->appendStream($streamMock);
+        $streamFeature->appendStream($streamAppendMock);
     }
 
     public function mockedStreamCopyToStream($source, $destination)
@@ -135,33 +141,8 @@ class StreamTest extends TestCase
 
     public function testAppendStreamReturnsAppendedStream(): void
     {
-        $this->markTestIncomplete('mock');
-
-        $testString = 'test';
-        $streamMock = $this->createMock(Stream::class);
-        $resourceMock = fopen('php://memory', 'r+');
-        $streamFeature = Stream::fromString($testString);
-
-        $mock = Mockery::mock('overload:stream_copy_to_stream');
-        $mock->shouldReceive('__invoke')
-            ->withArgs([Mockery::any(), Mockery::any()])
-            ->andReturn(false);
-
-        $streamMock->expects($this->once())
-            ->method('getResource')
-            ->willReturn($resourceMock);
-
-        $streamMock->expects($this->exactly(2))
-            ->method('isReadable')
-            ->willReturn(true);
-
-        $streamMock->expects($this->exactly(2))
-            ->method('rewind');
-
-        $streamFeature->appendStream($streamMock);
-
-        $this->stream = Stream::fromString($testString);
-        $this->stream->appendStream($streamMock);
+        $this->stream = Stream::fromString('test');
+        $this->stream->appendStream(Stream::fromString('_appended'));
 
         self::assertSame('test_appended', $this->stream->__toString());
     }
@@ -286,17 +267,21 @@ class StreamTest extends TestCase
 
     public function testTellFtellReturnsFalseThrowsException(): void
     {
-        $this->markTestIncomplete('mock');
-        $ftellMock = Mockery::mock('overload:ftell');
-        $ftellMock->shouldReceive('__invoke')
-            ->with(Mockery::type('resource'))
-            ->andReturnFalse();
+        // generate resource and set file pointer to not allowed position
+        $resourceMock = fopen('php://memory', 'r+');
+        fwrite($resourceMock, 'test content');
+        fseek($resourceMock, -1);
 
-        $this->stream = Stream::fromString('content');
+        $streamHandler = $this->getMockBuilder(Stream::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['getResource'])
+            ->getMock();
+
+        $streamHandler->expects($this->exactly(2))->method('getResource')->willReturn($resourceMock);
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('Can\'t determine position');
 
-        $this->stream->tell();
+        $streamHandler->tell();
     }
 
     public function testTellReturnsExpectedValued(): void
@@ -457,18 +442,24 @@ class StreamTest extends TestCase
 
     public function testWriteFWriteReturnFalseThrowsException(): void
     {
-        $this->markTestIncomplete('mock');
-        $fwriteMock = Mockery::mock('overload:fwrite');
-        $fwriteMock->shouldReceive('__invoke')
-            ->with(Mockery::type('resource'))
-            ->once()
-            ->andReturnFalse();
+        // generate read only resource
+        $resourceMock = fopen('php://memory', 'r');
 
-        $this->stream = Stream::fromFileMode('r+');
+        $streamHandler = $this->getMockBuilder(Stream::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['getResource', 'isWritable'])
+            ->getMock();
+
+        $streamHandler->expects($this->once())
+            ->method('isWritable')
+            ->willReturn(true);
+        $streamHandler->expects($this->exactly(2))
+            ->method('getResource')
+            ->willReturn($resourceMock);
         $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage("Cant't write to stream");
+        $this->expectExceptionMessage('Can\'t write to stream');
 
-        $this->stream->write('test');
+        $streamHandler->write('test');
     }
 
     public function testWriteReturnNumberOfBytesWritten(): void
@@ -503,16 +494,26 @@ class StreamTest extends TestCase
     public function testReadFReadReturnsFalseThrowsException(): void
     {
         $this->markTestIncomplete('mock');
-        $freadMock = Mockery::mock('overload:fclose');
-        $freadMock->shouldReceive('__invoke')
-            ->with(Mockery::type('resource'))
-            ->once();
+        // generate resource and set file pointer to not allowed position
+        $resourceMock = fopen('php://memory', 'w');
+        fwrite($resourceMock, 'Some content string');
 
-        $this->stream = Stream::fromFile($this->filesystem->url() . '/generated.json', 'r+');
+        $streamHandler = $this->getMockBuilder(Stream::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['getResource', 'isReadable'])
+            ->getMock();
+
+        $streamHandler->expects($this->exactly(2))
+            ->method('isReadable')
+            ->willReturn(true);
+
+        $streamHandler->expects($this->exactly(2))
+            ->method('getResource')
+            ->willReturn($resourceMock);
         $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage("Can't read from stream");
+        $this->expectExceptionMessage('Can\'t read from stream');
 
-        $this->stream->read(100);
+        $streamHandler->read(100);
     }
 
     public function testReadReturnValidNumberOfBytes(): void
@@ -543,17 +544,26 @@ class StreamTest extends TestCase
     public function testGetContentStreamReturnsFalseThrowsException(): void
     {
         $this->markTestIncomplete('mock');
-        $mock = Mockery::mock('overload:stream_get_contents');
-        $mock->shouldReceive('__invoke')
-            ->with(Mockery::type('resource'))
-            ->once()
-            ->andReturnFalse();
+        // generate readonly resource
+        $resourceMock = fopen('php://memory', 'w');
 
-        $this->stream = Stream::fromFile($this->filesystem->url() . '/generated.json', 'r');
+        $streamHandler = $this->getMockBuilder(Stream::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['getResource', 'isReadable'])
+            ->getMock();
+
+        $streamHandler->expects($this->exactly(2))
+            ->method('isReadable')
+            ->willReturn(true);
+
+        $streamHandler->expects($this->exactly(2))
+            ->method('getResource')
+            ->willReturn($resourceMock);
+
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage("Can't read content from stream");
 
-        $this->stream->getContents();
+        $streamHandler->getContents();
     }
 
     public function testGetMetadataKeyIsNullReturnsCompleteArray(): void
