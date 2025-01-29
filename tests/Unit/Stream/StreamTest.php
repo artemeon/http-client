@@ -31,14 +31,16 @@ class FalseReturningFilter extends php_user_filter
     }
 }
 
-class FalseReturningStream {
-
+class FalseReturningStream
+{
     public $context;
-    public function stream_open($path, $mode, $options, &$opened_path) {
+
+    public function stream_open($path, $mode, $options, &$opened_path)
+    {
         return true;
     }
 
-    public function stream_stat(): array|false
+    public function stream_stat(): array | false
     {
         return false;
     }
@@ -53,15 +55,15 @@ class FalseReturningStream {
         return false;
     }
 
-    public function stream_eof() {
+    public function stream_eof()
+    {
         return true;
     }
-    public function stream_get_contents($resource): string|false
+
+    public function stream_get_contents($resource): false | string
     {
         return false;
     }
-
-
 }
 /**
  * @internal
@@ -142,10 +144,10 @@ class StreamTest extends TestCase
 
     public function testAppendStreamCantCopyStreamThrowsException(): void
     {
-        stream_wrapper_register("falsestream", FalseReturningStream::class);
+        stream_wrapper_register('falsestream', FalseReturningStream::class);
         $resourceMock = fopen('falsestream://test', 'w');
 
-        $testString ='test';
+        $testString = 'test';
         $streamFeature = Stream::fromString($testString);
 
         $streamAppendMock = $this->createMock(Stream::class);
@@ -565,7 +567,7 @@ class StreamTest extends TestCase
     public function testGetContentStreamReturnsFalseThrowsException(): void
     {
         $this->markTestIncomplete('mock');
-        stream_wrapper_register("falsestream", FalseReturningStream::class);
+        stream_wrapper_register('falsestream', FalseReturningStream::class);
         $resourceMock = fopen('falsestream://test', 'w');
 
         $streamHandler = $this->getMockBuilder(Stream::class)
