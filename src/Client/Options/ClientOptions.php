@@ -166,7 +166,7 @@ class ClientOptions
     }
 
     /**
-     * @return resource
+     * @return resource|null
      */
     public function getSink(): mixed
     {

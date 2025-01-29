@@ -22,7 +22,7 @@ interface AppendableStream extends StreamInterface
     /**
      * Return the resource handle.
      *
-     * @return resource
+     * @return resource|null
      */
     public function getResource(): mixed;
 }

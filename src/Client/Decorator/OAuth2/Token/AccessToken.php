@@ -57,10 +57,10 @@ class AccessToken
         $data = json_decode($json, true);
 
         return new self(
-            (string) $data['access_token'] ?? '',
-            (int) $data['expires_in'] ?? 0,
-            (string) $data['token_type'] ?? '',
-            (string) $data['scope'] ?? '',
+            (string) ($data['access_token'] ?? ''),
+            (int) ($data['expires_in'] ?? 0),
+            (string) ($data['token_type'] ?? ''),
+            (string) ($data['scope'] ?? ''),
         );
     }
 

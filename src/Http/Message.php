@@ -215,8 +215,6 @@ abstract class Message implements MessageInterface
                     throw new InvalidArgumentException('Values must a string or numeric');
                 }
             }
-        } elseif (! is_string($value) && ! is_numeric($value)) {
-            throw new InvalidArgumentException('Values must a string or numeric');
         }
     }
 }
