@@ -19,6 +19,7 @@ use Mockery;
 use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamDirectory;
 use Override;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -195,9 +196,7 @@ class StreamTest extends TestCase
         $fcloseMock = Mockery::mock('overload:fclose');
         $fcloseMock->shouldReceive('__invoke')
             ->with(Mockery::type('resource'))
-            ->andReturnUsing(function ($resource) {
-                return fclose($resource);
-            });
+            ->andReturnUsing(static fn ($resource) => fclose($resource));
 
         $this->stream = Stream::fromString('content');
         $this->stream->detach();
@@ -390,9 +389,7 @@ class StreamTest extends TestCase
         self::assertFalse($this->stream->isWritable());
     }
 
-    /**
-     * @dataProvider provideIsModeWriteable
-     */
+    #[DataProvider('provideIsModeWriteable')]
     public function testIsWritableReturnsExpectedValue(string $mode, bool $isWritable, string $file): void
     {
         $file = $this->filesystem->url() . '/' . $file;
@@ -409,10 +406,7 @@ class StreamTest extends TestCase
         self::assertFalse($this->stream->isReadable());
     }
 
-    /**
-     * @dataProvider provideIsReadable
-     */
-
+    #[DataProvider('provideIsReadable')]
     public function testIsReadableReturnsExpectedValue(string $mode, bool $isReadable, string $file): void
     {
         $file = $this->filesystem->url() . '/' . $file;

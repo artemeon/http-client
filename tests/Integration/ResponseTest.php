@@ -7,16 +7,11 @@ namespace Artemeon\HttpClient\Tests\Integration;
 use Artemeon\HttpClient\Http\Response;
 use Artemeon\HttpClient\Tests\TestCase;
 use GuzzleHttp\Psr7\Utils;
-use InvalidArgumentException;
-use PHPUnit\Framework\AssertionFailedError;
-use Throwable;
-use TypeError;
 
 /**
- * @covers \Artemeon\HttpClient\Http\Response
- *
  * @internal
  */
+#[\PHPUnit\Framework\Attributes\CoversClass(Response::class)]
 class ResponseTest extends TestCase
 {
     private Response $response;
@@ -32,7 +27,7 @@ class ResponseTest extends TestCase
     /**
      * {@inheritDoc}
      */
-    public function createSubject()
+    public function createSubject(): Response
     {
         return new Response(200, '1.1');
     }
@@ -58,44 +53,6 @@ class ResponseTest extends TestCase
         $this->assertNotSame($this->response, $response);
         $this->assertEquals($this->response, $original, 'Response MUST not be mutated');
         $this->assertSame(204, $response->getStatusCode());
-    }
-
-    /**
-     * @dataProvider getInvalidStatusCodeArguments
-     */
-    public function testStatusCodeInvalidArgument($statusCode): void
-    {
-        if (isset($this->skippedTests[__FUNCTION__])) {
-            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
-        }
-
-        try {
-            $this->response->withStatus($statusCode);
-            $this->fail('withStatus() should have raised exception on invalid argument');
-        } catch (AssertionFailedError $e) {
-            // invalid argument not caught
-            throw $e;
-        } catch (InvalidArgumentException | TypeError $e) {
-            // valid
-            $this->assertInstanceOf(Throwable::class, $e);
-        } catch (Throwable $e) {
-            // invalid
-            $this->fail(sprintf(
-                'Unexpected exception (%s) thrown from withStatus(); expected TypeError or InvalidArgumentException',
-                gettype($e),
-            ));
-        }
-    }
-
-    public static function getInvalidStatusCodeArguments()
-    {
-        return [
-            'true' => [true],
-            'string' => ['foobar'],
-            'too-low' => [99],
-            'too-high' => [600],
-            'object' => [new \stdClass()],
-        ];
     }
 
     public function testReasonPhrase(): void

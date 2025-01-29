@@ -26,7 +26,7 @@ class ClientOptions
     private bool $addReferer;
 
     /** @var resource|null */
-    private mixed $sink;
+    private mixed $sink = null;
 
     private bool $httpErrors;
 

@@ -41,6 +41,7 @@ use GuzzleHttp\Psr7\Response as GuzzleResponse;
 use Mockery;
 use Mockery\MockInterface;
 use Override;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -114,9 +115,7 @@ class ArtemeonHttpClientTest extends TestCase
         self::assertSame($expectedHeaders, $response->getHeaders());
     }
 
-    /**
-     * @dataProvider provideExceptionMappings
-     */
+    #[DataProvider('provideExceptionMappings')]
     public function testSendGuzzleThrowsExceptionMappedToHttpClientException(
         \RuntimeException $guzzleException,
         string $httpClientException,

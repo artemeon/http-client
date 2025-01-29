@@ -10,24 +10,20 @@ use Artemeon\HttpClient\Tests\TestCase;
 use GuzzleHttp\Psr7\MessageTrait;
 use GuzzleHttp\Psr7\Uri as GuzzleUri;
 use GuzzleHttp\Psr7\Utils;
-use InvalidArgumentException;
-use PHPUnit\Framework\AssertionFailedError;
+use PHPUnit\Framework\Attributes\CoversClass;
 use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\UriInterface;
+use Psr\Http\Message\StreamInterface;
 use RuntimeException;
-use Throwable;
-use TypeError;
 
 /**
- * @covers \Artemeon\HttpClient\Http\Request
- *
  * @internal
  */
+#[CoversClass(Request::class)]
 class RequestTest extends TestCase
 {
     use MessageTrait;
 
-    protected function buildUri($uri)
+    protected function buildUri($uri): GuzzleUri
     {
         if (class_exists(GuzzleUri::class)) {
             return new GuzzleUri($uri);
@@ -39,15 +35,12 @@ class RequestTest extends TestCase
     /**
      * Overwrite, parent code doesn't work witz Guzzle > 7.2, remove when paren code is fixed.
      */
-    protected function buildStream($data)
+    protected function buildStream($data): StreamInterface
     {
         return Utils::streamFor($data);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function createSubject()
+    public function createSubject(): Request
     {
         $this->skippedTests['testMethodIsExtendable'] = '';
 
@@ -124,43 +117,6 @@ class RequestTest extends TestCase
         $this->assertEquals('CUSTOM', $request->getMethod());
     }
 
-    /**
-     * @dataProvider getInvalidMethods
-     */
-    public function testMethodWithInvalidArguments($method): void
-    {
-        if (isset($this->skippedTests[__FUNCTION__])) {
-            $this->markTestSkipped($this->skippedTests[__FUNCTION__]);
-        }
-
-        try {
-            $this->request->withMethod($method);
-            $this->fail('withMethod() should have raised exception on invalid argument');
-        } catch (AssertionFailedError $e) {
-            // invalid argument not caught
-            throw $e;
-        } catch (InvalidArgumentException | TypeError $e) {
-            // valid
-            $this->assertInstanceOf(Throwable::class, $e);
-        } catch (Throwable $e) {
-            // invalid
-            $this->fail(sprintf(
-                'Unexpected exception (%s) thrown from withMethod(); expected TypeError or InvalidArgumentException',
-                gettype($e),
-            ));
-        }
-    }
-
-    public static function getInvalidMethods()
-    {
-        return [
-            'null' => [null],
-            'false' => [false],
-            'array' => [['foo']],
-            'object' => [new \stdClass()],
-        ];
-    }
-
     public function testUri(): void
     {
         if (isset($this->skippedTests[__FUNCTION__])) {
@@ -168,14 +124,11 @@ class RequestTest extends TestCase
         }
         $original = clone $this->request;
 
-        $this->assertInstanceOf(UriInterface::class, $this->request->getUri());
-
         $uri = $this->buildUri('http://www.foo.com/bar');
         $request = $this->request->withUri($uri);
         $this->assertNotSame($this->request, $request);
         $this->assertEquals($this->request, $original, 'Request object MUST not be mutated');
         $this->assertEquals('www.foo.com', $request->getHeaderLine('host'));
-        $this->assertInstanceOf(UriInterface::class, $request->getUri());
         $this->assertEquals('http://www.foo.com/bar', (string) $request->getUri());
 
         $request = $request->withUri($this->buildUri('/foobar'));

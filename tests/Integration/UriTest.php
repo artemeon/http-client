@@ -9,16 +9,15 @@ use Artemeon\HttpClient\Tests\TestCase;
 use Psr\Http\Message\UriInterface;
 
 /**
- * @covers \Artemeon\HttpClient\Http\Uri
- *
  * @internal
  */
+#[\PHPUnit\Framework\Attributes\CoversClass(Uri::class)]
 class UriTest extends TestCase
 {
     /**
      * {@inheritDoc}
      */
-    public function createUri($uri)
+    public function createUri(string $uri)
     {
         return Uri::fromString($uri);
     }
@@ -55,10 +54,9 @@ class UriTest extends TestCase
      * leading slashes in the path is presented verbatim (in contrast to what is
      * provided when calling getPath()).
      *
-     * @depends testGetPathNormalizesMultipleLeadingSlashesToSingleSlashToPreventXSS
-     *
      * @psalm-param array{expected: non-empty-string, uri: UriInterface} $test
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testGetPathNormalizesMultipleLeadingSlashesToSingleSlashToPreventXSS')]
     public function testStringRepresentationWithMultipleSlashes(array $test): void
     {
         $this->assertSame($test['expected'], (string) $test['uri']);
