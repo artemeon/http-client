@@ -25,8 +25,8 @@ class ClientOptions
     private int $maxRedirects;
     private bool $addReferer;
 
-    /** @var resource */
-    private $sink;
+    /** @var resource|null */
+    private mixed $sink;
 
     private bool $httpErrors;
 

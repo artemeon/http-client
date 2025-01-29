@@ -24,7 +24,7 @@ use Override;
 class Stream implements AppendableStream
 {
     /**
-     * @var resource
+     * @var resource|null
      */
     private mixed $resource;
 
@@ -171,11 +171,13 @@ class Stream implements AppendableStream
      * {@inheritDoc}
      */
     #[Override]
-    public function detach(): void
+    public function detach()
     {
         $this->close();
         $this->metaData = [];
         $this->resource = null;
+
+        return null;
     }
 
     /**

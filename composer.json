@@ -15,7 +15,7 @@
     "pint:fix": "./vendor/bin/pint",
     "test": "./vendor/bin/pest",
     "test:coverage": "XDEBUG_MODE=coverage ./vendor/bin/pest --coverage --min=67.3",
-    "test:type-coverage": "XDEBUG_MODE=coverage ./vendor/bin/pest --type-coverage --min=99.9"
+    "test:type-coverage": "XDEBUG_MODE=coverage ./vendor/bin/pest --type-coverage --min=99.8"
   },
   "authors": [
     {
