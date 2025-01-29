@@ -132,10 +132,9 @@ class Header
 
         foreach ($values as &$value) {
             $value = trim((string) $value);
-            $isInvalidValue = !is_numeric($value);
             $containsInvalidCharacters = preg_match("@^[ \t\x21-\x7E\x80-\xFF]*$@", $value) !== 1;
 
-            if ($isInvalidValue || $containsInvalidCharacters) {
+            if ($containsInvalidCharacters) {
                 throw new InvalidArgumentException('Header values must be RFC 7230 compatible strings.');
             }
         }

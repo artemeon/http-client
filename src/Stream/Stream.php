@@ -26,7 +26,7 @@ class Stream implements AppendableStream
     /**
      * @var resource|null
      */
-    private mixed $resource;
+    private mixed $resource = null;
 
     /**
      * @see https://www.php.net/manual/de/function.stream-get-meta-data

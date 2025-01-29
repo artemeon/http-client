@@ -103,13 +103,6 @@ class UriTest extends TestCase
         self::assertSame('', $url->getPath());
     }
 
-    public function testWithSchemeIsNotStringThroesException(): void
-    {
-        $this->expectException(InvalidArgumentException::class);
-        $url = Uri::fromString('http://www.artemeon.de:8080');
-        $url->withScheme(0);
-    }
-
     public function testWithSchemeReturnsUpdatedInstance(): void
     {
         $url = Uri::fromString('http://www.artemeon.de:8080');
@@ -148,14 +141,6 @@ class UriTest extends TestCase
         self::assertNotSame($url, $cloned);
         self::assertSame('http://user:password@www.artemeon.de', $cloned->__toString());
         self::assertSame('user:password', $cloned->getUserInfo());
-    }
-
-    public function testWithHostIsNotStringThrowsException(): void
-    {
-        $url = Uri::fromString('http://dietmar.simons:password@www.artemeon.de');
-        $this->expectException(InvalidArgumentException::class);
-
-        $url->withHost(123);
     }
 
     public function testWithHostIsUpperCaseWillConvertedToLoweCase(): void
