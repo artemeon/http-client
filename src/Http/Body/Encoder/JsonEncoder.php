@@ -25,12 +25,14 @@ use Psr\Http\Message\StreamInterface;
 class JsonEncoder implements Encoder
 {
     /**
-     * @param mixed $value String, object or array to encode
      * @param int $options Optional json encode options: @see https://www.php.net/manual/de/function.json-encode.php
      * @param string $mimeType Optional custom mime type
      */
-    private function __construct(private readonly array | object $value, private readonly int $options = 0, private readonly string $mimeType = MediaType::JSON)
-    {
+    private function __construct(
+        private readonly array | object $value,
+        private readonly int $options = 0,
+        private readonly string $mimeType = MediaType::JSON,
+    ) {
     }
 
     /**

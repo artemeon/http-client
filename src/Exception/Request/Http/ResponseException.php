@@ -33,7 +33,6 @@ class ResponseException extends TransferException
      * @param Request $request The failed request
      * @param string $message The error message
      * @param Exception|null $previous The previous exception
-     * @return ResponseException
      */
     public static function fromResponse(
         ?Response $response,
