@@ -13,7 +13,6 @@ declare(strict_types=1);
 
 namespace Artemeon\HttpClient\Tests\Unit\Http;
 
-use Artemeon\HttpClient\Exception\InvalidArgumentException;
 use Artemeon\HttpClient\Http\Uri;
 use PHPUnit\Framework\TestCase;
 
