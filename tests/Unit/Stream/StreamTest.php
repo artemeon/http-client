@@ -19,9 +19,50 @@ use Mockery;
 use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamDirectory;
 use Override;
+use php_user_filter;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
+class FalseReturningFilter extends php_user_filter
+{
+    public function filter($in, $out, &$consumed, $closing): int
+    {
+        return PSFS_ERR_FATAL;
+    }
+}
+
+class FalseReturningStream {
+
+    public $context;
+    public function stream_open($path, $mode, $options, &$opened_path) {
+        return true;
+    }
+
+    public function stream_stat(): array|false
+    {
+        return false;
+    }
+
+    public function stream_read($count)
+    {
+        return false;
+    }
+
+    public function stream_write($data)
+    {
+        return false;
+    }
+
+    public function stream_eof() {
+        return true;
+    }
+    public function stream_get_contents($resource): string|false
+    {
+        return false;
+    }
+
+
+}
 /**
  * @internal
  */
@@ -101,29 +142,16 @@ class StreamTest extends TestCase
 
     public function testAppendStreamCantCopyStreamThrowsException(): void
     {
-        $this->markTestIncomplete('mock');
-        $testString = 'test';
-        $streamMock = $this->createMock(Stream::class);
-        $resourceMock = fopen('php://memory', 'r');
-        $resourceAppendMock = fopen('php://memory', 'r');
+        stream_wrapper_register("falsestream", FalseReturningStream::class);
+        $resourceMock = fopen('falsestream://test', 'w');
 
+        $testString ='test';
         $streamFeature = Stream::fromString($testString);
-
-        $streamMock->expects($this->once())
-            ->method('getResource')
-            ->willReturn($resourceMock);
-
-        $streamMock->expects($this->once())
-            ->method('isReadable')
-            ->willReturn(true);
-
-        $streamMock->expects($this->once())
-            ->method('rewind');
 
         $streamAppendMock = $this->createMock(Stream::class);
         $streamAppendMock->expects($this->once())
             ->method('getResource')
-            ->willReturn($resourceAppendMock);
+            ->willReturn($resourceMock);
 
         $streamAppendMock->expects($this->once())
             ->method('isReadable')
@@ -486,17 +514,17 @@ class StreamTest extends TestCase
 
     public function testReadFReadReturnsFalseThrowsException(): void
     {
-        $this->markTestIncomplete('mock');
-        // generate resource and set file pointer to not allowed position
-        $resourceMock = fopen('php://memory', 'w');
+        stream_filter_register('false_filter', FalseReturningFilter::class);
+        $resourceMock = fopen('php://memory', 'r+');
         fwrite($resourceMock, 'Some content string');
+        stream_filter_append($resourceMock, 'false_filter');
 
         $streamHandler = $this->getMockBuilder(Stream::class)
             ->disableOriginalConstructor()
             ->onlyMethods(['getResource', 'isReadable'])
             ->getMock();
 
-        $streamHandler->expects($this->exactly(2))
+        $streamHandler->expects($this->once())
             ->method('isReadable')
             ->willReturn(true);
 
@@ -537,15 +565,15 @@ class StreamTest extends TestCase
     public function testGetContentStreamReturnsFalseThrowsException(): void
     {
         $this->markTestIncomplete('mock');
-        // generate readonly resource
-        $resourceMock = fopen('php://memory', 'w');
+        stream_wrapper_register("falsestream", FalseReturningStream::class);
+        $resourceMock = fopen('falsestream://test', 'w');
 
         $streamHandler = $this->getMockBuilder(Stream::class)
             ->disableOriginalConstructor()
             ->onlyMethods(['getResource', 'isReadable'])
             ->getMock();
 
-        $streamHandler->expects($this->exactly(2))
+        $streamHandler->expects($this->once())
             ->method('isReadable')
             ->willReturn(true);
 
