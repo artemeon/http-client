@@ -13,9 +13,7 @@ use GuzzleHttp\Psr7\Utils;
 use InvalidArgumentException;
 use PHPUnit\Framework\AssertionFailedError;
 use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\UriFactoryInterface as PsrUriFactoryInterface;
 use Psr\Http\Message\UriInterface;
-use Psr\Http\Message\UriInterface as PsrUriInterface;
 use RuntimeException;
 use Throwable;
 use TypeError;
@@ -159,7 +157,7 @@ class RequestTest extends TestCase
             'null' => [null],
             'false' => [false],
             'array' => [['foo']],
-            'object' => [new \stdClass],
+            'object' => [new \stdClass()],
         ];
     }
 

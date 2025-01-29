@@ -59,7 +59,7 @@ class UriTest extends TestCase
      *
      * @psalm-param array{expected: non-empty-string, uri: UriInterface} $test
      */
-    public function testStringRepresentationWithMultipleSlashes(array $test)
+    public function testStringRepresentationWithMultipleSlashes(array $test): void
     {
         $this->assertSame($test['expected'], (string) $test['uri']);
     }

@@ -94,7 +94,7 @@ class ResponseTest extends TestCase
             'string' => ['foobar'],
             'too-low' => [99],
             'too-high' => [600],
-            'object' => [new \stdClass],
+            'object' => [new \stdClass()],
         ];
     }
 
