@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Artemeon\HttpClient\Http;
 
 use Artemeon\HttpClient\Exception\InvalidArgumentException;
+use Override;
 use Psr\Http\Message\UriInterface;
 
 /**
@@ -96,7 +97,7 @@ class Uri implements UriInterface
     /**
      * @inheritDoc
      */
-    #[\Override]
+    #[Override]
     public function getScheme(): string
     {
         return $this->scheme;
@@ -105,7 +106,7 @@ class Uri implements UriInterface
     /**
      * @inheritDoc
      */
-    #[\Override]
+    #[Override]
     public function getHost(): string
     {
         return $this->host;
@@ -114,7 +115,7 @@ class Uri implements UriInterface
     /**
      * @inheritDoc
      */
-    #[\Override]
+    #[Override]
     public function getPort(): ?int
     {
         if ($this->isStandardPort($this->scheme, $this->port)) {
@@ -127,7 +128,7 @@ class Uri implements UriInterface
     /**
      * @inheritDoc
      */
-    #[\Override]
+    #[Override]
     public function getUserInfo(): string
     {
         if ($this->user !== '') {
@@ -144,7 +145,7 @@ class Uri implements UriInterface
     /**
      * @inheritDoc
      */
-    #[\Override]
+    #[Override]
     public function getPath(): string
     {
         return preg_replace('#^/+#', '/', $this->path);
@@ -153,7 +154,7 @@ class Uri implements UriInterface
     /**
      * @inheritDoc
      */
-    #[\Override]
+    #[Override]
     public function getQuery(): string
     {
         return $this->query;
@@ -162,7 +163,7 @@ class Uri implements UriInterface
     /**
      * @inheritDoc
      */
-    #[\Override]
+    #[Override]
     public function getFragment(): string
     {
         return $this->fragment;
@@ -171,7 +172,7 @@ class Uri implements UriInterface
     /**
      * @inheritDoc
      */
-    #[\Override]
+    #[Override]
     public function __toString(): string
     {
         $uri = ($this->getScheme() !== '') ? $this->getScheme() . ':' : '';
@@ -199,7 +200,7 @@ class Uri implements UriInterface
     /**
      * @inheritDoc
      */
-    #[\Override]
+    #[Override]
     public function getAuthority(): string
     {
         $authority = ($this->getPort() === null) ? $this->host : $this->host . ':' . $this->port;
@@ -214,8 +215,8 @@ class Uri implements UriInterface
     /**
      * @inheritDoc
      */
-    #[\Override]
-    public function withScheme($scheme): self
+    #[Override]
+    public function withScheme(string $scheme): self
     {
         $this->filterScheme($scheme);
 
@@ -228,7 +229,7 @@ class Uri implements UriInterface
     /**
      * @inheritDoc
      */
-    #[\Override]
+    #[Override]
     public function withUserInfo(string $user, ?string $password = null): self
     {
         $user = $this->filterUserInfoComponent($user);
@@ -250,12 +251,8 @@ class Uri implements UriInterface
         return $cloned;
     }
 
-    private function filterUserInfoComponent($component): string
+    private function filterUserInfoComponent(string $component): string
     {
-        if (!is_string($component)) {
-            throw new \InvalidArgumentException('User info must be a string');
-        }
-
         return preg_replace_callback(
             '/(?:[^%' . self::UNRESERVED . self::DELIMITER . ']+|%(?![A-Fa-f0-9]{2}))/',
             [$this, 'rawurlencodeMatchZero'],
@@ -271,8 +268,8 @@ class Uri implements UriInterface
     /**
      * @inheritDoc
      */
-    #[\Override]
-    public function withHost($host): self
+    #[Override]
+    public function withHost(string $host): self
     {
         $cloned = clone $this;
         $cloned->host = $cloned->filterHost($host);
@@ -283,8 +280,8 @@ class Uri implements UriInterface
     /**
      * @inheritDoc
      */
-    #[\Override]
-    public function withPort($port): self
+    #[Override]
+    public function withPort(?int $port): self
     {
         $cloned = clone $this;
         $cloned->port = $cloned->filterPort($port);
@@ -295,13 +292,9 @@ class Uri implements UriInterface
     /**
      * @inheritDoc
      */
-    #[\Override]
-    public function withPath($path): self
+    #[Override]
+    public function withPath(array | bool | int | string $path): self
     {
-        if (!is_string($path)) {
-            throw new InvalidArgumentException('path must be a string value');
-        }
-
         $cloned = clone $this;
         $cloned->path = $cloned->filterPath($path);
 
@@ -311,8 +304,8 @@ class Uri implements UriInterface
     /**
      * @inheritDoc
      */
-    #[\Override]
-    public function withQuery($query): self
+    #[Override]
+    public function withQuery(string $query): self
     {
         $cloned = clone $this;
         $cloned->query = $cloned->filterQueryOrFragment($query);
@@ -324,8 +317,8 @@ class Uri implements UriInterface
      * @inheritDoc
      * @throws InvalidArgumentException
      */
-    #[\Override]
-    public function withFragment($fragment): self
+    #[Override]
+    public function withFragment(string $fragment): self
     {
         $cloned = clone $this;
         $cloned->fragment = $cloned->filterQueryOrFragment($fragment);
@@ -338,13 +331,9 @@ class Uri implements UriInterface
      *
      * @throws InvalidArgumentException
      */
-    private function filterPort($port): ?int
+    private function filterPort(?int $port): ?int
     {
         if ($port !== null) {
-            if (!is_int($port)) {
-                throw new InvalidArgumentException('port must be a integer value');
-            }
-
             if ($port < 0 || $port > 65535) {
                 throw new InvalidArgumentException("port: $port must be in a range between 0 and 65535");
             }
@@ -358,12 +347,8 @@ class Uri implements UriInterface
      *
      * @throws InvalidArgumentException
      */
-    private function filterScheme($scheme): string
+    private function filterScheme(string $scheme): string
     {
-        if (!is_string($scheme)) {
-            throw new InvalidArgumentException('scheme must be a lowercase string');
-        }
-
         return strtolower(trim($scheme));
     }
 
@@ -372,12 +357,8 @@ class Uri implements UriInterface
      *
      * @throws InvalidArgumentException
      */
-    private function filterHost($host): string
+    private function filterHost(string $host): string
     {
-        if (!is_string($host)) {
-            throw new InvalidArgumentException('host must be a string value');
-        }
-
         return strtolower(trim($host));
     }
 
@@ -402,12 +383,8 @@ class Uri implements UriInterface
      *
      * @throws InvalidArgumentException
      */
-    private function filterQueryOrFragment($fragment): string
+    private function filterQueryOrFragment(string $fragment): string
     {
-        if (!is_string($fragment)) {
-            throw new InvalidArgumentException('fragment must be a string');
-        }
-
         $pattern = '/(?:[^' . self::UNRESERVED . self::DELIMITER . '%:@\/\?]++|%(?![A-Fa-f0-9]{2}))/';
 
         return preg_replace_callback($pattern, [$this, 'encode'], $fragment);

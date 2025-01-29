@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Artemeon\HttpClient\Client\Options;
 
 use Closure;
+use Override;
 
 final readonly class InlineClientOptionsModifier implements ClientOptionsModifier
 {
@@ -22,7 +23,7 @@ final readonly class InlineClientOptionsModifier implements ClientOptionsModifie
         return new self(Closure::fromCallable($callable));
     }
 
-    #[\Override]
+    #[Override]
     public function modify(ClientOptions $clientOptions): ClientOptions
     {
         $callback = $this->callback;

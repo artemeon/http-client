@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Artemeon\HttpClient\Http\Header\Fields;
 
 use Artemeon\HttpClient\Http\Header\HeaderField;
+use Override;
 
 /**
  * Class to describe the header field 'Content-Type'.
@@ -40,7 +41,7 @@ class ContentType implements HeaderField
     /**
      * @inheritDoc
      */
-    #[\Override]
+    #[Override]
     public function getName(): string
     {
         return HeaderField::CONTENT_TYPE;
@@ -49,7 +50,7 @@ class ContentType implements HeaderField
     /**
      * @inheritDoc
      */
-    #[\Override]
+    #[Override]
     public function getValue(): string
     {
         return $this->mimeType;

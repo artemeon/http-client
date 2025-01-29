@@ -10,6 +10,7 @@ use Artemeon\HttpClient\Client\Options\ClientOptions;
 use Artemeon\HttpClient\Client\Options\ClientOptionsModifier;
 use Artemeon\HttpClient\Http\Request;
 use Artemeon\HttpClient\Http\Response;
+use Override;
 
 final class HttpClientWithModifiedOptions extends HttpClientDecorator
 {
@@ -18,7 +19,7 @@ final class HttpClientWithModifiedOptions extends HttpClientDecorator
         parent::__construct($httpClient);
     }
 
-    #[\Override]
+    #[Override]
     public function send(Request $request, ?ClientOptions $clientOptions = null): Response
     {
         return $this->httpClient->send($request, $this->modified($clientOptions));

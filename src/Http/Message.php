@@ -85,19 +85,19 @@ abstract class Message implements MessageInterface
      * {@inheritDoc}
      */
     #[Override]
-    public function hasHeader($name): bool
+    public function hasHeader(string $name): bool
     {
-        return $this->headers->has((string) $name);
+        return $this->headers->has($name);
     }
 
     /**
      * {@inheritDoc}
      */
     #[Override]
-    public function getHeader($name): array
+    public function getHeader(string $name): array
     {
         try {
-            return $this->headers->get((string) $name)->getValues();
+            return $this->headers->get($name)->getValues();
         } catch (InvalidArgumentException) {
             return [];
         }
@@ -107,10 +107,10 @@ abstract class Message implements MessageInterface
      * {@inheritDoc}
      */
     #[Override]
-    public function getHeaderLine($name): string
+    public function getHeaderLine(string $name): string
     {
         try {
-            return $this->headers->get((string) $name)->getValue();
+            return $this->headers->get($name)->getValue();
         } catch (InvalidArgumentException) {
             return '';
         }
@@ -120,7 +120,7 @@ abstract class Message implements MessageInterface
      * {@inheritDoc}
      */
     #[Override]
-    public function withHeader($name, $value): self
+    public function withHeader(string $name, $value): self
     {
         $cloned = clone $this;
         $cloned->assertHeader($name, $value);
@@ -138,10 +138,10 @@ abstract class Message implements MessageInterface
      * {@inheritDoc}
      */
     #[Override]
-    public function withProtocolVersion($version): self
+    public function withProtocolVersion(string $version): self
     {
         $cloned = clone $this;
-        $cloned->version = (string) $version;
+        $cloned->version = $version;
 
         return $cloned;
     }
@@ -150,7 +150,7 @@ abstract class Message implements MessageInterface
      * {@inheritDoc}
      */
     #[Override]
-    public function withAddedHeader($name, $value): self
+    public function withAddedHeader(string $name, $value): self
     {
         $cloned = clone $this;
         $cloned->assertHeader($name, $value);
@@ -162,7 +162,7 @@ abstract class Message implements MessageInterface
                 $cloned->headers->get($name)->addValue($value);
             }
         } else {
-            // Field does not exists, create new header
+            // Field does not exist, create new header
             $header = is_array($value) ? Header::fromArray($name, $value) : Header::fromString($name, $value);
             $cloned->headers->add($header);
         }
@@ -203,9 +203,9 @@ abstract class Message implements MessageInterface
      *
      * @throws InvalidArgumentException
      */
-    private function assertHeader($name, $value): void
+    private function assertHeader(string $name, array | float | int | string $value): void
     {
-        if (! is_string($name) || $name === '') {
+        if ($name === '') {
             throw new InvalidArgumentException('Header must be a non empty string');
         }
 

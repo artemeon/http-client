@@ -15,6 +15,7 @@ namespace Artemeon\HttpClient\Http\Body\Reader;
 
 use Artemeon\HttpClient\Exception\RuntimeException;
 use Artemeon\HttpClient\Stream\Stream;
+use Override;
 use Psr\Http\Message\StreamInterface;
 
 /**
@@ -52,7 +53,7 @@ class FileReader implements Reader
     /**
      * @inheritDoc
      */
-    #[\Override]
+    #[Override]
     public function getStream(): StreamInterface
     {
         return $this->stream;
@@ -61,7 +62,7 @@ class FileReader implements Reader
     /**
      * @inheritDoc
      */
-    #[\Override]
+    #[Override]
     public function getFileExtension(): string
     {
         if (!preg_match("/\.([a-zA-Z]+)$/", $this->file, $matches)) {

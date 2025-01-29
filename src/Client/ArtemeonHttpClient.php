@@ -38,6 +38,7 @@ use GuzzleHttp\Exception\RequestException as GuzzleRequestException;
 use GuzzleHttp\Exception\ServerException as GuzzleServerException;
 use GuzzleHttp\Exception\TooManyRedirectsException as GuzzleTooManyRedirectsException;
 use GuzzleHttp\Exception\TransferException as GuzzleTransferException;
+use Override;
 use Psr\Http\Message\ResponseInterface as GuzzleResponse;
 
 /**
@@ -51,7 +52,7 @@ class ArtemeonHttpClient implements HttpClient
     ) {
     }
 
-    #[\Override]
+    #[Override]
     final public function send(Request $request, ?ClientOptions $clientOptions = null): Response
     {
         if ($clientOptions instanceof ClientOptions) {

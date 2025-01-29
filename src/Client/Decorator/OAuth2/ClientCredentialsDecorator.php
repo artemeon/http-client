@@ -31,6 +31,7 @@ use Artemeon\HttpClient\Http\Request;
 use Artemeon\HttpClient\Http\Response;
 use Artemeon\HttpClient\Http\Uri;
 use Exception;
+use Override;
 
 /**
  * Http client decorator to add transparent access tokens to requests. Fetches the 'Access Token' from
@@ -84,7 +85,7 @@ class ClientCredentialsDecorator extends HttpClientDecorator
     /**
      * @inheritDoc
      */
-    #[\Override]
+    #[Override]
     public function send(Request $request, ?ClientOptions $clientOptions = null): Response
     {
         if ($this->accessTokenCache->isExpired()) {

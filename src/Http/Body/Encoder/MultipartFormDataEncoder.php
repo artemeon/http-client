@@ -17,6 +17,7 @@ use Artemeon\HttpClient\Exception\RuntimeException;
 use Artemeon\HttpClient\Http\MediaType;
 use Artemeon\HttpClient\Stream\AppendableStream;
 use Artemeon\HttpClient\Stream\Stream;
+use Override;
 use Psr\Http\Message\StreamInterface;
 
 /**
@@ -99,7 +100,7 @@ class MultipartFormDataEncoder implements Encoder
     /**
      * @inheritDoc
      */
-    #[\Override]
+    #[Override]
     public function encode(): StreamInterface
     {
         // Add the end boundary
@@ -111,7 +112,7 @@ class MultipartFormDataEncoder implements Encoder
     /**
      * @inheritDoc
      */
-    #[\Override]
+    #[Override]
     public function getMimeType(): string
     {
         return sprintf('%s; boundary="%s"', MediaType::MULTIPART_FORM_DATA, $this->boundary);

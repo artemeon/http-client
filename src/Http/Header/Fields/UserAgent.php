@@ -14,13 +14,14 @@ declare(strict_types=1);
 namespace Artemeon\HttpClient\Http\Header\Fields;
 
 use Artemeon\HttpClient\Http\Header\HeaderField;
+use Override;
 
 /**
  * Class to describe the header field 'User-Agent'.
  */
 class UserAgent implements HeaderField
 {
-    public const DEFAULT = 'Artemeon/HttpClient/Guzzle6';
+    public const string DEFAULT = 'Artemeon/HttpClient/Guzzle7';
 
     /**
      * @param string $userAgent The user agent string
@@ -42,7 +43,7 @@ class UserAgent implements HeaderField
     /**
      * @inheritDoc
      */
-    #[\Override]
+    #[Override]
     public function getName(): string
     {
         return HeaderField::USER_AGENT;
@@ -51,7 +52,7 @@ class UserAgent implements HeaderField
     /**
      * @inheritDoc
      */
-    #[\Override]
+    #[Override]
     public function getValue(): string
     {
         return $this->userAgent;

@@ -21,6 +21,7 @@ use Artemeon\HttpClient\Http\Header\Fields\Host;
 use Artemeon\HttpClient\Http\Header\Header;
 use Artemeon\HttpClient\Http\Header\HeaderField;
 use Artemeon\HttpClient\Http\Header\Headers;
+use Override;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UriInterface;
@@ -30,19 +31,19 @@ use Psr\Http\Message\UriInterface;
  */
 class Request extends Message implements RequestInterface
 {
-    public const METHOD_POST = 'POST';
+    public const string METHOD_POST = 'POST';
 
-    public const METHOD_GET = 'GET';
+    public const string METHOD_GET = 'GET';
 
-    public const METHOD_PUT = 'PUT';
+    public const string METHOD_PUT = 'PUT';
 
-    public const METHOD_DELETE = 'DELETE';
+    public const string METHOD_DELETE = 'DELETE';
 
-    public const METHOD_OPTIONS = 'OPTIONS';
+    public const string METHOD_OPTIONS = 'OPTIONS';
 
-    public const METHOD_PATCH = 'PATCH';
+    public const string METHOD_PATCH = 'PATCH';
 
-    public const METHOD_HEAD = 'HEAD';
+    public const string METHOD_HEAD = 'HEAD';
 
     private string $method;
 
@@ -200,7 +201,7 @@ class Request extends Message implements RequestInterface
     /**
      * {@inheritDoc}
      */
-    #[\Override]
+    #[Override]
     public function getMethod(): string
     {
         return $this->method;
@@ -209,13 +210,9 @@ class Request extends Message implements RequestInterface
     /**
      * {@inheritDoc}
      */
-    #[\Override]
-    public function withMethod($method): self
+    #[Override]
+    public function withMethod(string $method): self
     {
-        if (! is_string($method)) {
-            throw new InvalidArgumentException('method must be a string value');
-        }
-
         $this->assertValidMethod($method);
 
         $cloned = clone $this;
@@ -227,7 +224,7 @@ class Request extends Message implements RequestInterface
     /**
      * {@inheritDoc}
      */
-    #[\Override]
+    #[Override]
     public function getUri(): UriInterface
     {
         return $this->uri;
@@ -238,8 +235,8 @@ class Request extends Message implements RequestInterface
      *
      * @throws InvalidArgumentException
      */
-    #[\Override]
-    public function withUri(UriInterface $uri, $preserveHost = false): self
+    #[Override]
+    public function withUri(UriInterface $uri, bool $preserveHost = false): self
     {
         if ($uri === $this->uri) {
             return $this;
@@ -267,7 +264,7 @@ class Request extends Message implements RequestInterface
     /**
      * {@inheritDoc}
      */
-    #[\Override]
+    #[Override]
     public function getRequestTarget(): string
     {
         if ($this->requestTarget !== null) {
@@ -280,8 +277,8 @@ class Request extends Message implements RequestInterface
     /**
      * {@inheritDoc}
      */
-    #[\Override]
-    public function withRequestTarget($requestTarget): self
+    #[Override]
+    public function withRequestTarget(string $requestTarget): self
     {
         if (preg_match('#\s#', $requestTarget)) {
             throw new InvalidArgumentException(

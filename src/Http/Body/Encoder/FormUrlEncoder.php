@@ -15,6 +15,7 @@ namespace Artemeon\HttpClient\Http\Body\Encoder;
 
 use Artemeon\HttpClient\Http\MediaType;
 use Artemeon\HttpClient\Stream\Stream;
+use Override;
 use Psr\Http\Message\StreamInterface;
 
 /**
@@ -49,7 +50,7 @@ class FormUrlEncoder implements Encoder
     /**
      * @inheritDoc
      */
-    #[\Override]
+    #[Override]
     public function encode(): StreamInterface
     {
         return Stream::fromString(http_build_query($this->formValues));
@@ -58,7 +59,7 @@ class FormUrlEncoder implements Encoder
     /**
      * @inheritDoc
      */
-    #[\Override]
+    #[Override]
     public function getMimeType(): string
     {
         return MediaType::FORM_URL_ENCODED;

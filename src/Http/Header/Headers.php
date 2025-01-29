@@ -17,6 +17,7 @@ use ArrayIterator;
 use Artemeon\HttpClient\Exception\InvalidArgumentException;
 use Countable;
 use IteratorAggregate;
+use Override;
 
 /**
  * Header collection class for http requests and responses.
@@ -152,7 +153,7 @@ class Headers implements Countable, IteratorAggregate
     /**
      * @inheritDoc
      */
-    #[\Override]
+    #[Override]
     public function getIterator(): ArrayIterator
     {
         return new ArrayIterator($this->headers);
@@ -161,7 +162,7 @@ class Headers implements Countable, IteratorAggregate
     /**
      * @inheritDoc
      */
-    #[\Override]
+    #[Override]
     public function count(): int
     {
         return count($this->headers);

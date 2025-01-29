@@ -16,6 +16,7 @@ namespace Artemeon\HttpClient\Http\Body\Encoder;
 use Artemeon\HttpClient\Exception\RuntimeException;
 use Artemeon\HttpClient\Http\MediaType;
 use Artemeon\HttpClient\Stream\Stream;
+use Override;
 use Psr\Http\Message\StreamInterface;
 
 /**
@@ -73,7 +74,7 @@ class JsonEncoder implements Encoder
      * @inheritDoc
      * @throws RuntimeException
      */
-    #[\Override]
+    #[Override]
     public function encode(): StreamInterface
     {
         $json = json_encode($this->value, $this->options);
@@ -90,7 +91,7 @@ class JsonEncoder implements Encoder
     /**
      * @inheritDoc
      */
-    #[\Override]
+    #[Override]
     public function getMimeType(): string
     {
         return $this->mimeType;

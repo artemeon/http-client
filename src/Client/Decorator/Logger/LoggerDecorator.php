@@ -21,6 +21,7 @@ use Artemeon\HttpClient\Exception\Request\Http\ClientResponseException;
 use Artemeon\HttpClient\Exception\Request\Http\ServerResponseException;
 use Artemeon\HttpClient\Http\Request;
 use Artemeon\HttpClient\Http\Response;
+use Override;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -36,7 +37,7 @@ class LoggerDecorator extends HttpClientDecorator
     /**
      * @inheritDoc
      */
-    #[\Override]
+    #[Override]
     public function send(Request $request, ?ClientOptions $clientOptions = null): Response
     {
         try {

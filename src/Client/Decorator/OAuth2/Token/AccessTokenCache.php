@@ -23,7 +23,7 @@ interface AccessTokenCache
     /**
      * Add token to the cache.
      */
-    public function add(AccessToken $accessToken);
+    public function add(AccessToken $accessToken): void;
 
     /**
      * Get token from the cache.

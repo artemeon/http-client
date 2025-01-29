@@ -160,7 +160,7 @@ class ClientOptions
     /**
      * @param resource $sink
      */
-    public function setSink($sink): void
+    public function setSink(mixed $sink): void
     {
         $this->sink = $sink;
     }
@@ -168,7 +168,7 @@ class ClientOptions
     /**
      * @return resource
      */
-    public function getSink()
+    public function getSink(): mixed
     {
         return $this->sink;
     }

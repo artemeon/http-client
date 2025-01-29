@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Artemeon\HttpClient\Http\Header\Fields;
 
 use Artemeon\HttpClient\Http\Header\HeaderField;
+use Override;
 
 /**
  * Class to describe the header field 'Authorisation'.
@@ -57,7 +58,7 @@ class Authorization implements HeaderField
     /**
      * @inheritDoc
      */
-    #[\Override]
+    #[Override]
     public function getName(): string
     {
         return self::AUTHORIZATION;
@@ -66,7 +67,7 @@ class Authorization implements HeaderField
     /**
      * @inheritDoc
      */
-    #[\Override]
+    #[Override]
     public function getValue(): string
     {
         return $this->type . ' ' . $this->credentials;

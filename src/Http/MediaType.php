@@ -18,38 +18,17 @@ namespace Artemeon\HttpClient\Http;
  */
 class MediaType
 {
-    /** @var string */
-    public const JSON = 'application/json';
-
-    /** @var string */
-    public const JSON_API = 'application/vnd.api+json';
-
-    /** @var string */
-    public const FORM_URL_ENCODED = 'application/x-www-form-urlencoded';
-
-    /** @var string */
-    public const MULTIPART_FORM_DATA = 'multipart/form-data';
-
-    /** @var string */
-    public const PDF = 'application/pdf';
-
-    /** @var string */
-    public const XML = 'application/xml';
-
-    /** @var string */
-    public const BMP = 'image/x-ms-bmp';
-
-    /** @var string */
-    public const GIF = 'image/gif';
-
-    /** @var string */
-    public const JPG = 'image/jpeg';
-
-    /** @var string */
-    public const PNG = 'image/png';
-
-    /** @var string */
-    public const UNKNOWN = 'application/octet-stream';
+    public const string JSON = 'application/json';
+    public const string JSON_API = 'application/vnd.api+json';
+    public const string FORM_URL_ENCODED = 'application/x-www-form-urlencoded';
+    public const string MULTIPART_FORM_DATA = 'multipart/form-data';
+    public const string PDF = 'application/pdf';
+    public const string XML = 'application/xml';
+    public const string BMP = 'image/x-ms-bmp';
+    public const string GIF = 'image/gif';
+    public const string JPG = 'image/jpeg';
+    public const string PNG = 'image/png';
+    public const string UNKNOWN = 'application/octet-stream';
 
     /** @var string[] */
     private static array $extensionToType = [

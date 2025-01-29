@@ -13,8 +13,8 @@ declare(strict_types=1);
 
 namespace Artemeon\HttpClient\Http;
 
-use Artemeon\HttpClient\Exception\InvalidArgumentException;
 use Artemeon\HttpClient\Http\Header\Headers;
+use Override;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
 
@@ -43,7 +43,7 @@ class Response extends Message implements ResponseInterface
     /**
      * @inheritDoc
      */
-    #[\Override]
+    #[Override]
     public function getStatusCode(): int
     {
         return $this->statusCode;
@@ -52,17 +52,9 @@ class Response extends Message implements ResponseInterface
     /**
      * @inheritDoc
      */
-    #[\Override]
-    public function withStatus($code, $reasonPhrase = ''): ResponseInterface
+    #[Override]
+    public function withStatus(int $code, string $reasonPhrase = ''): ResponseInterface
     {
-        if (!is_string($reasonPhrase)) {
-            throw new InvalidArgumentException('reasonPhrase must be a string value');
-        }
-
-        if (!is_int($code)) {
-            throw new InvalidArgumentException('code must be a integer value');
-        }
-
         if ($code < 100 || $code >= 600) {
             throw new \InvalidArgumentException('code must be an integer value between 100 and 599');
         }
@@ -77,7 +69,7 @@ class Response extends Message implements ResponseInterface
     /**
      * @inheritDoc
      */
-    #[\Override]
+    #[Override]
     public function getReasonPhrase(): string
     {
         return $this->reasonPhrase;

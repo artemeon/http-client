@@ -18,12 +18,12 @@ namespace Artemeon\HttpClient\Http\Header;
  */
 interface HeaderField
 {
-    public const AUTHORIZATION = 'Authorization';
-    public const REFERER = 'Referer';
-    public const USER_AGENT = 'User-Agent';
-    public const CONTENT_TYPE = 'Content-Type';
-    public const CONTENT_LENGTH = 'Content-Length';
-    public const HOST = 'Host';
+    public const string AUTHORIZATION = 'Authorization';
+    public const string REFERER = 'Referer';
+    public const string USER_AGENT = 'User-Agent';
+    public const string CONTENT_TYPE = 'Content-Type';
+    public const string CONTENT_LENGTH = 'Content-Length';
+    public const string HOST = 'Host';
 
     /**
      * Returns the name of the field.
