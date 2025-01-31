@@ -107,7 +107,7 @@ class Stream implements AppendableStream
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     #[Override]
     public function __toString(): string
@@ -123,7 +123,7 @@ class Stream implements AppendableStream
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     #[Override]
     public function appendStream(AppendableStream $stream): int
@@ -146,7 +146,7 @@ class Stream implements AppendableStream
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     #[Override]
     public function getResource(): mixed
@@ -155,7 +155,7 @@ class Stream implements AppendableStream
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     #[Override]
     public function close(): void
@@ -168,7 +168,7 @@ class Stream implements AppendableStream
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     #[Override]
     public function detach()
@@ -181,7 +181,7 @@ class Stream implements AppendableStream
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     #[Override]
     public function getSize(): ?int
@@ -196,7 +196,7 @@ class Stream implements AppendableStream
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     #[Override]
     public function tell(): int
@@ -212,7 +212,7 @@ class Stream implements AppendableStream
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     #[Override]
     public function eof(): bool
@@ -226,7 +226,7 @@ class Stream implements AppendableStream
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     #[Override]
     public function isSeekable(): bool
@@ -246,7 +246,7 @@ class Stream implements AppendableStream
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     #[Override]
     public function seek(int $offset, int $whence = SEEK_SET): void
@@ -260,7 +260,7 @@ class Stream implements AppendableStream
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     #[Override]
     public function rewind(): void
@@ -275,7 +275,7 @@ class Stream implements AppendableStream
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     #[Override]
     public function write(string $string): int
@@ -293,7 +293,7 @@ class Stream implements AppendableStream
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     #[Override]
     public function isWritable(): bool
@@ -314,7 +314,7 @@ class Stream implements AppendableStream
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     #[Override]
     public function isReadable(): bool
@@ -335,7 +335,7 @@ class Stream implements AppendableStream
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     #[Override]
     public function read(int $length): string
@@ -353,7 +353,7 @@ class Stream implements AppendableStream
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      *
      * This function reads the complete stream from the CURRENT! file pointer. If you
      * want ensure to read the complete stream use __toString() instead.
@@ -374,7 +374,7 @@ class Stream implements AppendableStream
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     #[Override]
     public function getMetadata(?string $key = null): mixed

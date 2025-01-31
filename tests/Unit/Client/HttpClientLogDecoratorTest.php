@@ -42,7 +42,7 @@ class HttpClientLogDecoratorTest extends TestCase
     private ClientOptions $clientOptions;
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     #[Override]
     protected function setUp(): void

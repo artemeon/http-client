@@ -58,7 +58,7 @@ abstract class Message implements MessageInterface
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      *
      * @throws RuntimeException
      */
@@ -73,7 +73,7 @@ abstract class Message implements MessageInterface
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     #[Override]
     public function getProtocolVersion(): string
@@ -82,7 +82,7 @@ abstract class Message implements MessageInterface
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     #[Override]
     public function hasHeader(string $name): bool
@@ -91,7 +91,7 @@ abstract class Message implements MessageInterface
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     #[Override]
     public function getHeader(string $name): array
@@ -104,7 +104,7 @@ abstract class Message implements MessageInterface
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     #[Override]
     public function getHeaderLine(string $name): string
@@ -117,7 +117,7 @@ abstract class Message implements MessageInterface
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     #[Override]
     public function withHeader(string $name, $value): self
@@ -135,7 +135,7 @@ abstract class Message implements MessageInterface
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     #[Override]
     public function withProtocolVersion(string $version): self
@@ -147,7 +147,7 @@ abstract class Message implements MessageInterface
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     #[Override]
     public function withAddedHeader(string $name, $value): self
@@ -171,7 +171,7 @@ abstract class Message implements MessageInterface
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     #[Override]
     public function withoutHeader(string $name): MessageInterface
@@ -183,7 +183,7 @@ abstract class Message implements MessageInterface
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     #[Override]
     public function withBody(StreamInterface $body): MessageInterface

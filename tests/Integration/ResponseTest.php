@@ -24,9 +24,6 @@ class ResponseTest extends TestCase
         return Utils::streamFor($data);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function createSubject(): Response
     {
         return new Response(200, '1.1');

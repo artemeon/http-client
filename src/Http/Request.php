@@ -199,7 +199,7 @@ class Request extends Message implements RequestInterface
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     #[Override]
     public function getMethod(): string
@@ -208,7 +208,7 @@ class Request extends Message implements RequestInterface
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     #[Override]
     public function withMethod(string $method): self
@@ -222,7 +222,7 @@ class Request extends Message implements RequestInterface
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     #[Override]
     public function getUri(): UriInterface
@@ -231,7 +231,7 @@ class Request extends Message implements RequestInterface
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      *
      * @throws InvalidArgumentException
      */
@@ -262,7 +262,7 @@ class Request extends Message implements RequestInterface
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     #[Override]
     public function getRequestTarget(): string
@@ -275,7 +275,7 @@ class Request extends Message implements RequestInterface
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     #[Override]
     public function withRequestTarget(string $requestTarget): self

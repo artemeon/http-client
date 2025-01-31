@@ -75,7 +75,7 @@ class StreamTest extends TestCase
     private vfsStreamDirectory $filesystem;
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     #[Override]
     protected function setUp(): void
@@ -92,7 +92,7 @@ class StreamTest extends TestCase
     }
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     #[Override]
     protected function tearDown(): void

@@ -14,9 +14,6 @@ use Psr\Http\Message\UriInterface;
 #[\PHPUnit\Framework\Attributes\CoversClass(Uri::class)]
 class UriTest extends TestCase
 {
-    /**
-     * {@inheritDoc}
-     */
     public function createUri(string $uri)
     {
         return Uri::fromString($uri);

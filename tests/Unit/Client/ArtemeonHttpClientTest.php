@@ -60,7 +60,7 @@ class ArtemeonHttpClientTest extends TestCase
     private ClientOptionsConverter | MockInterface $clientOptionsConverter;
 
     /**
-     * {@inheritDoc}
+     * @inheritDoc
      */
     #[Override]
     protected function setUp(): void
