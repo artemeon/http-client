@@ -32,17 +32,11 @@ use Psr\Http\Message\UriInterface;
 class Request extends Message implements RequestInterface
 {
     public const string METHOD_POST = 'POST';
-
     public const string METHOD_GET = 'GET';
-
     public const string METHOD_PUT = 'PUT';
-
     public const string METHOD_DELETE = 'DELETE';
-
     public const string METHOD_OPTIONS = 'OPTIONS';
-
     public const string METHOD_PATCH = 'PATCH';
-
     public const string METHOD_HEAD = 'HEAD';
 
     private string $method;
