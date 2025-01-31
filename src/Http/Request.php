@@ -250,10 +250,10 @@ class Request extends Message implements RequestInterface
 
         if ($preserveHost === true) {
             // Update only if the Host header is missing or empty, and the new URI contains a host component
-            if ($cloned->headers->isEmpty(HeaderField::HOST) && ! empty($uri->getHost())) {
+            if ($cloned->headers->isEmpty(HeaderField::HOST) && !empty($uri->getHost())) {
                 $cloned->headers->replace($newHost);
             }
-        } elseif (! empty($uri->getHost())) {
+        } elseif (!empty($uri->getHost())) {
             // Default: Update the Host header if the URI contains a host component
             $cloned->headers->replace($newHost);
         }
@@ -339,7 +339,7 @@ class Request extends Message implements RequestInterface
             self::METHOD_HEAD,
         ];
 
-        if (! in_array(strtoupper($method), $validMethods)) {
+        if (!in_array(strtoupper($method), $validMethods)) {
             throw new InvalidArgumentException("method: $method is invalid");
         }
     }

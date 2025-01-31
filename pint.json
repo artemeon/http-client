@@ -60,6 +60,7 @@
     "no_useless_nullsafe_operator": true,
     "no_useless_return": true,
     "no_whitespace_before_comma_in_array": true,
+    "not_operator_with_successor_space": false,
     "nullable_type_declaration": true,
     "object_operator_without_whitespace": true,
     "ordered_imports": {

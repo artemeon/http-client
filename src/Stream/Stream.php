@@ -40,7 +40,7 @@ class Stream implements AppendableStream
      */
     private function __construct(mixed $resource)
     {
-        if (! is_resource($resource)) {
+        if (!is_resource($resource)) {
             throw new RuntimeException('Invalid resource');
         }
 
@@ -99,7 +99,7 @@ class Stream implements AppendableStream
     {
         $resource = fopen($file, $mode);
 
-        if (! is_resource($resource)) {
+        if (!is_resource($resource)) {
             throw new RuntimeException("Can't open file $file");
         }
 
@@ -131,7 +131,7 @@ class Stream implements AppendableStream
         $this->assertStreamIsNotDetached();
         $this->assertStreamIsWriteable();
 
-        if (! $stream->isReadable()) {
+        if (!$stream->isReadable()) {
             throw new RuntimeException("Can't append not readable stream");
         }
 
@@ -160,7 +160,7 @@ class Stream implements AppendableStream
     #[Override]
     public function close(): void
     {
-        if (! is_resource($this->resource)) {
+        if (!is_resource($this->resource)) {
             return;
         }
 
@@ -186,7 +186,7 @@ class Stream implements AppendableStream
     #[Override]
     public function getSize(): ?int
     {
-        if (! is_resource($this->resource)) {
+        if (!is_resource($this->resource)) {
             return null;
         }
 
@@ -217,7 +217,7 @@ class Stream implements AppendableStream
     #[Override]
     public function eof(): bool
     {
-        if (! is_resource($this->resource)) {
+        if (!is_resource($this->resource)) {
             // php.net doc: feof returns TRUE if the file pointer is at EOF or an error occurs
             return true;
         }
@@ -231,7 +231,7 @@ class Stream implements AppendableStream
     #[Override]
     public function isSeekable(): bool
     {
-        if (! is_resource($this->resource)) {
+        if (!is_resource($this->resource)) {
             return false;
         }
 
@@ -267,7 +267,7 @@ class Stream implements AppendableStream
     {
         $this->assertStreamIsNotDetached();
 
-        if (! $this->isSeekable()) {
+        if (!$this->isSeekable()) {
             throw new RuntimeException('Stream is not seekable');
         }
 
@@ -298,7 +298,7 @@ class Stream implements AppendableStream
     #[Override]
     public function isWritable(): bool
     {
-        if (! is_resource($this->resource)) {
+        if (!is_resource($this->resource)) {
             return false;
         }
 
@@ -319,7 +319,7 @@ class Stream implements AppendableStream
     #[Override]
     public function isReadable(): bool
     {
-        if (! is_resource($this->resource)) {
+        if (!is_resource($this->resource)) {
             return false;
         }
 
@@ -401,7 +401,7 @@ class Stream implements AppendableStream
      */
     private function assertStreamIsReadable(): void
     {
-        if (! $this->isReadable()) {
+        if (!$this->isReadable()) {
             throw new RuntimeException('Stream is not readable');
         }
     }
@@ -411,7 +411,7 @@ class Stream implements AppendableStream
      */
     private function assertStreamIsWriteable(): void
     {
-        if (! $this->isWritable()) {
+        if (!$this->isWritable()) {
             throw new RuntimeException('Stream is not writeable');
         }
     }

@@ -65,7 +65,7 @@ abstract class Message implements MessageInterface
     #[Override]
     public function getBody(): StreamInterface
     {
-        if (! $this->body instanceof StreamInterface) {
+        if (!$this->body instanceof StreamInterface) {
             return Stream::fromFileMode('r+');
         }
 
@@ -188,7 +188,7 @@ abstract class Message implements MessageInterface
     #[Override]
     public function withBody(StreamInterface $body): MessageInterface
     {
-        if (! $body->isReadable()) {
+        if (!$body->isReadable()) {
             throw new InvalidArgumentException('Body stream must be readable');
         }
 
@@ -211,7 +211,7 @@ abstract class Message implements MessageInterface
 
         if (is_array($value)) {
             foreach ($value as &$val) {
-                if (! is_string($val) && ! is_numeric($val)) {
+                if (!is_string($val) && !is_numeric($val)) {
                     throw new InvalidArgumentException('Values must a string or numeric');
                 }
             }
