@@ -100,7 +100,7 @@ class Stream implements AppendableStream
     /**
      * @inheritDoc
      */
-    public function __toString()
+    public function __toString(): string
     {
         try {
             $this->rewind();
@@ -145,7 +145,7 @@ class Stream implements AppendableStream
     /**
      * @inheritDoc
      */
-    public function close()
+    public function close(): void
     {
         if (!is_resource($this->resource)) {
             return;
@@ -167,7 +167,7 @@ class Stream implements AppendableStream
     /**
      * @inheritDoc
      */
-    public function getSize()
+    public function getSize(): ?int
     {
         if (!is_resource($this->resource)) {
             return null;
@@ -181,7 +181,7 @@ class Stream implements AppendableStream
     /**
      * @inheritDoc
      */
-    public function tell()
+    public function tell(): int
     {
         $this->assertStreamIsNotDetached();
         $position = ftell($this->resource);
@@ -196,7 +196,7 @@ class Stream implements AppendableStream
     /**
      * @inheritDoc
      */
-    public function eof()
+    public function eof(): bool
     {
         if (!is_resource($this->resource)) {
             // php.net doc: feof returns TRUE if the file pointer is at EOF or an error occurs
@@ -209,7 +209,7 @@ class Stream implements AppendableStream
     /**
      * @inheritDoc
      */
-    public function isSeekable()
+    public function isSeekable(): bool
     {
         if (!is_resource($this->resource)) {
             return false;
@@ -228,7 +228,7 @@ class Stream implements AppendableStream
     /**
      * @inheritDoc
      */
-    public function seek($offset, $whence = SEEK_SET)
+    public function seek($offset, $whence = SEEK_SET): void
     {
         $this->assertStreamIsNotDetached();
         $result = fseek($this->resource, $offset, $whence);
@@ -241,7 +241,7 @@ class Stream implements AppendableStream
     /**
      * @inheritDoc
      */
-    public function rewind()
+    public function rewind(): void
     {
         $this->assertStreamIsNotDetached();
 
@@ -255,7 +255,7 @@ class Stream implements AppendableStream
     /**
      * @inheritDoc
      */
-    public function write($string)
+    public function write($string): int
     {
         $this->assertStreamIsNotDetached();
         $this->assertStreamIsWriteable();
@@ -272,7 +272,7 @@ class Stream implements AppendableStream
     /**
      * @inheritDoc
      */
-    public function isWritable()
+    public function isWritable(): bool
     {
         if (!is_resource($this->resource)) {
             return false;
@@ -292,7 +292,7 @@ class Stream implements AppendableStream
     /**
      * @inheritDoc
      */
-    public function isReadable()
+    public function isReadable(): bool
     {
         if (!is_resource($this->resource)) {
             return false;
@@ -312,7 +312,7 @@ class Stream implements AppendableStream
     /**
      * @inheritDoc
      */
-    public function read($length)
+    public function read($length): string
     {
         $this->assertStreamIsNotDetached();
         $this->assertStreamIsReadable();
@@ -332,7 +332,7 @@ class Stream implements AppendableStream
      * This function reads the complete stream from the CURRENT! file pointer. If you
      * want ensure to read the complete stream use __toString() instead.
      */
-    public function getContents()
+    public function getContents(): string
     {
         $this->assertStreamIsNotDetached();
         $this->assertStreamIsReadable();
