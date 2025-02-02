@@ -6,6 +6,7 @@ namespace Artemeon\HttpClient\Tests\Integration;
 
 use Artemeon\HttpClient\Http\Uri;
 use Artemeon\HttpClient\Tests\TestCase;
+use Psr\Http\Message\UriInterface;
 
 /**
  * @covers \Artemeon\HttpClient\Http\Uri
