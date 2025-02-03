@@ -18,35 +18,33 @@ use Artemeon\HttpClient\Exception\RuntimeException;
 use Artemeon\HttpClient\Http\Header\Header;
 use Artemeon\HttpClient\Http\Header\Headers;
 use Artemeon\HttpClient\Stream\Stream;
+use Override;
 use Psr\Http\Message\MessageInterface;
 use Psr\Http\Message\StreamInterface;
 
 /**
- * Abstract class to describe a http message
+ * Abstract class to describe a http message.
  *
  * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Messages
  */
 abstract class Message implements MessageInterface
 {
     protected Headers $headers;
-    protected ?StreamInterface $body;
-    protected string $version;
 
     /**
      * @param Headers|null $headers Optional: Headers collection or null
      * @param StreamInterface|null $body Optional: Body object or null
      * @param string $version Optional: Http protocol version string
      */
-    protected function __construct(?Headers $headers = null, StreamInterface $body = null, string $version = '1.1')
+    protected function __construct(?Headers $headers = null, protected ?StreamInterface $body = null, protected string $version = '1.1')
     {
         $this->headers = $headers ?? Headers::create();
-        $this->body = $body;
-        $this->version = $version;
     }
 
     /**
-     * Return the Header collection as an array
+     * Return the Header collection as an array.
      */
+    #[Override]
     public function getHeaders(): array
     {
         $headers = [];
@@ -61,8 +59,10 @@ abstract class Message implements MessageInterface
 
     /**
      * @inheritDoc
+     *
      * @throws RuntimeException
      */
+    #[Override]
     public function getBody(): StreamInterface
     {
         if (!$this->body instanceof StreamInterface) {
@@ -75,6 +75,7 @@ abstract class Message implements MessageInterface
     /**
      * @inheritDoc
      */
+    #[Override]
     public function getProtocolVersion(): string
     {
         return $this->version;
@@ -83,19 +84,21 @@ abstract class Message implements MessageInterface
     /**
      * @inheritDoc
      */
-    public function hasHeader($name): bool
+    #[Override]
+    public function hasHeader(string $name): bool
     {
-        return $this->headers->has(strval($name));
+        return $this->headers->has($name);
     }
 
     /**
      * @inheritDoc
      */
-    public function getHeader($name): array
+    #[Override]
+    public function getHeader(string $name): array
     {
         try {
-            return $this->headers->get(strval($name))->getValues();
-        } catch (InvalidArgumentException $e) {
+            return $this->headers->get($name)->getValues();
+        } catch (InvalidArgumentException) {
             return [];
         }
     }
@@ -103,11 +106,12 @@ abstract class Message implements MessageInterface
     /**
      * @inheritDoc
      */
-    public function getHeaderLine($name): string
+    #[Override]
+    public function getHeaderLine(string $name): string
     {
         try {
-            return $this->headers->get(strval($name))->getValue();
-        } catch (InvalidArgumentException $e) {
+            return $this->headers->get($name)->getValue();
+        } catch (InvalidArgumentException) {
             return '';
         }
     }
@@ -115,7 +119,8 @@ abstract class Message implements MessageInterface
     /**
      * @inheritDoc
      */
-    public function withHeader($name, $value): self
+    #[Override]
+    public function withHeader(string $name, $value): self
     {
         $cloned = clone $this;
         $cloned->assertHeader($name, $value);
@@ -132,10 +137,11 @@ abstract class Message implements MessageInterface
     /**
      * @inheritDoc
      */
-    public function withProtocolVersion($version): self
+    #[Override]
+    public function withProtocolVersion(string $version): self
     {
         $cloned = clone $this;
-        $cloned->version = strval($version);
+        $cloned->version = $version;
 
         return $cloned;
     }
@@ -143,7 +149,8 @@ abstract class Message implements MessageInterface
     /**
      * @inheritDoc
      */
-    public function withAddedHeader($name, $value): self
+    #[Override]
+    public function withAddedHeader(string $name, $value): self
     {
         $cloned = clone $this;
         $cloned->assertHeader($name, $value);
@@ -155,7 +162,7 @@ abstract class Message implements MessageInterface
                 $cloned->headers->get($name)->addValue($value);
             }
         } else {
-            // Field does not exists, create new header
+            // Field does not exist, create new header
             $header = is_array($value) ? Header::fromArray($name, $value) : Header::fromString($name, $value);
             $cloned->headers->add($header);
         }
@@ -166,7 +173,8 @@ abstract class Message implements MessageInterface
     /**
      * @inheritDoc
      */
-    public function withoutHeader($name)
+    #[Override]
+    public function withoutHeader(string $name): MessageInterface
     {
         $cloned = clone $this;
         $cloned->headers->remove($name);
@@ -177,7 +185,8 @@ abstract class Message implements MessageInterface
     /**
      * @inheritDoc
      */
-    public function withBody(StreamInterface $body)
+    #[Override]
+    public function withBody(StreamInterface $body): MessageInterface
     {
         if (!$body->isReadable()) {
             throw new InvalidArgumentException('Body stream must be readable');
@@ -190,15 +199,13 @@ abstract class Message implements MessageInterface
     }
 
     /**
-     * Checks the header data
+     * Checks the header data.
      *
-     * @param $name
-     * @param $value
      * @throws InvalidArgumentException
      */
-    private function assertHeader($name, $value): void
+    private function assertHeader(string $name, array | float | int | string $value): void
     {
-        if (!is_string($name) || $name === '') {
+        if ($name === '') {
             throw new InvalidArgumentException('Header must be a non empty string');
         }
 
@@ -208,8 +215,6 @@ abstract class Message implements MessageInterface
                     throw new InvalidArgumentException('Values must a string or numeric');
                 }
             }
-        } elseif (!is_string($value) && !is_numeric($value)) {
-            throw new InvalidArgumentException('Values must a string or numeric');
         }
     }
 }

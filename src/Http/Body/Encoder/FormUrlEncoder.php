@@ -15,27 +15,25 @@ namespace Artemeon\HttpClient\Http\Body\Encoder;
 
 use Artemeon\HttpClient\Http\MediaType;
 use Artemeon\HttpClient\Stream\Stream;
+use Override;
 use Psr\Http\Message\StreamInterface;
 
 /**
- * Encoder for "application/x-www-form-urlencoded" encoded body content
+ * Encoder for "application/x-www-form-urlencoded" encoded body content.
  */
 class FormUrlEncoder implements Encoder
 {
-    private array $formValues;
-
     /**
      * FormUrlEncoder constructor.
      *
      * @param array $formValues Array with the form values to encode: ['formFieldName' = 'value'],
      */
-    private function __construct(array $formValues)
+    private function __construct(private readonly array $formValues)
     {
-        $this->formValues = $formValues;
     }
 
     /**
-     * Named constructor to create an instance based on the given array
+     * Named constructor to create an instance based on the given array.
      *
      * ```php
      * $encoder = FormUrlEncoder->fromArray(['username' = 'John.Doe'])
@@ -52,6 +50,7 @@ class FormUrlEncoder implements Encoder
     /**
      * @inheritDoc
      */
+    #[Override]
     public function encode(): StreamInterface
     {
         return Stream::fromString(http_build_query($this->formValues));
@@ -60,6 +59,7 @@ class FormUrlEncoder implements Encoder
     /**
      * @inheritDoc
      */
+    #[Override]
     public function getMimeType(): string
     {
         return MediaType::FORM_URL_ENCODED;

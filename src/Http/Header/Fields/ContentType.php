@@ -14,24 +14,22 @@ declare(strict_types=1);
 namespace Artemeon\HttpClient\Http\Header\Fields;
 
 use Artemeon\HttpClient\Http\Header\HeaderField;
+use Override;
 
 /**
- * Class to describe the header field 'Content-Type'
+ * Class to describe the header field 'Content-Type'.
  */
 class ContentType implements HeaderField
 {
-    private string $mimeType;
-
     /**
      * @param string $mimeType Mime type string
      */
-    private function __construct(string $mimeType)
+    private function __construct(private readonly string $mimeType)
     {
-        $this->mimeType = $mimeType;
     }
 
     /**
-     * Named constructor to create an instance from the given string value
+     * Named constructor to create an instance from the given string value.
      *
      * @param string $mimeType MIME type string @see \Artemeon\HttpClient\Http\MediaType
      */
@@ -43,6 +41,7 @@ class ContentType implements HeaderField
     /**
      * @inheritDoc
      */
+    #[Override]
     public function getName(): string
     {
         return HeaderField::CONTENT_TYPE;
@@ -51,6 +50,7 @@ class ContentType implements HeaderField
     /**
      * @inheritDoc
      */
+    #[Override]
     public function getValue(): string
     {
         return $this->mimeType;

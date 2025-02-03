@@ -16,31 +16,27 @@ namespace Artemeon\HttpClient\Http\Body\Encoder;
 use Artemeon\HttpClient\Exception\RuntimeException;
 use Artemeon\HttpClient\Http\MediaType;
 use Artemeon\HttpClient\Stream\Stream;
+use Override;
 use Psr\Http\Message\StreamInterface;
 
 /**
- * Encoder for "application/json" encoded body content
+ * Encoder for "application/json" encoded body content.
  */
 class JsonEncoder implements Encoder
 {
-    private array|object $value;
-    private int $options;
-    private string $mimeType;
-
     /**
-     * @param mixed $value String, object or array to encode
      * @param int $options Optional json encode options: @see https://www.php.net/manual/de/function.json-encode.php
      * @param string $mimeType Optional custom mime type
      */
-    private function __construct(mixed $value, int $options = 0, string $mimeType = MediaType::JSON)
-    {
-        $this->value = $value;
-        $this->options = $options;
-        $this->mimeType = $mimeType;
+    private function __construct(
+        private readonly array | object $value,
+        private readonly int $options = 0,
+        private readonly string $mimeType = MediaType::JSON,
+    ) {
     }
 
     /**
-     * Named constructor to create an instance based on the given array
+     * Named constructor to create an instance based on the given array.
      *
      * ```php
      * # Associative arrays are always encoded as json object:
@@ -65,7 +61,7 @@ class JsonEncoder implements Encoder
     }
 
     /**
-     * Named constructor to create an instance based on the given object
+     * Named constructor to create an instance based on the given object.
      *
      * @param object $value Object to encode
      * @param int $options Bitmask of json constants:
@@ -80,12 +76,14 @@ class JsonEncoder implements Encoder
      * @inheritDoc
      * @throws RuntimeException
      */
+    #[Override]
     public function encode(): StreamInterface
     {
         $json = json_encode($this->value, $this->options);
 
         if ($json === false) {
             $error = json_last_error_msg();
+
             throw new RuntimeException("Can't encode to json: $error");
         }
 
@@ -95,6 +93,7 @@ class JsonEncoder implements Encoder
     /**
      * @inheritDoc
      */
+    #[Override]
     public function getMimeType(): string
     {
         return $this->mimeType;

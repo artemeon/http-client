@@ -14,10 +14,11 @@ declare(strict_types=1);
 namespace Artemeon\HttpClient\Http;
 
 use Artemeon\HttpClient\Exception\InvalidArgumentException;
+use Override;
 use Psr\Http\Message\UriInterface;
 
 /**
- * Class Url implements the PSR-7 UriInterface
+ * Class Url implements the PSR-7 UriInterface.
  */
 class Uri implements UriInterface
 {
@@ -26,13 +27,13 @@ class Uri implements UriInterface
     private string $host = '';
     private string $user = '';
     private string $password = '';
-    private ?int $port;
+    private ?int $port = null;
     private string $path = '';
     private string $fragment = '';
-    private const UNRESERVED = 'a-zA-Z0-9_\-\.~';
-    private const DELIMITER = '!\$&\'\(\)\*\+,;=';
+    private const string UNRESERVED = 'a-zA-Z0-9_\-\.~';
+    private const string DELIMITER = '!\$&\'\(\)\*\+,;=';
 
-    private const STANDARD_PORTS = [
+    private const array STANDARD_PORTS = [
         'http' => 80,
         'https' => 443,
         'ftp' => 21,
@@ -52,20 +53,22 @@ class Uri implements UriInterface
      */
     private function __construct(string $uri)
     {
-        if ($uri !== '') {
-            $this->query = $this->filterQueryOrFragment(parse_url($uri, PHP_URL_QUERY) ?? '');
-            $this->scheme = $this->filterScheme(parse_url($uri, PHP_URL_SCHEME) ?? '');
-            $this->host = $this->filterHost(parse_url($uri, PHP_URL_HOST) ?? '');
-            $this->port = $this->filterPort(parse_url($uri, PHP_URL_PORT) ?? null);
-            $this->fragment = $this->filterQueryOrFragment(parse_url($uri, PHP_URL_FRAGMENT) ?? '');
-            $this->path = $this->filterPath(parse_url($uri, PHP_URL_PATH) ?? '');
-            $this->user = parse_url($uri, PHP_URL_USER) ?? '';
-            $this->password = parse_url($uri, PHP_URL_PASS) ?? '';
+        if ($uri === '') {
+            return;
         }
+
+        $this->query = $this->filterQueryOrFragment(parse_url($uri, PHP_URL_QUERY) ?? '');
+        $this->scheme = $this->filterScheme(parse_url($uri, PHP_URL_SCHEME) ?? '');
+        $this->host = $this->filterHost(parse_url($uri, PHP_URL_HOST) ?? '');
+        $this->port = $this->filterPort(parse_url($uri, PHP_URL_PORT) ?? null);
+        $this->fragment = $this->filterQueryOrFragment(parse_url($uri, PHP_URL_FRAGMENT) ?? '');
+        $this->path = $this->filterPath(parse_url($uri, PHP_URL_PATH) ?? '');
+        $this->user = parse_url($uri, PHP_URL_USER) ?? '';
+        $this->password = parse_url($uri, PHP_URL_PASS) ?? '';
     }
 
     /**
-     * Named constructor to create an instance based on the given url and query params
+     * Named constructor to create an instance based on the given url and query params.
      *
      * @param string $uri Url string with protocol
      * @param array $queryParams Query params array: ["varName" => value]
@@ -94,6 +97,7 @@ class Uri implements UriInterface
     /**
      * @inheritDoc
      */
+    #[Override]
     public function getScheme(): string
     {
         return $this->scheme;
@@ -102,6 +106,7 @@ class Uri implements UriInterface
     /**
      * @inheritDoc
      */
+    #[Override]
     public function getHost(): string
     {
         return $this->host;
@@ -110,6 +115,7 @@ class Uri implements UriInterface
     /**
      * @inheritDoc
      */
+    #[Override]
     public function getPort(): ?int
     {
         if ($this->isStandardPort($this->scheme, $this->port)) {
@@ -122,28 +128,33 @@ class Uri implements UriInterface
     /**
      * @inheritDoc
      */
+    #[Override]
     public function getUserInfo(): string
     {
         if ($this->user !== '') {
             if ($this->password !== '') {
                 return $this->user . ':' . $this->password;
             }
+
             return $this->user;
         }
+
         return '';
     }
 
     /**
      * @inheritDoc
      */
+    #[Override]
     public function getPath(): string
     {
-        return $this->path;
+        return preg_replace('#^/+#', '/', $this->path);
     }
 
     /**
      * @inheritDoc
      */
+    #[Override]
     public function getQuery(): string
     {
         return $this->query;
@@ -152,6 +163,7 @@ class Uri implements UriInterface
     /**
      * @inheritDoc
      */
+    #[Override]
     public function getFragment(): string
     {
         return $this->fragment;
@@ -160,6 +172,7 @@ class Uri implements UriInterface
     /**
      * @inheritDoc
      */
+    #[Override]
     public function __toString(): string
     {
         $uri = ($this->getScheme() !== '') ? $this->getScheme() . ':' : '';
@@ -168,8 +181,9 @@ class Uri implements UriInterface
             $uri .= '//' . $this->getAuthority();
         }
 
-        if ($this->getPath() !== '') {
-            $uri .= $this->getPath();
+        // not normalized like //valid/path
+        if ($this->path !== '') {
+            $uri .= $this->path;
         }
 
         if ($this->getQuery() !== '') {
@@ -186,6 +200,7 @@ class Uri implements UriInterface
     /**
      * @inheritDoc
      */
+    #[Override]
     public function getAuthority(): string
     {
         $authority = ($this->getPort() === null) ? $this->host : $this->host . ':' . $this->port;
@@ -200,7 +215,8 @@ class Uri implements UriInterface
     /**
      * @inheritDoc
      */
-    public function withScheme($scheme): self
+    #[Override]
+    public function withScheme(string $scheme): self
     {
         $this->filterScheme($scheme);
 
@@ -213,10 +229,14 @@ class Uri implements UriInterface
     /**
      * @inheritDoc
      */
-    public function withUserInfo($user, $password = null): self
+    #[Override]
+    public function withUserInfo(string $user, ?string $password = null): self
     {
-        $user = trim(strval($user));
-        $password = trim(strval($password));
+        $user = $this->filterUserInfoComponent($user);
+        if ($password !== null) {
+            $password = $this->filterUserInfoComponent($password);
+        }
+
         $cloned = clone $this;
 
         // Empty string for the user is equivalent to removing user
@@ -225,16 +245,31 @@ class Uri implements UriInterface
             $cloned->password = '';
         } else {
             $cloned->user = $user;
-            $cloned->password = $password;
+            $cloned->password = $password ?? '';
         }
 
         return $cloned;
     }
 
+    private function filterUserInfoComponent(string $component): string
+    {
+        return preg_replace_callback(
+            '/(?:[^%' . self::UNRESERVED . self::DELIMITER . ']+|%(?![A-Fa-f0-9]{2}))/',
+            [$this, 'rawurlencodeMatchZero'],
+            $component,
+        );
+    }
+
+    private function rawurlencodeMatchZero(array $match): string
+    {
+        return rawurlencode((string) $match[0]);
+    }
+
     /**
      * @inheritDoc
      */
-    public function withHost($host): self
+    #[Override]
+    public function withHost(string $host): self
     {
         $cloned = clone $this;
         $cloned->host = $cloned->filterHost($host);
@@ -245,7 +280,8 @@ class Uri implements UriInterface
     /**
      * @inheritDoc
      */
-    public function withPort($port): self
+    #[Override]
+    public function withPort(?int $port): self
     {
         $cloned = clone $this;
         $cloned->port = $cloned->filterPort($port);
@@ -256,12 +292,9 @@ class Uri implements UriInterface
     /**
      * @inheritDoc
      */
-    public function withPath($path): self
+    #[Override]
+    public function withPath(array | bool | int | string $path): self
     {
-        if (!is_string($path)) {
-            throw new InvalidArgumentException('path must be a string value');
-        }
-
         $cloned = clone $this;
         $cloned->path = $cloned->filterPath($path);
 
@@ -271,7 +304,8 @@ class Uri implements UriInterface
     /**
      * @inheritDoc
      */
-    public function withQuery($query): self
+    #[Override]
+    public function withQuery(string $query): self
     {
         $cloned = clone $this;
         $cloned->query = $cloned->filterQueryOrFragment($query);
@@ -283,7 +317,8 @@ class Uri implements UriInterface
      * @inheritDoc
      * @throws InvalidArgumentException
      */
-    public function withFragment($fragment): self
+    #[Override]
+    public function withFragment(string $fragment): self
     {
         $cloned = clone $this;
         $cloned->fragment = $cloned->filterQueryOrFragment($fragment);
@@ -292,18 +327,13 @@ class Uri implements UriInterface
     }
 
     /**
-     * Filter and validate the port
+     * Filter and validate the port.
      *
-     * @param $port
      * @throws InvalidArgumentException
      */
-    private function filterPort($port): ?int
+    private function filterPort(?int $port): ?int
     {
         if ($port !== null) {
-            if (!is_int($port)) {
-                throw new InvalidArgumentException('port must be a integer value');
-            }
-
             if ($port < 0 || $port > 65535) {
                 throw new InvalidArgumentException("port: $port must be in a range between 0 and 65535");
             }
@@ -313,74 +343,55 @@ class Uri implements UriInterface
     }
 
     /**
-     * Filter and validate the scheme
+     * Filter and validate the scheme.
      *
-     * @param $scheme
      * @throws InvalidArgumentException
      */
-    private function filterScheme($scheme): string
+    private function filterScheme(string $scheme): string
     {
-        if (!is_string($scheme)) {
-            throw new InvalidArgumentException('scheme must be a lowercase string');
-        }
-
         return strtolower(trim($scheme));
     }
 
     /**
-     * Filter and validate the host
+     * Filter and validate the host.
      *
-     * @param $host
      * @throws InvalidArgumentException
      */
-    private function filterHost($host): string
+    private function filterHost(string $host): string
     {
-        if (!is_string($host)) {
-            throw new InvalidArgumentException('host must be a string value');
-        }
-
         return strtolower(trim($host));
     }
 
     /**
-     * Filter, validate and encode the path
+     * Filter, validate and encode the path.
      *
-     * @param $path
      * @throws InvalidArgumentException
      */
-    private function filterPath($path): string
+    private function filterPath(array | bool | int | string $path): string
     {
         if (!is_string($path)) {
             throw new InvalidArgumentException('path must be a string');
         }
 
-        $pattern = "/(?:[^" . self::UNRESERVED . self::DELIMITER . "%:@\/]++|%(?![A-Fa-f0-9]{2}))/";
+        $pattern = '/(?:[^' . self::UNRESERVED . self::DELIMITER . "%:@\/]++|%(?![A-Fa-f0-9]{2}))/";
 
         return preg_replace_callback($pattern, [$this, 'encode'], $path);
     }
 
     /**
-     * * Filter, validate and encode the query or fragment
+     * * Filter, validate and encode the query or fragment.
      *
-     * @param $fragment
      * @throws InvalidArgumentException
      */
-    private function filterQueryOrFragment($fragment): string
+    private function filterQueryOrFragment(string $fragment): string
     {
-        if (!is_string($fragment)) {
-            throw new InvalidArgumentException('fragment must be a string');
-        }
-
         $pattern = '/(?:[^' . self::UNRESERVED . self::DELIMITER . '%:@\/\?]++|%(?![A-Fa-f0-9]{2}))/';
 
         return preg_replace_callback($pattern, [$this, 'encode'], $fragment);
     }
 
     /**
-     * Checks if the given scheme uses their standard port
-     *
-     * @param string $scheme
-     * @param int $port
+     * Checks if the given scheme uses their standard port.
      */
     private function isStandardPort(string $scheme, ?int $port): bool
     {
@@ -392,10 +403,9 @@ class Uri implements UriInterface
     }
 
     /**
-     * Encoding for path, query and fragment characters
+     * Encoding for path, query and fragment characters.
      *
      * @param string[] $matches
-     * @return string
      */
     private function encode(array $matches): string
     {

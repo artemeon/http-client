@@ -14,9 +14,10 @@ declare(strict_types=1);
 namespace Artemeon\HttpClient\Http\Header\Fields;
 
 use Artemeon\HttpClient\Http\Header\HeaderField;
+use Override;
 
 /**
- * Class to describe the header field 'Authorisation'
+ * Class to describe the header field 'Authorisation'.
  *
  * Example:
  * ```php
@@ -25,21 +26,16 @@ use Artemeon\HttpClient\Http\Header\HeaderField;
  */
 class Authorization implements HeaderField
 {
-    private string $type;
-    private string $credentials;
-
     /**
      * @param string $type The type of the http authorization
      * @param string $credentials The credentials string
      */
-    private function __construct(string $type, string $credentials)
+    private function __construct(private readonly string $type, private readonly string $credentials)
     {
-        $this->type = $type;
-        $this->credentials = $credentials;
     }
 
     /**
-     * Name constructor to create an 'Authorisation: Bearer' field
+     * Name constructor to create an 'Authorisation: Bearer' field.
      *
      * @param string $credentials String with credentials for Bearer authorisation
      */
@@ -49,7 +45,7 @@ class Authorization implements HeaderField
     }
 
     /**
-     * Name constructor to create an 'Authorisation: Basic' field
+     * Name constructor to create an 'Authorisation: Basic' field.
      *
      * @param string $user String for the username
      * @param string $password String for the password
@@ -62,6 +58,7 @@ class Authorization implements HeaderField
     /**
      * @inheritDoc
      */
+    #[Override]
     public function getName(): string
     {
         return self::AUTHORIZATION;
@@ -70,6 +67,7 @@ class Authorization implements HeaderField
     /**
      * @inheritDoc
      */
+    #[Override]
     public function getValue(): string
     {
         return $this->type . ' ' . $this->credentials;

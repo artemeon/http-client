@@ -38,54 +38,48 @@ use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Request as GuzzleRequest;
 use GuzzleHttp\Psr7\Response as GuzzleResponse;
+use Mockery;
+use Mockery\MockInterface;
+use Override;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
-use Prophecy\Argument;
-use Prophecy\PhpUnit\ProphecyTrait;
-use Prophecy\Prophecy\ObjectProphecy;
 
 /**
- * @covers \Artemeon\HttpClient\Client\ArtemeonHttpClient
- * @covers \Artemeon\HttpClient\Exception\RuntimeException
- * @covers \Artemeon\HttpClient\Exception\Request\TransferException
- * @covers \Artemeon\HttpClient\Exception\Request\Network\ConnectException
- * @covers \Artemeon\HttpClient\Exception\Request\Http\ResponseException
- * @covers \Artemeon\HttpClient\Exception\Request\Http\ServerResponseException
- * @covers \Artemeon\HttpClient\Exception\Request\Http\ClientResponseException
- * @covers \Artemeon\HttpClient\Exception\Request\Http\RedirectResponseException
+ * @internal
  */
 class ArtemeonHttpClientTest extends TestCase
 {
-    use ProphecyTrait;
-
     private GuzzleClient $guzzleClient;
+
     private MockHandler $mockHandler;
+
     private ArtemeonHttpClient $httpClient;
+
     private ClientOptions $clientOptions;
-    private ClientOptionsConverter|ObjectProphecy $clientOptionsConverter;
+
+    private ClientOptionsConverter | MockInterface $clientOptionsConverter;
 
     /**
      * @inheritDoc
      */
-    public function setUp(): void
+    #[Override]
+    protected function setUp(): void
     {
         $this->mockHandler = new MockHandler();
         $this->guzzleClient = new GuzzleClient(['handler' => HandlerStack::create($this->mockHandler)]);
-        $this->clientOptionsConverter = $this->prophesize(ClientOptionsConverter::class);
+        $this->clientOptionsConverter = Mockery::mock(ClientOptionsConverter::class);
         $this->clientOptions = ClientOptions::fromDefaults();
 
         $this->httpClient = new ArtemeonHttpClient(
             $this->guzzleClient,
-            $this->clientOptionsConverter->reveal()
+            $this->clientOptionsConverter,
         );
     }
 
-    /**
-     * @test
-     */
-    public function send_WithoutOptions_UsesEmptyOptionsArray()
+    public function testSendWithoutOptionsUsesEmptyOptionsArray(): void
     {
         $this->mockHandler->append(new GuzzleResponse(200, [], 'Some body content'));
-        $this->clientOptionsConverter->toGuzzleOptionsArray(Argument::any())->shouldNotBeCalled();
+        $this->clientOptionsConverter->shouldNotReceive('toGuzzleOptionsArray');
 
         $request = Request::forGet(Uri::fromString('http://apache/'));
         $response = $this->httpClient->send($request);
@@ -93,15 +87,13 @@ class ArtemeonHttpClientTest extends TestCase
         self::assertInstanceOf(Response::class, $response);
     }
 
-    /**
-     * @test
-     */
-    public function send_WithOptions_ConvertOptions()
+    public function testSendWithOptionsConvertOptions(): void
     {
         $this->mockHandler->append(new GuzzleResponse(200, [], 'Some body content'));
-        $this->clientOptionsConverter->toGuzzleOptionsArray($this->clientOptions)
-            ->shouldBeCalled()
-            ->willReturn([]);
+        $this->clientOptionsConverter->shouldReceive('toGuzzleOptionsArray')
+            ->withArgs([$this->clientOptions])
+            ->once()
+            ->andReturn([]);
 
         $request = Request::forGet(Uri::fromString('http://apache/'));
         $response = $this->httpClient->send($request, $this->clientOptions);
@@ -109,10 +101,7 @@ class ArtemeonHttpClientTest extends TestCase
         self::assertInstanceOf(Response::class, $response);
     }
 
-    /**
-     * @test
-     */
-    public function send_ConvertsGuzzleResponseToValidResponse(): void
+    public function testSendConvertsGuzzleResponseToValidResponse(): void
     {
         $request = Request::forGet(Uri::fromString('http://apache/endpoints/upload.php'));
         $expectedContent = 'Some body content';
@@ -126,14 +115,11 @@ class ArtemeonHttpClientTest extends TestCase
         self::assertSame($expectedHeaders, $response->getHeaders());
     }
 
-    /**
-     * @test
-     * @dataProvider provideExceptionMappings
-     */
-    public function send_GuzzleThrowsException_MappedToHttpClientException(
+    #[DataProvider('provideExceptionMappings')]
+    public function testSendGuzzleThrowsExceptionMappedToHttpClientException(
         \RuntimeException $guzzleException,
-        string $httpClientException
-    ) {
+        string $httpClientException,
+    ): void {
         $this->mockHandler->append($guzzleException);
         $request = Request::forGet(Uri::fromString('http://apache/endpoints/upload.php'));
 
@@ -142,9 +128,9 @@ class ArtemeonHttpClientTest extends TestCase
     }
 
     /**
-     * Data provider for exception mappings from guzzle to httpClient exceptions
+     * Data provider for exception mappings from guzzle to httpClient exceptions.
      */
-    public function provideExceptionMappings(): array
+    public static function provideExceptionMappings(): array
     {
         $fakeResponse = new GuzzleResponse(200);
         $fakeRequest = new GuzzleRequest('GET', 'test');

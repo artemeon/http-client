@@ -16,42 +16,34 @@ namespace Artemeon\HttpClient\Tests\Unit\Http\Body\Encoder;
 use Artemeon\HttpClient\Exception\RuntimeException;
 use Artemeon\HttpClient\Http\Body\Encoder\JsonEncoder;
 use Artemeon\HttpClient\Http\MediaType;
-use phpmock\prophecy\PHPProphet;
+use Mockery;
 use PHPUnit\Framework\TestCase;
-use Prophecy\Argument;
 use stdClass;
 
 /**
- * @covers \Artemeon\HttpClient\Http\Body\Encoder\JsonEncoder
+ * @internal
  */
 class JsonEncoderTest extends TestCase
 {
-    /**
-     * @test
-     * @runInSeparateProcess
-     */
-    public function fromArray_JsonEncodeFailsThrows_Exception()
+    public function tearDown(): void
     {
-        $globalProphet = new PHPProphet();
-        $globalProphecy = $globalProphet->prophesize("\Artemeon\HttpClient\Http\Body\Encoder");
-
-        $globalProphecy->json_encode(Argument::any(), Argument::any())->willReturn(false);
-        $globalProphecy->reveal();
-
-        $this->expectException(RuntimeException::class);
-        $value = ['test' => 12];
-        $options = 0;
-
-        $encoder = JsonEncoder::fromArray($value, $options);
-        $encoder->encode();
-
-        $globalProphet->checkPredictions();
+        Mockery::close(); // Mockery aufräumen
     }
 
-    /**
-     * @test
-     */
-    public function fromObject_ReturnExpectedValue(): void
+    public function testFromArrayJsonEncodeFailsThrowsException(): void
+    {
+        $mockJsonEncode = Mockery::mock('overload:json_encode');
+        $mockJsonEncode->shouldReceive('__invoke')->andReturn(false);
+
+        $encoder = JsonEncoder::fromArray(['invalid' => "\xB1\x31"], 0);
+
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage("Can't encode to json: Malformed UTF-8 characters, possibly incorrectly encoded");
+
+        $encoder->encode();
+    }
+
+    public function testFromObjectReturnExpectedValue(): void
     {
         $class = new stdClass();
         $class->name = 'name';
@@ -63,16 +55,13 @@ class JsonEncoderTest extends TestCase
         self::assertSame(MediaType::JSON, $encoder->getMimeType());
     }
 
-    /**
-     * @test
-     */
-    public function fromArray_ReturnExpectedValue(): void
+    public function testFromArrayReturnExpectedValue(): void
     {
         $encoder = JsonEncoder::fromArray(
             [
                 'name' => 'name',
-                'test' => 1
-            ]
+                'test' => 1,
+            ],
         );
 
         self::assertSame('{"name":"name","test":1}', $encoder->encode()->__toString());

@@ -27,17 +27,17 @@ use Artemeon\HttpClient\Http\Request;
 use Artemeon\HttpClient\Http\Response;
 
 /**
- * Interface to plug in third party http-client libraries
+ * Interface to plug in third party http-client libraries.
  */
 interface HttpClient
 {
     /**
-     * Sends the request
+     * Sends the request.
      *
      * @param Request $request Request object to send
      * @param ClientOptions|null $clientOptions Optional client configuration object
      *
-     * @throws HttpClientException  Interface to catch all possible exceptions
+     * @throws HttpClientException Interface to catch all possible exceptions
      * @throws InvalidArgumentException 1. All exceptions with invalid arguments
      * @throws RuntimeException 2. All exceptions during runtime
      * @throws TransferException 2.1 All exceptions during the request/response transfers
@@ -48,5 +48,5 @@ interface HttpClient
      * @throws RedirectResponseException 2.1.2.3 All response exceptions with 300 status codes
      * @throws \InvalidArgumentException
      */
-    public function send(Request $request, ClientOptions $clientOptions = null): Response;
+    public function send(Request $request, ?ClientOptions $clientOptions = null): Response;
 }

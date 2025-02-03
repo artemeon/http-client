@@ -32,18 +32,18 @@ try {
         Body::fromEncoder(
             FormUrlEncoder::fromArray(
                 [
-                    "user" => 'John.Doe',
+                    'user' => 'John.Doe',
                     'password' => 'geheim',
                     'group' => 'admin',
-                ]
-            )
+                ],
+            ),
         ),
         Headers::fromFields(
             [
                 Authorization::forAuthBasic('John.Doe', 'geheim'),
                 UserAgent::fromString(),
-            ]
-        )
+            ],
+        ),
     );
 
     $clientOptions = ClientOptions::fromDefaults();

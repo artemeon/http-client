@@ -16,32 +16,28 @@ namespace Artemeon\HttpClient\Tests\Unit\Client;
 use Artemeon\HttpClient\Client\Options\ClientOptions;
 use Artemeon\HttpClient\Client\Options\ClientOptionsConverter;
 use GuzzleHttp\RequestOptions as GuzzleRequestOptions;
+use Override;
 use PHPUnit\Framework\TestCase;
-use Prophecy\PhpUnit\ProphecyTrait;
 
 /**
- * @covers \Artemeon\HttpClient\Client\Options\ClientOptionsConverter
+ * @internal
  */
 class ClientOptionsConverterTest extends TestCase
 {
-    use ProphecyTrait;
-
     private ClientOptionsConverter $clientOptionConverter;
     private ClientOptions $clientOptions;
 
     /**
      * @inheritDoc
      */
+    #[Override]
     public function setUp(): void
     {
         $this->clientOptions = ClientOptions::fromDefaults();
         $this->clientOptionConverter = new ClientOptionsConverter();
     }
 
-    /**
-     * @test
-     */
-    public function verifyKey_IsFalse(): void
+    public function testVerifyKeyIsFalse(): void
     {
         $this->clientOptions->optDisableSslVerification();
         $options = $this->clientOptionConverter->toGuzzleOptionsArray($this->clientOptions);
@@ -49,20 +45,14 @@ class ClientOptionsConverterTest extends TestCase
         self::assertFalse($options[GuzzleRequestOptions::VERIFY]);
     }
 
-    /**
-     * @test
-     */
-    public function verifyKey_IsTrue(): void
+    public function testVerifyKeyIsTrue(): void
     {
         $options = $this->clientOptionConverter->toGuzzleOptionsArray($this->clientOptions);
 
         self::assertTrue($options[GuzzleRequestOptions::VERIFY]);
     }
 
-    /**
-     * @test
-     */
-    public function verifyKey_IsCaBundlePathString(): void
+    public function testVerifyKeyIsCaBundlePathString(): void
     {
         $expected = '/path/ca/bundle';
         $this->clientOptions->optSetCustomCaBundlePath($expected);
@@ -71,10 +61,7 @@ class ClientOptionsConverterTest extends TestCase
         self::assertSame($expected, $options[GuzzleRequestOptions::VERIFY]);
     }
 
-    /**
-     * @test
-     */
-    public function allowRedirectsKey_ReturnFalse(): void
+    public function testAllowRedirectsKeyReturnFalse(): void
     {
         $this->clientOptions->optDisableRedirects();
         $options = $this->clientOptionConverter->toGuzzleOptionsArray($this->clientOptions);
@@ -82,10 +69,7 @@ class ClientOptionsConverterTest extends TestCase
         self::assertFalse($options[GuzzleRequestOptions::ALLOW_REDIRECTS]);
     }
 
-    /**
-     * @test
-     */
-    public function allowRedirectsKey_ReturnsValidArray(): void
+    public function testAllowRedirectsKeyReturnsValidArray(): void
     {
         $expectedMax = 10;
         $expectedReferer = true;
@@ -98,10 +82,7 @@ class ClientOptionsConverterTest extends TestCase
         self::assertSame($expectedMax, $options[GuzzleRequestOptions::ALLOW_REDIRECTS]['max']);
     }
 
-    /**
-     * @test
-     */
-    public function timeoutKey_HasExpectedIntValue(): void
+    public function testTimeoutKeyHasExpectedIntValue(): void
     {
         $expected = 22;
         $this->clientOptions->optSetTimeout($expected);

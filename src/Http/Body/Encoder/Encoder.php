@@ -17,19 +17,19 @@ use Artemeon\HttpClient\Exception\RuntimeException;
 use Psr\Http\Message\StreamInterface;
 
 /**
- * Interface for http body Encoder
+ * Interface for http body Encoder.
  */
 interface Encoder
 {
     /**
-     * Encodes the body content
+     * Encodes the body content.
      *
      * @throws RuntimeException
      */
     public function encode(): StreamInterface;
 
     /**
-     * Returns the supported MimeType
+     * Returns the supported MimeType.
      */
     public function getMimeType(): string;
 }

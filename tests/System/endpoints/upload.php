@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-header("HTTP/1.0 200 OK");
-header("Content-Type: text/plain");
+header('HTTP/1.0 200 OK');
+header('Content-Type: text/plain');
 echo '<h1>TARGET SERVER:</h1>';
 echo '<h2>REQUEST</h2>';
 print_r($_REQUEST);

@@ -14,27 +14,23 @@ declare(strict_types=1);
 namespace Artemeon\HttpClient\Http\Header\Fields;
 
 use Artemeon\HttpClient\Http\Header\HeaderField;
+use Override;
 use Psr\Http\Message\UriInterface;
 
 /**
- * Class to describe the header field 'Host'
+ * Class to describe the header field 'Host'.
  */
 class Host implements HeaderField
 {
-    private string $host;
-
     /**
      * @param string $host The host string
      */
-    private function __construct(string $host)
+    private function __construct(private readonly string $host)
     {
-        $this->host = $host;
     }
 
     /**
-     * Named constructor to create an instance based on the given Url
-     *
-     * @param UriInterface $uri
+     * Named constructor to create an instance based on the given Url.
      */
     public static function fromUri(UriInterface $uri): self
     {
@@ -48,6 +44,7 @@ class Host implements HeaderField
     /**
      * @inheritDoc
      */
+    #[Override]
     public function getName(): string
     {
         return HeaderField::HOST;
@@ -56,6 +53,7 @@ class Host implements HeaderField
     /**
      * @inheritDoc
      */
+    #[Override]
     public function getValue(): string
     {
         return $this->host;

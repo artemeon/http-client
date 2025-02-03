@@ -38,23 +38,22 @@ use GuzzleHttp\Exception\RequestException as GuzzleRequestException;
 use GuzzleHttp\Exception\ServerException as GuzzleServerException;
 use GuzzleHttp\Exception\TooManyRedirectsException as GuzzleTooManyRedirectsException;
 use GuzzleHttp\Exception\TransferException as GuzzleTransferException;
+use Override;
 use Psr\Http\Message\ResponseInterface as GuzzleResponse;
 
 /**
- * HttpClient implementation with guzzle
+ * HttpClient implementation with guzzle.
  */
 class ArtemeonHttpClient implements HttpClient
 {
-    private GuzzleClient $guzzleClient;
-    private ClientOptionsConverter $clientOptionsConverter;
-
-    public function __construct(GuzzleClient $guzzleClient, ClientOptionsConverter $clientOptionsConverter)
-    {
-        $this->guzzleClient = $guzzleClient;
-        $this->clientOptionsConverter = $clientOptionsConverter;
+    public function __construct(
+        private readonly GuzzleClient $guzzleClient,
+        private readonly ClientOptionsConverter $clientOptionsConverter,
+    ) {
     }
 
-    final public function send(Request $request, ClientOptions $clientOptions = null): Response
+    #[Override]
+    final public function send(Request $request, ?ClientOptions $clientOptions = null): Response
     {
         if ($clientOptions instanceof ClientOptions) {
             $guzzleOptions = $this->clientOptionsConverter->toGuzzleOptionsArray($clientOptions);
@@ -116,7 +115,7 @@ class ArtemeonHttpClient implements HttpClient
     }
 
     /**
-     * Checks the Guzzle exception for a response object and converts it to a Artemeon response object
+     * Checks the Guzzle exception for a response object and converts it to a Artemeon response object.
      */
     private function getResponseFromGuzzleException(GuzzleRequestException $guzzleRequestException): ?Response
     {
@@ -128,9 +127,9 @@ class ArtemeonHttpClient implements HttpClient
     }
 
     /**
-     * Converts a GuzzleResponse object to our Response object
+     * Converts a GuzzleResponse object to our Response object.
      */
-    private function convertGuzzleResponse(GuzzleResponse $guzzleResponse): Response
+    private function convertGuzzleResponse(?GuzzleResponse $guzzleResponse): Response
     {
         $headers = Headers::create();
 
@@ -143,7 +142,7 @@ class ArtemeonHttpClient implements HttpClient
             $guzzleResponse->getProtocolVersion(),
             $guzzleResponse->getBody(),
             $headers,
-            $guzzleResponse->getReasonPhrase()
+            $guzzleResponse->getReasonPhrase(),
         );
     }
 }

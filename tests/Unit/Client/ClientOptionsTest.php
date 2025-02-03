@@ -14,30 +14,26 @@ declare(strict_types=1);
 namespace Artemeon\HttpClient\Tests\Unit\Client;
 
 use Artemeon\HttpClient\Client\Options\ClientOptions;
+use Override;
 use PHPUnit\Framework\TestCase;
-use Prophecy\PhpUnit\ProphecyTrait;
 
 /**
- * @covers \Artemeon\HttpClient\Client\Options\ClientOptions
+ * @internal
  */
 class ClientOptionsTest extends TestCase
 {
-    use ProphecyTrait;
-
     private ClientOptions $clientOptions;
 
     /**
      * @inheritDoc
      */
+    #[Override]
     public function setUp(): void
     {
         $this->clientOptions = ClientOptions::fromDefaults();
     }
 
-    /**
-     * @test
-     */
-    public function fromDefaults_setValidValues(): void
+    public function testFromDefaultsSetValidValues(): void
     {
         self::assertTrue($this->clientOptions->isRedirectAllowed());
         self::assertSame(10, $this->clientOptions->getTimeout());
@@ -48,10 +44,7 @@ class ClientOptionsTest extends TestCase
         self::assertFalse($this->clientOptions->hasCustomCaBundlePath());
     }
 
-    /**
-     * @test
-     */
-    public function ChangedOptions_SetValidValues(): void
+    public function testChangedOptionsSetValidValues(): void
     {
         $this->clientOptions->optDisableRedirects();
         $this->clientOptions->optSetTimeout(50);

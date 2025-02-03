@@ -15,131 +15,162 @@ namespace Artemeon\HttpClient\Tests\Unit\Stream;
 
 use Artemeon\HttpClient\Exception\RuntimeException;
 use Artemeon\HttpClient\Stream\Stream;
+use Mockery;
 use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\vfsStreamDirectory;
-use phpmock\prophecy\PHPProphet;
+use Override;
+use php_user_filter;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
-use Prophecy\Argument;
-use Prophecy\Prophecy\ProphecyInterface;
 
+class FalseReturningFilter extends php_user_filter
+{
+    public function filter($in, $out, &$consumed, $closing): int
+    {
+        return PSFS_ERR_FATAL;
+    }
+}
+
+class FalseReturningStream
+{
+    public $context;
+
+    public function stream_open($path, $mode, $options, &$opened_path)
+    {
+        return true;
+    }
+
+    public function stream_stat(): array | false
+    {
+        return false;
+    }
+
+    public function stream_read($count)
+    {
+        return false;
+    }
+
+    public function stream_write($data)
+    {
+        return false;
+    }
+
+    public function stream_eof()
+    {
+        return true;
+    }
+
+    public function stream_get_contents($resource): false | string
+    {
+        return false;
+    }
+}
 /**
- * @covers \Artemeon\HttpClient\Stream\Stream
+ * @internal
  */
 class StreamTest extends TestCase
 {
-    /** @var Stream */
-    private $stream;
+    private Stream $stream;
 
-    /** @var ProphecyInterface */
-    private $globalProphecy;
-
-    /** @var PHPProphet */
-    private $globalProphet;
-
-    /** @var vfsStreamDirectory */
-    private $filesystem;
+    private vfsStreamDirectory $filesystem;
 
     /**
      * @inheritDoc
      */
-    public function setUp(): void
+    #[Override]
+    protected function setUp(): void
     {
-        $this->globalProphet = new PHPProphet();
-        $this->globalProphecy = $this->globalProphet->prophesize('\Artemeon\HttpClient\Stream');
+        parent::setUp();
+
         $this->filesystem = vfsStream::setup('stream');
+        file_put_contents($this->filesystem->url() . '/generated.json', '');
 
         vfsStream::copyFromFileSystem(
             __DIR__ . '/../../Fixtures/encoder',
-            $this->filesystem
+            $this->filesystem,
         );
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
-    public function tearDown(): void
+    #[Override]
+    protected function tearDown(): void
     {
-        $this->globalProphet->checkPredictions();
-        $this->stream = null;
+        Mockery::close();
+        parent::tearDown();
     }
 
-    /**
-     * @test
-     * @runInSeparateProcess
-     */
-    public function __construct_ResourceIsInvalid_ThrowsException()
+    public function constructResourceIsInvalidThrowsException(): void
     {
-        $this->globalProphecy->fopen(Argument::any(), Argument::any())
-            ->shouldBeCalled()
-            ->willReturn(false);
+        $fopenMock = Mockery::mock('overload:fopen');
+        $fopenMock->shouldReceive('__invoke')
+            ->with(Mockery::any(), Mockery::any())
+            ->andReturn(false);
 
-        $this->globalProphecy->reveal();
         $this->expectException(RuntimeException::class);
 
-        $this->stream = Stream::fromFileMode('rw');
+        Stream::fromFileMode('rw');
     }
 
-    /**
-     * @test
-     */
-    public function appendStream_IsDetached_ThrowsException(): void
+    public function testAppendStreamIsDetachedThrowsException(): void
     {
         $this->stream = Stream::fromString('test');
         $this->stream->detach();
         $this->expectException(RuntimeException::class);
-        $this->expectErrorMessage('Stream is detached');
+        $this->expectExceptionMessage('Stream is detached');
 
         $this->stream->appendStream(Stream::fromString('append'));
     }
 
-    /**
-     * @test
-     */
-    public function appendStream_IsNotWriteable_ThrowsException(): void
+    public function testAppendStreamIsNotWriteableThrowsException(): void
     {
         $this->stream = Stream::fromFileMode('r');
         $this->expectException(RuntimeException::class);
-        $this->expectErrorMessage('Stream is not writeable');
+        $this->expectExceptionMessage('Stream is not writeable');
 
         $this->stream->appendStream(Stream::fromString('append'));
     }
 
-    /**
-     * @test
-     */
-    public function appendStream_GivenStreamIsNotReadable_ThrowsException(): void
+    public function testAppendStreamGivenStreamIsNotReadableThrowsException(): void
     {
         $this->stream = Stream::fromString('test');
         $this->expectException(RuntimeException::class);
-        $this->expectErrorMessage("Can't append not readable stream");
+        $this->expectExceptionMessage("Can't append not readable stream");
 
         $writeOnlyStream = Stream::fromFile($this->filesystem->url() . '/generated.json', 'w');
         $this->stream->appendStream($writeOnlyStream);
     }
 
-    /**
-     * @test
-     */
-    public function appendStream_CantCopyStream_ThrowsException(): void
+    public function testAppendStreamCantCopyStreamThrowsException(): void
     {
-        $this->globalProphecy->stream_copy_to_stream(Argument::any(), Argument::any())
-            ->shouldBeCalled()
-            ->willReturn(false);
+        stream_wrapper_register('falsestream', FalseReturningStream::class);
+        $resourceMock = fopen('falsestream://test', 'w');
 
-        $this->globalProphecy->reveal();
+        $testString = 'test';
+        $streamFeature = Stream::fromString($testString);
 
-        $this->stream = Stream::fromString('test');
+        $streamAppendMock = $this->createMock(Stream::class);
+        $streamAppendMock->expects($this->once())
+            ->method('getResource')
+            ->willReturn($resourceMock);
+
+        $streamAppendMock->expects($this->once())
+            ->method('isReadable')
+            ->willReturn(true);
+
         $this->expectException(RuntimeException::class);
-        $this->expectErrorMessage("Append failed");
+        $this->expectExceptionMessage('Append failed');
 
-        $writeOnlyStream = Stream::fromFile($this->filesystem->url() . '/generated.json');
-        $this->stream->appendStream($writeOnlyStream);
+        $streamFeature->appendStream($streamAppendMock);
     }
 
-    /**
-     * @test
-     */
-    public function appendStream_ReturnsAppendedStream(): void
+    public function mockedStreamCopyToStream($source, $destination)
+    {
+        return call_user_func_array($GLOBALS['originalStreamCopyToStream'], func_get_args());
+    }
+
+    public function testAppendStreamReturnsAppendedStream(): void
     {
         $this->stream = Stream::fromString('test');
         $this->stream->appendStream(Stream::fromString('_appended'));
@@ -147,26 +178,21 @@ class StreamTest extends TestCase
         self::assertSame('test_appended', $this->stream->__toString());
     }
 
-    /**
-     * @test
-     * @runInSeparateProcess
-     */
-    public function fromFile_ResourceIsInvalid_ThrowsException(): void
+    public function testFromFileResourceIsInvalidThrowsException(): void
     {
-        $this->globalProphecy->fopen(Argument::any(), Argument::any())
-            ->shouldBeCalled()
-            ->willReturn(false);
+        $fopenMock = Mockery::mock('overload:fopen');
+        $fopenMock->shouldReceive('__invoke')
+            ->with(Mockery::any(), Mockery::any())
+            ->andReturn(false);
 
-        $this->globalProphecy->reveal();
         $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Can\'t open file /does/not/exists.txt');
 
         $this->stream = Stream::fromFile('/does/not/exists.txt');
+        $this->fail('Expected RuntimeException was not thrown.');
     }
 
-    /**
-     * @test
-     */
-    public function __toString_IsDetached_ReturnEmptyString(): void
+    public function testToStringIsDetachedReturnEmptyString(): void
     {
         $this->stream = Stream::fromString('some_content');
         $this->stream->detach();
@@ -175,10 +201,7 @@ class StreamTest extends TestCase
         self::assertEmpty($content);
     }
 
-    /**
-     * @test
-     */
-    public function __toString_ReturnValidString(): void
+    public function testToStringReturnValidString(): void
     {
         $expected = 'some_content';
         $this->stream = Stream::fromString($expected);
@@ -187,10 +210,7 @@ class StreamTest extends TestCase
         self::assertSame($expected, $content);
     }
 
-    /**
-     * @test
-     */
-    public function __toString_WithBytesRead_ReturnsCompleteString(): void
+    public function testToStringWithBytesReadReturnsCompleteString(): void
     {
         $expected = 'some_content';
         $this->stream = Stream::fromString($expected);
@@ -201,87 +221,61 @@ class StreamTest extends TestCase
         self::assertSame($expected, $content);
     }
 
-    /**
-     * @test
-     * @doesNotPerformAssertions
-     * @runInSeparateProcess
-     */
-    public function close_IsDetached_ShouldNotCallClose(): void
+    public function testCloseIsDetachedShouldNotCallClose(): void
     {
-        $this->globalProphecy->fclose(Argument::type('resource'))->will(
-            function ($args) {
-                return fclose($args[0]);
-            }
-        )->shouldBeCalledTimes(1);
-
-        $this->globalProphecy->reveal();
+        $fcloseMock = Mockery::mock('overload:fclose');
+        $fcloseMock->shouldReceive('__invoke')
+            ->with(Mockery::type('resource'))
+            ->andReturnUsing(static fn ($resource) => fclose($resource));
 
         $this->stream = Stream::fromString('content');
         $this->stream->detach();
         $this->stream->close();
+
+        Mockery::close();
+        $this->addToAssertionCount(1);
     }
 
-    /**
-     * @test
-     * @doesNotPerformAssertions
-     * @runInSeparateProcess
-     */
-    public function close_ShouldCallClose(): void
+    public function testCloseShouldCallClose(): void
     {
-        $this->globalProphecy->fclose(Argument::type('resource'))->will(
-            function ($args) {
-                return fclose($args[0]);
-            }
-        )->shouldBeCalled();
-
-        $this->globalProphecy->reveal();
+        $fcloseMock = Mockery::mock('overload:fclose');
+        $fcloseMock->shouldReceive('__invoke')
+            ->with(Mockery::type('resource'))
+            ->once();
 
         $this->stream = Stream::fromString('content');
         $this->stream->close();
-        $this->stream->eof();
+
+        Mockery::close();
+        $this->addToAssertionCount(1);
     }
 
-    /**
-     * @test
-     * @runInSeparateProcess
-     */
-    public function detach_ShouldCallClose(): void
+    public function testDetachShouldCallClose(): void
     {
-        $this->globalProphecy->fclose(Argument::type('resource'))->will(
-            function ($args) {
-                return fclose($args[0]);
-            }
-        )->shouldBeCalled();
+        $fcloseMock = Mockery::mock('overload:fclose');
+        $fcloseMock->shouldReceive('__invoke')
+            ->with(Mockery::type('resource'))
+            ->once();
 
-        $this->globalProphecy->reveal();
         $this->stream = Stream::fromString('content');
         $this->stream->detach();
 
         self::assertSame([], $this->stream->getMetadata());
     }
 
-    /**
-     * @test
-     * @runInSeparateProcess 
-     */
-    public function getSize_ReturnExpectedValue(): void
+    public function testGetSizeReturnExpectedValue(): void
     {
-        $this->globalProphecy->fstat(Argument::type('resource'))->will(
-            function ($args) {
-                return fstat($args[0]);
-            }
-        )->shouldBeCalled();
+        $fstatMock = Mockery::mock('overload:fstat');
+        $fstatMock->shouldReceive('__invoke')
+            ->with(Mockery::type('resource'))
+            ->once();
 
-        $this->globalProphecy->reveal();
         $this->stream = Stream::fromString('content');
 
         self::assertSame(7, $this->stream->getSize());
     }
 
-    /**
-     * @test
-     */
-    public function getSize_IsDetached_ReturnNull(): void
+    public function testGetSizeIsDetachedReturnNull(): void
     {
         $this->stream = Stream::fromString('content');
         $this->stream->detach();
@@ -289,36 +283,36 @@ class StreamTest extends TestCase
         self::assertNull($this->stream->getSize());
     }
 
-    /**
-     * @test
-     */
-    public function tell_IsDetached_ThrowsException(): void
+    public function testTellIsDetachedThrowsException(): void
     {
         $this->stream = Stream::fromString('content');
         $this->stream->detach();
         $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Stream is detached');
 
         $this->stream->tell();
     }
 
-    /**
-     * @test
-     */
-    public function tell_FtellReturnsFalse_ThrowsException(): void
+    public function testTellFtellReturnsFalseThrowsException(): void
     {
-        $this->globalProphecy->ftell(Argument::type('resource'))->willReturn(false);
-        $this->globalProphecy->reveal();
+        // generate resource and set file pointer to not allowed position
+        $resourceMock = fopen('php://memory', 'r+');
+        fwrite($resourceMock, 'test content');
+        fseek($resourceMock, -1);
 
-        $this->stream = Stream::fromString('content');
+        $streamHandler = $this->getMockBuilder(Stream::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['getResource'])
+            ->getMock();
+
+        $streamHandler->expects($this->exactly(2))->method('getResource')->willReturn($resourceMock);
         $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Can\'t determine position');
 
-        $this->stream->tell();
+        $streamHandler->tell();
     }
 
-    /**
-     * @test
-     */
-    public function tell_ReturnsExpectedValued(): void
+    public function testTellReturnsExpectedValued(): void
     {
         $this->stream = Stream::fromString('content');
         $this->stream->getContents();
@@ -326,10 +320,7 @@ class StreamTest extends TestCase
         self::assertSame(7, $this->stream->tell());
     }
 
-    /**
-     * @test
-     */
-    public function eof_IsDetached_ReturnsTrue(): void
+    public function testEofIsDetachedReturnsTrue(): void
     {
         $this->stream = Stream::fromString('content');
         $this->stream->detach();
@@ -337,10 +328,7 @@ class StreamTest extends TestCase
         self::assertTrue($this->stream->eof());
     }
 
-    /**
-     * @test
-     */
-    public function eof_ReturnsExpectedValued(): void
+    public function testEofReturnsExpectedValued(): void
     {
         $this->stream = Stream::fromString('content');
         self::assertFalse($this->stream->eof());
@@ -349,10 +337,7 @@ class StreamTest extends TestCase
         self::assertTrue($this->stream->eof());
     }
 
-    /**
-     * @test
-     */
-    public function isSeekable_IsDetached_ReturnFalse(): void
+    public function testIsSeekableIsDetachedReturnFalse(): void
     {
         $this->stream = Stream::fromString('content');
         $this->stream->detach();
@@ -360,10 +345,7 @@ class StreamTest extends TestCase
         self::assertFalse($this->stream->isSeekable());
     }
 
-    /**
-     * @test
-     */
-    public function isSeekable_WithNonSeekableFileModes_ReturnFalse(): void
+    public function testIsSeekableWithNonSeekableFileModesReturnFalse(): void
     {
         $this->stream = Stream::fromFile($this->filesystem->url() . '/generated.json', 'a');
         self::assertFalse($this->stream->isSeekable());
@@ -372,19 +354,13 @@ class StreamTest extends TestCase
         self::assertFalse($this->stream->isSeekable());
     }
 
-    /**
-     * @test
-     */
-    public function isSeekable_ReturnTrue(): void
+    public function testIsSeekableReturnTrue(): void
     {
         $this->stream = Stream::fromFile($this->filesystem->url() . '/generated.json');
         self::assertTrue($this->stream->isSeekable());
     }
 
-    /**
-     * @test
-     */
-    public function seek_IsDetached_ThrowsException(): void
+    public function testSeekIsDetachedThrowsException(): void
     {
         $this->stream = Stream::fromString('content');
         $this->stream->detach();
@@ -393,21 +369,15 @@ class StreamTest extends TestCase
         $this->stream->seek(7);
     }
 
-    /**
-     * @test
-     */
-    public function seek_FseekFails_ThrowsException(): void
+    public function testSeekFseekFailsThrowsException(): void
     {
         $this->stream = Stream::fromString('content');
         $this->expectException(RuntimeException::class);
 
-        $this->stream->seek(456);
+        $this->stream->seek(-456);
     }
 
-    /**
-     * @test
-     */
-    public function seek_FseekSetsValidPointer(): void
+    public function testSeekFseekSetsValidPointer(): void
     {
         $this->stream = Stream::fromString('content');
         $this->stream->seek(2);
@@ -415,10 +385,7 @@ class StreamTest extends TestCase
         self::assertSame(2, $this->stream->tell());
     }
 
-    /**
-     * @test
-     */
-    public function rewind_IsDetached_ThrowsException(): void
+    public function testRewindIsDetachedThrowsException(): void
     {
         $this->stream = Stream::fromString('content');
         $this->stream->detach();
@@ -427,10 +394,7 @@ class StreamTest extends TestCase
         $this->stream->rewind();
     }
 
-    /**
-     * @test
-     */
-    public function rewind_IsNotSeekable_ThrowsException(): void
+    public function testRewindIsNotSeekableThrowsException(): void
     {
         $this->stream = Stream::fromFile($this->filesystem->url() . '/generated.json', 'a');
         $this->expectException(RuntimeException::class);
@@ -438,10 +402,7 @@ class StreamTest extends TestCase
         $this->stream->rewind();
     }
 
-    /**
-     * @test
-     */
-    public function rewind_ShouldResetFilePointerToZero(): void
+    public function testRewindShouldResetFilePointerToZero(): void
     {
         $this->stream = Stream::fromFile($this->filesystem->url() . '/generated.json', 'r+');
         $this->stream->getContents();
@@ -450,10 +411,7 @@ class StreamTest extends TestCase
         self::assertSame(0, $this->stream->tell());
     }
 
-    /**
-     * @test
-     */
-    public function isWritable_IsDetached_ReturnsFalse(): void
+    public function testIsWritableIsDetachedReturnsFalse(): void
     {
         $this->stream = Stream::fromString('content');
         $this->stream->detach();
@@ -461,11 +419,8 @@ class StreamTest extends TestCase
         self::assertFalse($this->stream->isWritable());
     }
 
-    /**
-     * @test
-     * @dataProvider provideIsModeWriteable
-     */
-    public function isWritable_ReturnsExpectedValue(string $mode, bool $isWritable, string $file): void
+    #[DataProvider('provideIsModeWriteable')]
+    public function testIsWritableReturnsExpectedValue(string $mode, bool $isWritable, string $file): void
     {
         $file = $this->filesystem->url() . '/' . $file;
         $this->stream = Stream::fromFile($file, $mode);
@@ -473,10 +428,7 @@ class StreamTest extends TestCase
         self::assertSame($isWritable, $this->stream->isWritable());
     }
 
-    /**
-     * @test
-     */
-    public function isReadable_IsDetached_ReturnsFalse(): void
+    public function testIsReadableIsDetachedReturnsFalse(): void
     {
         $this->stream = Stream::fromString('content');
         $this->stream->detach();
@@ -484,11 +436,8 @@ class StreamTest extends TestCase
         self::assertFalse($this->stream->isReadable());
     }
 
-    /**
-     * @test
-     * @dataProvider provideIsReadable
-     */
-    public function isReadable_ReturnsExpectedValue(string $mode, bool $isReadable, string $file): void
+    #[DataProvider('provideIsReadable')]
+    public function testIsReadableReturnsExpectedValue(string $mode, bool $isReadable, string $file): void
     {
         $file = $this->filesystem->url() . '/' . $file;
         $this->stream = Stream::fromFile($file, $mode);
@@ -496,10 +445,7 @@ class StreamTest extends TestCase
         self::assertSame($isReadable, $this->stream->isReadable());
     }
 
-    /**
-     * @test
-     */
-    public function write_IsDetached_ThrowsException(): void
+    public function testWriteIsDetachedThrowsException(): void
     {
         $this->stream = Stream::fromFileMode('r+');
         $this->stream->detach();
@@ -508,40 +454,38 @@ class StreamTest extends TestCase
         $this->stream->write('test');
     }
 
-    /**
-     * @test
-     */
-    public function write_IsNotWriteable_ThrowsException(): void
+    public function testWriteIsNotWriteableThrowsException(): void
     {
         $this->stream = Stream::fromFileMode('r');
         $this->expectException(RuntimeException::class);
-        $this->expectErrorMessage('Stream is not writeable');
+        $this->expectExceptionMessage('Stream is not writeable');
 
         $this->stream->write('test');
     }
 
-    /**
-     * @test
-     * @runInSeparateProcess
-     */
-    public function write_FWriteReturnFalse_ThrowsException(): void
+    public function testWriteFWriteReturnFalseThrowsException(): void
     {
-        $this->globalProphecy->fwrite(Argument::type('resource'), 'test')
-            ->willReturn(false)
-            ->shouldBeCalled();
+        // generate read only resource
+        $resourceMock = fopen('php://memory', 'r');
 
-        $this->globalProphecy->reveal();
-        $this->stream = Stream::fromFileMode('r+');
+        $streamHandler = $this->getMockBuilder(Stream::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['getResource', 'isWritable'])
+            ->getMock();
+
+        $streamHandler->expects($this->once())
+            ->method('isWritable')
+            ->willReturn(true);
+        $streamHandler->expects($this->exactly(2))
+            ->method('getResource')
+            ->willReturn($resourceMock);
         $this->expectException(RuntimeException::class);
-        $this->expectErrorMessage("Cant't write to stream");
+        $this->expectExceptionMessage('Can\'t write to stream');
 
-        $this->stream->write('test');
+        $streamHandler->write('test');
     }
 
-    /**
-     * @test
-     */
-    public function write_ReturnNumberOfBytesWritten(): void
+    public function testWriteReturnNumberOfBytesWritten(): void
     {
         $expectedString = 'Some content string';
         $expectedBytes = strlen($expectedString);
@@ -551,107 +495,101 @@ class StreamTest extends TestCase
         self::assertSame($expectedString, $this->stream->__toString());
     }
 
-    /**
-     * @test
-     */
-    public function read_IsDetached_ThrowsException(): void
+    public function testReadIsDetachedThrowsException(): void
     {
         $this->stream = Stream::fromFile($this->filesystem->url() . '/generated.json');
         $this->stream->detach();
         $this->expectException(RuntimeException::class);
-        $this->expectErrorMessage('Stream is detached');
+        $this->expectExceptionMessage('Stream is detached');
 
         $this->stream->read(100);
     }
 
-    /**
-     * @test
-     */
-    public function read_IsNotReadable_ThrowsException(): void
+    public function testReadIsNotReadableThrowsException(): void
     {
         $this->stream = Stream::fromFile($this->filesystem->url() . '/generated.json', 'w');
         $this->expectException(RuntimeException::class);
-        $this->expectErrorMessage('Stream is not readable');
+        $this->expectExceptionMessage('Stream is not readable');
 
         $this->stream->read(100);
     }
 
-    /**
-     * @test
-     * @runInSeparateProcess
-     */
-    public function read_FReadReturnsFalse_ThrowsException(): void
+    public function testReadFReadReturnsFalseThrowsException(): void
     {
-        $this->globalProphecy->fread(Argument::type('resource'), 100)
-            ->willReturn(false)
-            ->shouldBeCalled();
+        stream_filter_register('false_filter', FalseReturningFilter::class);
+        $resourceMock = fopen('php://memory', 'r+');
+        fwrite($resourceMock, 'Some content string');
+        stream_filter_append($resourceMock, 'false_filter');
 
-        $this->globalProphecy->reveal();
+        $streamHandler = $this->getMockBuilder(Stream::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['getResource', 'isReadable'])
+            ->getMock();
 
-        $this->stream = Stream::fromFile($this->filesystem->url() . '/generated.json', 'r+');
+        $streamHandler->expects($this->once())
+            ->method('isReadable')
+            ->willReturn(true);
+
+        $streamHandler->expects($this->exactly(2))
+            ->method('getResource')
+            ->willReturn($resourceMock);
         $this->expectException(RuntimeException::class);
-        $this->expectErrorMessage("Can't read from stream");
+        $this->expectExceptionMessage('Can\'t read from stream');
 
-        $this->stream->read(100);
+        $streamHandler->read(100);
     }
 
-    /**
-     * @test
-     */
-    public function read_ReturnValidNumberOfBytes(): void
+    public function testReadReturnValidNumberOfBytes(): void
     {
         $this->stream = Stream::fromFile($this->filesystem->url() . '/generated.json', 'r');
         self::assertSame(100, strlen($this->stream->read(100)));
     }
 
-    /**
-     * @test
-     */
-    public function getContent_IsDetached_ThrowsException(): void
+    public function testGetContentIsDetachedThrowsException(): void
     {
         $this->stream = Stream::fromFile($this->filesystem->url() . '/generated.json');
         $this->stream->detach();
         $this->expectException(RuntimeException::class);
-        $this->expectErrorMessage('Stream is detached');
+        $this->expectExceptionMessage('Stream is detached');
 
         $this->stream->getContents();
     }
 
-    /**
-     * @test
-     */
-    public function getContent_IsNotReadable_ThrowsException(): void
+    public function testGetContentIsNotReadableThrowsException(): void
     {
         $this->stream = Stream::fromFile($this->filesystem->url() . '/generated.json', 'w');
         $this->expectException(RuntimeException::class);
-        $this->expectErrorMessage('Stream is not readable');
+        $this->expectExceptionMessage('Stream is not readable');
 
         $this->stream->getContents();
     }
 
-    /**
-     * @test
-     * @runInSeparateProcess
-     */
-    public function getContent_StreamReturnsFalse_ThrowsException(): void
+    public function testGetContentStreamReturnsFalseThrowsException(): void
     {
-        $this->globalProphecy->stream_get_contents(Argument::type('resource'))
-            ->willReturn(false)
-            ->shouldBeCalled();
+        $this->markTestIncomplete('mock');
+        stream_wrapper_register('falsestream', FalseReturningStream::class);
+        $resourceMock = fopen('falsestream://test', 'w');
 
-        $this->globalProphecy->reveal();
+        $streamHandler = $this->getMockBuilder(Stream::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['getResource', 'isReadable'])
+            ->getMock();
 
-        $this->stream = Stream::fromFile($this->filesystem->url() . '/generated.json', 'r+');
+        $streamHandler->expects($this->once())
+            ->method('isReadable')
+            ->willReturn(true);
+
+        $streamHandler->expects($this->exactly(2))
+            ->method('getResource')
+            ->willReturn($resourceMock);
+
         $this->expectException(RuntimeException::class);
-        $this->expectErrorMessage("Can't read content from stream");
+        $this->expectExceptionMessage("Can't read content from stream");
 
-        $this->stream->getContents();
+        $streamHandler->getContents();
     }
 
-    /**
-     * @test
-     */
-    public function getMetadata_KeyIsNull_ReturnsCompleteArray(): void
+    public function testGetMetadataKeyIsNullReturnsCompleteArray(): void
     {
         $this->stream = Stream::fromFile($this->filesystem->url() . '/generated.json', 'r+');
         $metaData = $this->stream->getMetadata();
@@ -668,10 +606,7 @@ class StreamTest extends TestCase
         self::assertArrayHasKey('uri', $metaData);
     }
 
-    /**
-     * @test
-     */
-    public function getMetadata_WithValidKey_ReturnsKeyValue(): void
+    public function testGetMetadataWithValidKeyReturnsKeyValue(): void
     {
         $this->stream = Stream::fromFile($this->filesystem->url() . '/generated.json', 'r+');
         $mode = $this->stream->getMetadata('mode');
@@ -679,10 +614,7 @@ class StreamTest extends TestCase
         self::assertSame('r+', $mode);
     }
 
-    /**
-     * @test
-     */
-    public function getMetadata_WithNonExistentKey_ReturnsNull(): void
+    public function testGetMetadataWithNonExistentKeyReturnsNull(): void
     {
         $this->stream = Stream::fromFile($this->filesystem->url() . '/generated.json', 'r+');
 
@@ -690,9 +622,9 @@ class StreamTest extends TestCase
     }
 
     /**
-     * All fopen modes for the status isWriteable
+     * All fopen modes for the status isWriteable.
      */
-    public function provideIsModeWriteable(): array
+    public static function provideIsModeWriteable(): array
     {
         return [
             ['r', false, 'generated.json'],
@@ -709,9 +641,9 @@ class StreamTest extends TestCase
     }
 
     /**
-     * All fopen modes for the status isReadable
+     * All fopen modes for the status isReadable.
      */
-    public function provideIsReadable(): array
+    public static function provideIsReadable(): array
     {
         return [
             ['r', true, 'generated.json'],
@@ -726,5 +658,4 @@ class StreamTest extends TestCase
             ['c+', true, 'generated.json'],
         ];
     }
-
 }

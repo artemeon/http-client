@@ -15,33 +15,32 @@ namespace Artemeon\HttpClient\Http\Body\Reader;
 
 use Artemeon\HttpClient\Exception\RuntimeException;
 use Artemeon\HttpClient\Stream\Stream;
+use Override;
 use Psr\Http\Message\StreamInterface;
 
 /**
- * Reader to read body content from local and remote file system
+ * Reader to read body content from local and remote file system.
  */
 class FileReader implements Reader
 {
-    private StreamInterface $stream;
-    private string $file;
+    private readonly StreamInterface $stream;
 
     /**
      * @param StreamInterface $stream The content stream
      * @param string $file The file path with file extension
      * @throws RuntimeException
      */
-    public function __construct(StreamInterface $stream, string $file)
+    public function __construct(StreamInterface $stream, private readonly string $file)
     {
         if (!$stream->isReadable()) {
             throw new RuntimeException('Stream is nor readable');
         }
 
         $this->stream = $stream;
-        $this->file = $file;
     }
 
     /**
-     * Named construct to create an instance based on the given file path string
+     * Named construct to create an instance based on the given file path string.
      *
      * @param string $file Filename inclusive path and extension
      * @throws RuntimeException
@@ -54,6 +53,7 @@ class FileReader implements Reader
     /**
      * @inheritDoc
      */
+    #[Override]
     public function getStream(): StreamInterface
     {
         return $this->stream;
@@ -62,6 +62,7 @@ class FileReader implements Reader
     /**
      * @inheritDoc
      */
+    #[Override]
     public function getFileExtension(): string
     {
         if (!preg_match("/\.([a-zA-Z]+)$/", $this->file, $matches)) {

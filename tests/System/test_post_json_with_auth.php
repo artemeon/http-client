@@ -28,7 +28,7 @@ try {
     $request = Request::forPost(
         Uri::fromString('http://apache/endpoints/upload.php'),
         Body::fromReader(FileReader::fromFile('../Fixtures/encoder/generated.json')),
-        Headers::fromFields([Authorization::forAuthBasic('John.Doe', 'geheim')])
+        Headers::fromFields([Authorization::forAuthBasic('John.Doe', 'geheim')]),
     );
 
     HttpClientTestFactory::withTransactionLog()->send($request);

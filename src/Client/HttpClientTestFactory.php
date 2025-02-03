@@ -29,7 +29,7 @@ use Psr\Http\Message\ResponseInterface;
 class HttpClientTestFactory
 {
     private array $transactionLog = [];
-    private MockHandler $mockHandler;
+    private readonly MockHandler $mockHandler;
     private static HttpClientTestFactory $instance;
 
     public function __construct()
@@ -39,7 +39,7 @@ class HttpClientTestFactory
     }
 
     /**
-     * Singleton factory
+     * Singleton factory.
      */
     private static function getInstance(): self
     {
@@ -51,7 +51,7 @@ class HttpClientTestFactory
     }
 
     /**
-     * Named constructor to create an instance with a middleware to record transactions only for debugging purposes
+     * Named constructor to create an instance with a middleware to record transactions only for debugging purposes.
      *
      * Example:
      * $httpClient = HttpClientTestFactory::withTransactionLog();
@@ -69,7 +69,7 @@ class HttpClientTestFactory
 
             return new ArtemeonHttpClient(
                 new GuzzleClient(['handler' => $handlerStack]),
-                new ClientOptionsConverter()
+                new ClientOptionsConverter(),
             );
         } catch (InvalidArgumentException $exception) {
             throw RuntimeException::fromPreviousException($exception);
@@ -77,7 +77,7 @@ class HttpClientTestFactory
     }
 
     /**
-     * Creates an instance to mock
+     * Creates an instance to mock.
      *
      * ```php
      * HttpClientTestFactory::mockResponses(
@@ -101,7 +101,7 @@ class HttpClientTestFactory
 
             return new ArtemeonHttpClient(
                 new GuzzleClient(['handler' => HandlerStack::create($instance->mockHandler)]),
-                new ClientOptionsConverter()
+                new ClientOptionsConverter(),
             );
         } catch (InvalidArgumentException $exception) {
             throw RuntimeException::fromPreviousException($exception);
@@ -109,9 +109,8 @@ class HttpClientTestFactory
     }
 
     /**
-     * Register the responses to mock
+     * Register the responses to mock.
      *
-     * @param array $responses
      * @throws InvalidArgumentException
      */
     public static function mockResponses(array $responses): void
@@ -128,7 +127,7 @@ class HttpClientTestFactory
     }
 
     /**
-     * Return the recorded transaction log array
+     * Return the recorded transaction log array.
      */
     public static function getTransactionLog(): array
     {
@@ -136,7 +135,7 @@ class HttpClientTestFactory
     }
 
     /**
-     * Returns the formatted transaction logs as a string
+     * Returns the formatted transaction logs as a string.
      */
     public static function printTransactionLog(): void
     {

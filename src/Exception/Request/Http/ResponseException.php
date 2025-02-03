@@ -17,30 +17,28 @@ use Artemeon\HttpClient\Exception\Request\TransferException;
 use Artemeon\HttpClient\Http\Request;
 use Artemeon\HttpClient\Http\Response;
 use Exception;
-use Throwable;
 
 /**
- * Exception class to catch all possible http status code ranges
+ * Exception class to catch all possible http status code ranges.
  */
 class ResponseException extends TransferException
 {
-    protected ?Response $response;
+    protected ?Response $response = null;
     protected int $statusCode;
 
     /**
-     * Named constructor to create an instance based on the response of the failed request
+     * Named constructor to create an instance based on the response of the failed request.
      *
      * @param ?Response $response The failed response if exists
      * @param Request $request The failed request
      * @param string $message The error message
      * @param Exception|null $previous The previous exception
-     * @return ResponseException
      */
     public static function fromResponse(
         ?Response $response,
         Request $request,
         string $message,
-        Exception $previous = null
+        ?Exception $previous = null,
     ): static {
         $instance = new static($message, 0, $previous);
         $instance->request = $request;
@@ -51,7 +49,7 @@ class ResponseException extends TransferException
     }
 
     /**
-     * Returns the Response object
+     * Returns the Response object.
      */
     public function getResponse(): ?Response
     {
@@ -59,7 +57,7 @@ class ResponseException extends TransferException
     }
 
     /**
-     * Checks if we have a response object
+     * Checks if we have a response object.
      */
     public function hasResponse(): bool
     {
@@ -67,7 +65,7 @@ class ResponseException extends TransferException
     }
 
     /**
-     * Returns the http status code
+     * Returns the http status code.
      */
     public function getStatusCode(): int
     {

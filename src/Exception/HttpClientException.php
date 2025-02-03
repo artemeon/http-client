@@ -7,7 +7,7 @@ namespace Artemeon\HttpClient\Exception;
 use Throwable;
 
 /**
- * Interface to catch all possible HttpClient exceptions
+ * Interface to catch all possible HttpClient exceptions.
  */
 interface HttpClientException extends Throwable
 {

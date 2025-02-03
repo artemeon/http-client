@@ -19,20 +19,20 @@ use Exception;
 use Throwable;
 
 /**
- * Class for all runtime exceptions during the request/response transfers
+ * Class for all runtime exceptions during the request/response transfers.
  */
 class TransferException extends RuntimeException
 {
     protected Request $request;
 
     /**
-     * Named constructor to create an instance based on the given request object
+     * Named constructor to create an instance based on the given request object.
      *
      * @param Request $request The failed request object
      * @param string $message The error message
      * @param Exception|null $previous The precious third party exception
      */
-    public static function fromRequest(Request $request, string $message, Exception $previous = null): static
+    public static function fromRequest(Request $request, string $message, ?Exception $previous = null): static
     {
         $instance = new static($message, 0, $previous);
         $instance->request = $request;
@@ -46,7 +46,7 @@ class TransferException extends RuntimeException
     }
 
     /**
-     * Returns the request object of the failed request
+     * Returns the request object of the failed request.
      */
     public function getRequest(): Request
     {

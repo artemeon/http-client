@@ -5,8 +5,7 @@ declare(strict_types=1);
 namespace Artemeon\HttpClient\Exception;
 
 /**
- * Exception class for all invalid argument exceptions
- *
+ * Exception class for all invalid argument exceptions.
  */
 class InvalidArgumentException extends \InvalidArgumentException implements HttpClientException
 {

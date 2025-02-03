@@ -14,15 +14,19 @@ declare(strict_types=1);
 namespace Artemeon\HttpClient\Stream;
 
 use Artemeon\HttpClient\Exception\RuntimeException;
+use Override;
 
 /**
- * Stream interface implementation for large strings and files
+ * Stream interface implementation for large strings and files.
  *
  * @see https://www.php.net/manual/de/intro.stream.php
  */
 class Stream implements AppendableStream
 {
-    private $resource;
+    /**
+     * @var resource|null
+     */
+    private mixed $resource = null;
 
     /**
      * @see https://www.php.net/manual/de/function.stream-get-meta-data
@@ -31,9 +35,10 @@ class Stream implements AppendableStream
 
     /**
      * @param resource $resource
+     *
      * @throws RuntimeException
      */
-    private function __construct($resource)
+    private function __construct(mixed $resource)
     {
         if (!is_resource($resource)) {
             throw new RuntimeException('Invalid resource');
@@ -44,7 +49,7 @@ class Stream implements AppendableStream
     }
 
     /**
-     * Force to close the file handle
+     * Force to close the file handle.
      */
     public function __destruct()
     {
@@ -52,15 +57,16 @@ class Stream implements AppendableStream
     }
 
     /**
-     * Named constructor to create an instance based on the given string
+     * Named constructor to create an instance based on the given string.
      *
      * @param string $string String content
      * @param string $mode @see https://www.php.net/manual/de/function.fopen.php
+     *
      * @throws RuntimeException
      */
     public static function fromString(string $string, string $mode = 'r+'): self
     {
-        $resource = fopen("php://temp", $mode);
+        $resource = fopen('php://temp', $mode);
         $instance = new self($resource);
         $instance->write($string);
 
@@ -68,22 +74,25 @@ class Stream implements AppendableStream
     }
 
     /**
-     * Named constructor to create an instance based on the given file mode
+     * Named constructor to create an instance based on the given file mode.
      *
      * @param string $mode Stream Modes: @see https://www.php.net/manual/de/function.fopen.php
+     *
      * @throws RuntimeException
      */
     public static function fromFileMode(string $mode): self
     {
-        $resource = fopen("php://temp", $mode);
+        $resource = fopen('php://temp', $mode);
+
         return new self($resource);
     }
 
     /**
-     * Named constructor to create an instance based on the given file and read/write mode
+     * Named constructor to create an instance based on the given file and read/write mode.
      *
      * @param string $file Path to the file
      * @param string $mode Stream Modes: @see https://www.php.net/manual/de/function.fopen.php
+     *
      * @throws RuntimeException
      */
     public static function fromFile(string $file, string $mode = 'r+'): self
@@ -91,7 +100,7 @@ class Stream implements AppendableStream
         $resource = fopen($file, $mode);
 
         if (!is_resource($resource)) {
-            throw new RuntimeException("Cam't open file $file");
+            throw new RuntimeException("Can't open file $file");
         }
 
         return new self($resource);
@@ -100,12 +109,13 @@ class Stream implements AppendableStream
     /**
      * @inheritDoc
      */
-    public function __toString()
+    #[Override]
+    public function __toString(): string
     {
         try {
             $this->rewind();
             $content = $this->getContents();
-        } catch (RuntimeException $exception) {
+        } catch (RuntimeException) {
             $content = '';
         }
 
@@ -115,6 +125,7 @@ class Stream implements AppendableStream
     /**
      * @inheritDoc
      */
+    #[Override]
     public function appendStream(AppendableStream $stream): int
     {
         $this->assertStreamIsNotDetached();
@@ -125,10 +136,10 @@ class Stream implements AppendableStream
         }
 
         $stream->rewind();
-        $bytes = stream_copy_to_stream($stream->getResource(), $this->resource);
+        $bytes = stream_copy_to_stream($stream->getResource(), $this->getResource());
 
         if ($bytes === false) {
-            throw new RuntimeException("Append failed");
+            throw new RuntimeException('Append failed');
         }
 
         return $bytes;
@@ -137,7 +148,8 @@ class Stream implements AppendableStream
     /**
      * @inheritDoc
      */
-    public function getResource()
+    #[Override]
+    public function getResource(): mixed
     {
         return $this->resource;
     }
@@ -145,7 +157,8 @@ class Stream implements AppendableStream
     /**
      * @inheritDoc
      */
-    public function close()
+    #[Override]
+    public function close(): void
     {
         if (!is_resource($this->resource)) {
             return;
@@ -157,17 +170,21 @@ class Stream implements AppendableStream
     /**
      * @inheritDoc
      */
+    #[Override]
     public function detach()
     {
         $this->close();
         $this->metaData = [];
         $this->resource = null;
+
+        return null;
     }
 
     /**
      * @inheritDoc
      */
-    public function getSize()
+    #[Override]
+    public function getSize(): ?int
     {
         if (!is_resource($this->resource)) {
             return null;
@@ -175,28 +192,30 @@ class Stream implements AppendableStream
 
         $fstat = fstat($this->resource);
 
-        return ($fstat['size']);
+        return $fstat['size'];
     }
 
     /**
      * @inheritDoc
      */
-    public function tell()
+    #[Override]
+    public function tell(): int
     {
         $this->assertStreamIsNotDetached();
-        $position = ftell($this->resource);
+        $position = ftell($this->getResource());
 
         if ($position === false) {
             throw new RuntimeException("Can't determine position");
         }
 
-        return (int)$position;
+        return (int) $position;
     }
 
     /**
      * @inheritDoc
      */
-    public function eof()
+    #[Override]
+    public function eof(): bool
     {
         if (!is_resource($this->resource)) {
             // php.net doc: feof returns TRUE if the file pointer is at EOF or an error occurs
@@ -209,7 +228,8 @@ class Stream implements AppendableStream
     /**
      * @inheritDoc
      */
-    public function isSeekable()
+    #[Override]
+    public function isSeekable(): bool
     {
         if (!is_resource($this->resource)) {
             return false;
@@ -217,31 +237,33 @@ class Stream implements AppendableStream
 
         // According to the fopen manual mode 'a' and 'a+' are not seekable
         foreach (['a', 'a+'] as $mode) {
-            if (strpos($this->metaData["mode"], $mode) !== false) {
+            if (str_contains((string) $this->metaData['mode'], $mode)) {
                 return false;
             }
         }
 
-        return (bool)$this->getMetadata('seekable');
+        return (bool) $this->getMetadata('seekable');
     }
 
     /**
      * @inheritDoc
      */
-    public function seek($offset, $whence = SEEK_SET)
+    #[Override]
+    public function seek(int $offset, int $whence = SEEK_SET): void
     {
         $this->assertStreamIsNotDetached();
         $result = fseek($this->resource, $offset, $whence);
 
         if ($result === -1) {
-            throw new RuntimeException("Cant't seek with offset $offset");
+            throw new RuntimeException("Can't seek with offset $offset");
         }
     }
 
     /**
      * @inheritDoc
      */
-    public function rewind()
+    #[Override]
+    public function rewind(): void
     {
         $this->assertStreamIsNotDetached();
 
@@ -255,15 +277,16 @@ class Stream implements AppendableStream
     /**
      * @inheritDoc
      */
-    public function write($string)
+    #[Override]
+    public function write(string $string): int
     {
         $this->assertStreamIsNotDetached();
         $this->assertStreamIsWriteable();
 
-        $bytes = fwrite($this->resource, strval($string));
+        $bytes = fwrite($this->getResource(), $string);
 
         if ($bytes === false) {
-            throw new RuntimeException("Cant't write to stream");
+            throw new RuntimeException("Can't write to stream");
         }
 
         return $bytes;
@@ -272,7 +295,8 @@ class Stream implements AppendableStream
     /**
      * @inheritDoc
      */
-    public function isWritable()
+    #[Override]
+    public function isWritable(): bool
     {
         if (!is_resource($this->resource)) {
             return false;
@@ -281,7 +305,7 @@ class Stream implements AppendableStream
         $writeModes = ['r+', 'w', 'w+', 'a', 'a+', 'x', 'x+', 'c', 'c+'];
 
         foreach ($writeModes as $mode) {
-            if (strpos($this->metaData["mode"], $mode) !== false) {
+            if (str_contains((string) $this->metaData['mode'], $mode)) {
                 return true;
             }
         }
@@ -292,7 +316,8 @@ class Stream implements AppendableStream
     /**
      * @inheritDoc
      */
-    public function isReadable()
+    #[Override]
+    public function isReadable(): bool
     {
         if (!is_resource($this->resource)) {
             return false;
@@ -301,7 +326,7 @@ class Stream implements AppendableStream
         $readModes = ['r', 'r+', 'w+', 'a+', 'x+', 'c+'];
 
         foreach ($readModes as $mode) {
-            if (strpos($this->metaData["mode"], $mode) !== false) {
+            if (str_contains((string) $this->metaData['mode'], $mode)) {
                 return true;
             }
         }
@@ -312,15 +337,16 @@ class Stream implements AppendableStream
     /**
      * @inheritDoc
      */
-    public function read($length)
+    #[Override]
+    public function read(int $length): string
     {
         $this->assertStreamIsNotDetached();
         $this->assertStreamIsReadable();
 
-        $string = fread($this->resource, intval($length));
+        $string = fread($this->getResource(), $length);
 
         if ($string === false) {
-            throw  new RuntimeException("Can't read from stream");
+            throw new RuntimeException("Can't read from stream");
         }
 
         return $string;
@@ -332,15 +358,16 @@ class Stream implements AppendableStream
      * This function reads the complete stream from the CURRENT! file pointer. If you
      * want ensure to read the complete stream use __toString() instead.
      */
-    public function getContents()
+    #[Override]
+    public function getContents(): string
     {
         $this->assertStreamIsNotDetached();
         $this->assertStreamIsReadable();
 
-        $content = stream_get_contents($this->resource);
+        $content = stream_get_contents($this->getResource());
 
         if ($content === false) {
-            throw  new RuntimeException("Can't read content from stream");
+            throw new RuntimeException("Can't read content from stream");
         }
 
         return $content;
@@ -349,17 +376,14 @@ class Stream implements AppendableStream
     /**
      * @inheritDoc
      */
-    public function getMetadata($key = null)
+    #[Override]
+    public function getMetadata(?string $key = null): mixed
     {
         if ($key === null) {
             return $this->metaData;
         }
 
-        if (isset($this->metaData[$key])) {
-            return $this->metaData[$key];
-        }
-
-        return null;
+        return $this->metaData[$key] ?? null;
     }
 
     /**
@@ -367,7 +391,7 @@ class Stream implements AppendableStream
      */
     private function assertStreamIsNotDetached(): void
     {
-        if ($this->resource === null) {
+        if ($this->getResource() === null) {
             throw new RuntimeException('Stream is detached');
         }
     }

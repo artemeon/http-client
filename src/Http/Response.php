@@ -13,19 +13,16 @@ declare(strict_types=1);
 
 namespace Artemeon\HttpClient\Http;
 
-use Artemeon\HttpClient\Exception\InvalidArgumentException;
 use Artemeon\HttpClient\Http\Header\Headers;
+use Override;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
 
 /**
- * PSR-7 Response class
+ * PSR-7 Response class.
  */
 class Response extends Message implements ResponseInterface
 {
-    private int $statusCode;
-    private string $reasonPhrase;
-
     /**
      * @param int $statusCode The http status code
      * @param string $version The http version number without http prefix
@@ -34,20 +31,19 @@ class Response extends Message implements ResponseInterface
      * @param string $reasonPhrase The http response reason phrase
      */
     public function __construct(
-        int $statusCode,
+        private int $statusCode,
         string $version,
-        StreamInterface $body = null,
-        Headers $headers = null,
-        string $reasonPhrase = ''
+        ?StreamInterface $body = null,
+        ?Headers $headers = null,
+        private string $reasonPhrase = '',
     ) {
-        $this->statusCode = $statusCode;
-        $this->reasonPhrase = $reasonPhrase;
         parent::__construct($headers, $body, $version);
     }
 
     /**
      * @inheritDoc
      */
+    #[Override]
     public function getStatusCode(): int
     {
         return $this->statusCode;
@@ -56,16 +52,9 @@ class Response extends Message implements ResponseInterface
     /**
      * @inheritDoc
      */
-    public function withStatus($code, $reasonPhrase = '')
+    #[Override]
+    public function withStatus(int $code, string $reasonPhrase = ''): ResponseInterface
     {
-        if (!is_string($reasonPhrase)) {
-            throw new InvalidArgumentException('reasonPhrase must be a string value');
-        }
-
-        if (!is_int($code)) {
-            throw  new InvalidArgumentException('code must be a integer value');
-        }
-
         if ($code < 100 || $code >= 600) {
             throw new \InvalidArgumentException('code must be an integer value between 100 and 599');
         }
@@ -80,6 +69,7 @@ class Response extends Message implements ResponseInterface
     /**
      * @inheritDoc
      */
+    #[Override]
     public function getReasonPhrase(): string
     {
         return $this->reasonPhrase;

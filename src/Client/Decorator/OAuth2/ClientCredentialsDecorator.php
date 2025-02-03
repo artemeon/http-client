@@ -31,6 +31,7 @@ use Artemeon\HttpClient\Http\Request;
 use Artemeon\HttpClient\Http\Response;
 use Artemeon\HttpClient\Http\Uri;
 use Exception;
+use Override;
 
 /**
  * Http client decorator to add transparent access tokens to requests. Fetches the 'Access Token' from
@@ -38,9 +39,6 @@ use Exception;
  */
 class ClientCredentialsDecorator extends HttpClientDecorator
 {
-    private Request $accessTokenRequest;
-    private AccessTokenCache  $accessTokenCache;
-
     /**
      * ClientCredentialsDecorator constructor.
      *
@@ -50,17 +48,14 @@ class ClientCredentialsDecorator extends HttpClientDecorator
      */
     public function __construct(
         HttpClient $httpClient,
-        Request $accessTokenRequest,
-        AccessTokenCache $accessTokenCache
+        private readonly Request $accessTokenRequest,
+        private readonly AccessTokenCache $accessTokenCache,
     ) {
-        $this->accessTokenRequest = $accessTokenRequest;
-        $this->accessTokenCache = $accessTokenCache;
-
         parent::__construct($httpClient);
     }
 
     /**
-     * Named constructor to create an instance based on the given ClientCredentials
+     * Named constructor to create an instance based on the given ClientCredentials.
      *
      * @param ClientCredentials $clientCredentials The OAuth2 client credential object
      * @param Uri $uri The Uri object
@@ -74,7 +69,7 @@ class ClientCredentialsDecorator extends HttpClientDecorator
         ClientCredentials $clientCredentials,
         Uri $uri,
         HttpClient $httpClient,
-        AccessTokenCache $accessTokenCache = null
+        ?AccessTokenCache $accessTokenCache = null,
     ): self {
         // Ensure default cache strategy
         if ($accessTokenCache === null) {
@@ -90,7 +85,8 @@ class ClientCredentialsDecorator extends HttpClientDecorator
     /**
      * @inheritDoc
      */
-    public function send(Request $request, ClientOptions $clientOptions = null): Response
+    #[Override]
+    public function send(Request $request, ?ClientOptions $clientOptions = null): Response
     {
         if ($this->accessTokenCache->isExpired()) {
             $this->accessTokenCache->add($this->requestAccessToken());
@@ -104,17 +100,16 @@ class ClientCredentialsDecorator extends HttpClientDecorator
     }
 
     /**
-     * Fetches the access token
+     * Fetches the access token.
      *
-     * @param ClientOptions|null $clientOptions
      * @throws RuntimeException
      */
-    private function requestAccessToken(ClientOptions $clientOptions = null): AccessToken
+    private function requestAccessToken(?ClientOptions $clientOptions = null): AccessToken
     {
         try {
             $response = $this->httpClient->send($this->accessTokenRequest, $clientOptions);
-        } catch (HttpClientException | Exception $exception) {
-            throw new RuntimeException("Cant request access token", 0, $exception);
+        } catch (Exception | HttpClientException $exception) {
+            throw new RuntimeException('Cant request access token', 0, $exception);
         }
 
         $this->assertIsValidJsonResponse($response);
@@ -123,9 +118,8 @@ class ClientCredentialsDecorator extends HttpClientDecorator
     }
 
     /**
-     * Checks for a valid access token response with valid json body
+     * Checks for a valid access token response with valid json body.
      *
-     * @param Response $response
      * @throws RuntimeException
      */
     private function assertIsValidJsonResponse(Response $response): void
@@ -133,10 +127,10 @@ class ClientCredentialsDecorator extends HttpClientDecorator
         if ($response->getStatusCode() !== 200) {
             throw new RuntimeException(
                 sprintf(
-                    "Invalid status code: s% for access token request, Body: %s",
+                    'Invalid status code: s% for access token request, Body: %s',
                     $response->getStatusCode(),
-                    $response->getBody()->__toString()
-                )
+                    $response->getBody()->__toString(),
+                ),
             );
         }
 

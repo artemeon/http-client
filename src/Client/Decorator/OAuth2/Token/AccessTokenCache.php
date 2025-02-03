@@ -16,27 +16,24 @@ namespace Artemeon\HttpClient\Client\Decorator\OAuth2\Token;
 use Artemeon\HttpClient\Exception\RuntimeException;
 
 /**
- * Interface to realize several strategy's to store AccessToken
+ * Interface to realize several strategy's to store AccessToken.
  */
 interface AccessTokenCache
 {
     /**
-     * Add token to the cache
-     *
-     * @param AccessToken $accessToken
+     * Add token to the cache.
      */
-    public function add(AccessToken $accessToken);
+    public function add(AccessToken $accessToken): void;
 
     /**
-     * Get token from the cache
+     * Get token from the cache.
      *
      * @throws RuntimeException
      */
     public function get(): AccessToken;
 
     /**
-     * Check if the token is expired or not set
+     * Check if the token is expired or not set.
      */
     public function isExpired(): bool;
-
 }

@@ -28,4 +28,3 @@ try {
 } catch (HttpClientException $exception) {
     print_r($exception);
 }
-

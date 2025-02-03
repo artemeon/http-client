@@ -21,33 +21,34 @@ use Artemeon\HttpClient\Exception\Request\Http\ClientResponseException;
 use Artemeon\HttpClient\Exception\Request\Http\ServerResponseException;
 use Artemeon\HttpClient\Http\Request;
 use Artemeon\HttpClient\Http\Response;
+use Override;
 use Psr\Log\LoggerInterface;
 
 /**
- * Decorator class to add Psr logging to the httpClient
+ * Decorator class to add Psr logging to the httpClient.
  */
 class LoggerDecorator extends HttpClientDecorator
 {
-    private LoggerInterface $logger;
-
-    public function __construct(HttpClient $httpClient, LoggerInterface $logger)
+    public function __construct(HttpClient $httpClient, private readonly LoggerInterface $logger)
     {
-        $this->logger = $logger;
         parent::__construct($httpClient);
     }
 
     /**
      * @inheritDoc
      */
-    public function send(Request $request, ClientOptions $clientOptions = null): Response
+    #[Override]
+    public function send(Request $request, ?ClientOptions $clientOptions = null): Response
     {
         try {
             return $this->httpClient->send($request, $clientOptions);
         } catch (ClientResponseException | ServerResponseException $exception) {
             $this->logger->error($exception->getMessage(), ['exception' => $exception]);
+
             throw $exception;
         } catch (HttpClientException $exception) {
             $this->logger->info($exception->getMessage(), ['exception' => $exception]);
+
             throw $exception;
         }
     }
