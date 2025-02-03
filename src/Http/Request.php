@@ -58,7 +58,6 @@ class Request extends Message implements RequestInterface
         string $version = '1.1'
     ) {
         $this->uri = $uri;
-        $this->requestTarget = $this->parseRequestTarget($uri);
         $this->assertValidMethod($method);
         $this->method = $method;
 
@@ -265,6 +264,10 @@ class Request extends Message implements RequestInterface
      */
     public function getRequestTarget(): string
     {
+        if ($this->requestTarget !== null) {
+            return $this->requestTarget;
+        }
+
         return $this->parseRequestTarget($this->uri);
     }
 
