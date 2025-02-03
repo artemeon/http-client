@@ -231,8 +231,13 @@ class Request extends Message implements RequestInterface
      */
     public function withUri(UriInterface $uri, $preserveHost = false): self
     {
+        if ($uri === $this->uri) {
+            return $this;
+        }
+
+        $normalizedPath = preg_replace('#^/+#', '/', $uri->getPath());
         $cloned = clone $this;
-        $cloned->uri = $uri;
+        $cloned->uri = $uri->withPath($normalizedPath);
 
         $newHost = Header::fromString(HeaderField::HOST, $uri->getHost());
 
