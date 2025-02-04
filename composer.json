@@ -1,6 +1,5 @@
 {
   "name": "artemeon/http-client",
-  "version": "1.1.0",
   "description": "Thin wrapper for external http client libraries.",
   "homepage": "https://github.com/artemeon/http-client#readme",
   "license": "MIT",
