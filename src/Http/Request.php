@@ -58,7 +58,6 @@ class Request extends Message implements RequestInterface
         string $version = '1.1'
     ) {
         $this->uri = $uri;
-        $this->requestTarget = $this->parseRequestTarget($uri);
         $this->assertValidMethod($method);
         $this->method = $method;
 
@@ -70,11 +69,12 @@ class Request extends Message implements RequestInterface
     }
 
     /**
-     * Named constructor to create an instance for post requests
+     * Named constructor to create an instance for GET requests.
      *
      * @param Uri $uri The Url object
      * @param Headers|null $headers Optional: Headers collection or null
      * @param string $version Optional: http protocol version string
+     *
      * @throws InvalidArgumentException
      */
     public static function forGet(Uri $uri, ?Headers $headers = null, string $version = '1.1'): self
@@ -94,6 +94,7 @@ class Request extends Message implements RequestInterface
      * @param Uri $uri The Url object
      * @param Headers|null $headers Optional: Headers collection or null
      * @param string $version Optional: the http protocol version string
+     *
      * @throws InvalidArgumentException
      */
     public static function forOptions(Uri $uri, ?Headers $headers = null, string $version = '1.1'): self
@@ -114,6 +115,7 @@ class Request extends Message implements RequestInterface
      * @param Body $body The Body object
      * @param Headers|null $headers Optional: Headers collection or null
      * @param string $version Optional: the http protocol version string
+     *
      * @throws InvalidArgumentException
      */
     public static function forPost(Uri $uri, Body $body, ?Headers $headers = null, string $version = '1.1'): self
@@ -136,6 +138,7 @@ class Request extends Message implements RequestInterface
      * @param Body $body The Body object
      * @param Headers|null $headers Optional: Headers collection or null
      * @param string $version Optional: the http protocol version string
+     *
      * @throws InvalidArgumentException
      */
     public static function forPut(Uri $uri, Body $body, ?Headers $headers = null, string $version = '1.1'): self
@@ -158,6 +161,7 @@ class Request extends Message implements RequestInterface
      * @param Body $body The Body object
      * @param Headers|null $headers Optional: Headers collection or null
      * @param string $version Optional: the http protocol version string
+     *
      * @throws InvalidArgumentException
      */
     public static function forPatch(Uri $uri, Body $body, ?Headers $headers = null, string $version = '1.1'): self
@@ -179,6 +183,7 @@ class Request extends Message implements RequestInterface
      * @param Uri $uri The Url object
      * @param Headers|null $headers Optional: Headers collection or null
      * @param string $version Optional: http protocol version string
+     *
      * @throws InvalidArgumentException
      */
     public static function forDelete(Uri $uri, ?Headers $headers = null, string $version = '1.1'): self
@@ -231,8 +236,13 @@ class Request extends Message implements RequestInterface
      */
     public function withUri(UriInterface $uri, $preserveHost = false): self
     {
+        if ($uri === $this->uri) {
+            return $this;
+        }
+
+        $normalizedPath = preg_replace('#^/+#', '/', $uri->getPath());
         $cloned = clone $this;
-        $cloned->uri = $uri;
+        $cloned->uri = $uri->withPath($normalizedPath);
 
         $newHost = Header::fromString(HeaderField::HOST, $uri->getHost());
 
@@ -254,7 +264,11 @@ class Request extends Message implements RequestInterface
      */
     public function getRequestTarget(): string
     {
-        return $this->requestTarget;
+        if (isset($this->requestTarget)) {
+            return $this->requestTarget;
+        }
+
+        return $this->parseRequestTarget($this->uri);
     }
 
     /**

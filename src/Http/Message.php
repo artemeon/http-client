@@ -166,7 +166,7 @@ abstract class Message implements MessageInterface
     /**
      * @inheritDoc
      */
-    public function withoutHeader($name)
+    public function withoutHeader($name): MessageInterface
     {
         $cloned = clone $this;
         $cloned->headers->remove($name);
@@ -177,7 +177,7 @@ abstract class Message implements MessageInterface
     /**
      * @inheritDoc
      */
-    public function withBody(StreamInterface $body)
+    public function withBody(StreamInterface $body): MessageInterface
     {
         if (!$body->isReadable()) {
             throw new InvalidArgumentException('Body stream must be readable');
