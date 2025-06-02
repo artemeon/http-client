@@ -25,7 +25,9 @@ use Artemeon\HttpClient\Exception\RuntimeException;
 use Artemeon\HttpClient\Http\Body\Body;
 use Artemeon\HttpClient\Http\Body\Encoder\FormUrlEncoder;
 use Artemeon\HttpClient\Http\Header\Fields\Authorization;
+use Artemeon\HttpClient\Http\Header\Header;
 use Artemeon\HttpClient\Http\Header\HeaderField;
+use Artemeon\HttpClient\Http\Header\Headers;
 use Artemeon\HttpClient\Http\MediaType;
 use Artemeon\HttpClient\Http\Request;
 use Artemeon\HttpClient\Http\Response;
@@ -66,23 +68,35 @@ class ClientCredentialsDecorator extends HttpClientDecorator
      * @param Uri $uri The Uri object
      * @param HttpClient $httpClient The http client to decorate
      * @param AccessTokenCache|null $accessTokenCache AccessTokenCache implementation
+     * @param bool $strictRfc Strictly follow the OAuth2 spec and send the client credentials only in the Authorization header
      *
      * @throws InvalidArgumentException
      * @throws RuntimeException
+     *
+     * @see https://datatracker.ietf.org/doc/html/rfc6749#section-4.4.2
      */
     public static function fromClientCredentials(
         ClientCredentials $clientCredentials,
         Uri $uri,
         HttpClient $httpClient,
-        AccessTokenCache $accessTokenCache = null
+        AccessTokenCache $accessTokenCache = null,
+        bool $strictRfc = false
     ): self {
         // Ensure default cache strategy
         if ($accessTokenCache === null) {
             $accessTokenCache = new InMemoryAccessTokenCache();
         }
 
-        $body = Body::fromEncoder(FormUrlEncoder::fromArray($clientCredentials->toArray()));
-        $accessTokenRequest = Request::forPost($uri, $body);
+        if ($strictRfc) {
+            $headers = Headers::create();
+            $headers->add(Header::fromField(Authorization::forAuthBasic($clientCredentials->getClientId(), $clientCredentials->getClientSecret())));
+            $body = Body::fromEncoder(FormUrlEncoder::fromArray($clientCredentials->toArray(false)));
+        } else {
+            $headers = Headers::create();
+            $body = Body::fromEncoder(FormUrlEncoder::fromArray($clientCredentials->toArray()));
+        }
+
+        $accessTokenRequest = Request::forPost($uri, $body, $headers);
 
         return new self($httpClient, $accessTokenRequest, $accessTokenCache);
     }
