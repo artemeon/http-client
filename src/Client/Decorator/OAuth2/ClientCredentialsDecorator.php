@@ -87,12 +87,11 @@ class ClientCredentialsDecorator extends HttpClientDecorator
             $accessTokenCache = new InMemoryAccessTokenCache();
         }
 
+        $headers = Headers::create();
         if ($strictRfc) {
-            $headers = Headers::create();
             $headers->add(Header::fromField(Authorization::forAuthBasic($clientCredentials->getClientId(), $clientCredentials->getClientSecret())));
             $body = Body::fromEncoder(FormUrlEncoder::fromArray($clientCredentials->toArray(false)));
         } else {
-            $headers = Headers::create();
             $body = Body::fromEncoder(FormUrlEncoder::fromArray($clientCredentials->toArray()));
         }
 
