@@ -37,6 +37,16 @@ class ClientCredentials
         $this->scope = mb_convert_encoding($scope, 'UTF-8', 'ISO-8859-1');
     }
 
+    public function getClientId(): string
+    {
+        return $this->clientId;
+    }
+
+    public function getClientSecret(): string
+    {
+        return $this->clientSecret;
+    }
+
     /**
      * Named constructor to create an instance based on the given credentials
      *
@@ -52,13 +62,16 @@ class ClientCredentials
     /**
      * Creates the required key => value pairs for the Access Token Request
      */
-    public function toArray(): array
+    public function toArray(bool $includeClientCredentials = true): array
     {
         $requestData = [
             'grant_type' => 'client_credentials',
-            'client_id' => $this->clientId,
-            'client_secret' => $this->clientSecret,
         ];
+
+        if ($includeClientCredentials) {
+            $requestData['client_id'] = $this->clientId;
+            $requestData['client_secret'] = $this->clientSecret;
+        }
 
         if (!empty($this->scope)) {
             $requestData['scope'] = $this->scope;
