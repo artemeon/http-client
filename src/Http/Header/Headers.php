@@ -21,6 +21,8 @@ use Override;
 
 /**
  * Header collection class for http requests and responses.
+ *
+ * @implements IteratorAggregate<array-key, Header>
  */
 class Headers implements Countable, IteratorAggregate
 {
@@ -152,6 +154,8 @@ class Headers implements Countable, IteratorAggregate
 
     /**
      * @inheritDoc
+     *
+     * @return ArrayIterator<array-key, Header>
      */
     #[Override]
     public function getIterator(): ArrayIterator

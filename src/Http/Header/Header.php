@@ -21,6 +21,10 @@ use Artemeon\HttpClient\Exception\InvalidArgumentException;
 class Header
 {
     private readonly string $name;
+
+    /**
+     * @var array<array-key, string>
+     */
     private array $values;
 
     /**
@@ -50,7 +54,7 @@ class Header
      * Named constructor to create an instance based on the given string[] values.
      *
      * @param string $name Name of the http header field
-     * @param array $values Array of header values
+     * @param array<array-key, string> $values Array of header values
      * @throws InvalidArgumentException
      */
     public static function fromArray(string $name, array $values): self
@@ -89,7 +93,7 @@ class Header
     /**
      * Add an array of values to the header, doublets will be skipped.
      *
-     * @param array $values The string value to add
+     * @param array<array-key, string> $values The string values to add
      */
     public function addValues(array $values): void
     {
@@ -105,6 +109,8 @@ class Header
 
     /**
      * Returns all value of the http header field.
+     *
+     * @return array<array-key, string>
      */
     public function getValues(): array
     {
@@ -122,7 +128,11 @@ class Header
     /**
      * Check and normalize header values.
      *
+     * @param non-empty-array<array-key, string> $values
+     *
      * @throws InvalidArgumentException
+     *
+     * @return non-empty-array<array-key, string>
      */
     private function assertValues(array $values): array
     {
@@ -139,7 +149,7 @@ class Header
             }
         }
 
-        return $values;
+        return array_values($values);
     }
 
     /**

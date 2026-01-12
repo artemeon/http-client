@@ -71,7 +71,7 @@ class Uri implements UriInterface
      * Named constructor to create an instance based on the given url and query params.
      *
      * @param string $uri Url string with protocol
-     * @param array $queryParams Query params array: ["varName" => value]
+     * @param array<string, mixed> $queryParams Query params array: ["varName" => value]
      * @throws InvalidArgumentException
      */
     public static function fromQueryParams(string $uri, array $queryParams): self
@@ -260,6 +260,9 @@ class Uri implements UriInterface
         );
     }
 
+    /**
+     * @param string[] $match
+     */
     private function rawurlencodeMatchZero(array $match): string
     {
         return rawurlencode((string) $match[0]);
@@ -293,7 +296,7 @@ class Uri implements UriInterface
      * @inheritDoc
      */
     #[Override]
-    public function withPath(array | bool | int | string $path): self
+    public function withPath(string $path): self
     {
         $cloned = clone $this;
         $cloned->path = $cloned->filterPath($path);
@@ -367,12 +370,8 @@ class Uri implements UriInterface
      *
      * @throws InvalidArgumentException
      */
-    private function filterPath(array | bool | int | string $path): string
+    private function filterPath(string $path): string
     {
-        if (!is_string($path)) {
-            throw new InvalidArgumentException('path must be a string');
-        }
-
         $pattern = '/(?:[^' . self::UNRESERVED . self::DELIMITER . "%:@\/]++|%(?![A-Fa-f0-9]{2}))/";
 
         return preg_replace_callback($pattern, [$this, 'encode'], $path);

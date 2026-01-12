@@ -201,6 +201,8 @@ abstract class Message implements MessageInterface
     /**
      * Checks the header data.
      *
+     * @param array<array-key, mixed>|float|int|string $value
+     *
      * @throws InvalidArgumentException
      */
     private function assertHeader(string $name, array | float | int | string $value): void

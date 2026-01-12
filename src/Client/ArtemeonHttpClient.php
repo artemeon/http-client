@@ -85,6 +85,8 @@ class ArtemeonHttpClient implements HttpClient
      *  -------- 2. GuzzleClientException -> ClientResponseException
      * ```
      *
+     * @param array<array-key, mixed> $guzzleOptions
+     *
      * @throws HttpClientException
      */
     private function doSend(Request $request, array $guzzleOptions): Response
