@@ -30,6 +30,8 @@ class Stream implements AppendableStream
 
     /**
      * @see https://www.php.net/manual/de/function.stream-get-meta-data
+     *
+     * @var array<string, mixed>
      */
     private array $metaData;
 

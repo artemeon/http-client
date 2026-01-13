@@ -28,13 +28,15 @@ use Psr\Http\Message\ResponseInterface;
  */
 class HttpClientTestFactory
 {
+    /**
+     * @var array<int, array<string, mixed>>
+     */
     private array $transactionLog = [];
     private readonly MockHandler $mockHandler;
     private static HttpClientTestFactory $instance;
 
     public function __construct()
     {
-        $this->transactionLog = [];
         $this->mockHandler = new MockHandler();
     }
 
@@ -111,6 +113,8 @@ class HttpClientTestFactory
     /**
      * Register the responses to mock.
      *
+     * @param list<ResponseInterface> $responses
+     *
      * @throws InvalidArgumentException
      */
     public static function mockResponses(array $responses): void
@@ -128,6 +132,8 @@ class HttpClientTestFactory
 
     /**
      * Return the recorded transaction log array.
+     *
+     * @return array<int, array<string, mixed>>
      */
     public static function getTransactionLog(): array
     {

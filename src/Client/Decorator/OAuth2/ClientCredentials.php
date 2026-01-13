@@ -61,6 +61,8 @@ class ClientCredentials
 
     /**
      * Creates the required key => value pairs for the Access Token Request.
+     *
+     * @return array<string, mixed>
      */
     public function toArray(bool $includeClientCredentials = true): array
     {

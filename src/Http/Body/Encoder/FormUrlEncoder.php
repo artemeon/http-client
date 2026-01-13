@@ -26,7 +26,7 @@ class FormUrlEncoder implements Encoder
     /**
      * FormUrlEncoder constructor.
      *
-     * @param array $formValues Array with the form values to encode: ['formFieldName' = 'value'],
+     * @param array<string, mixed> $formValues Array with the form values to encode: ['formFieldName' = 'value'],
      */
     private function __construct(private readonly array $formValues)
     {
@@ -40,7 +40,7 @@ class FormUrlEncoder implements Encoder
      * $encoder->encode();
      * ```
      *
-     * @param array $formValues ['formFieldName' = 'value'],
+     * @param array<string, mixed> $formValues ['formFieldName' = 'value'],
      */
     public static function fromArray(array $formValues): self
     {

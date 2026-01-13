@@ -25,6 +25,7 @@ use Psr\Http\Message\StreamInterface;
 class JsonEncoder implements Encoder
 {
     /**
+     * @param array<array-key, mixed>|object $value
      * @param int $options Optional json encode options: @see https://www.php.net/manual/de/function.json-encode.php
      * @param string $mimeType Optional custom mime type
      */
@@ -51,7 +52,7 @@ class JsonEncoder implements Encoder
      * $encoder->encode();
      * ```
      *
-     * @param array $value Array to encode, associative array always encoded as json object
+     * @param array<array-key, mixed> $value Array to encode, associative array always encoded as json object
      * @param int $options Optional Bitmask of json constants: @see https://www.php.net/manual/en/function.json-encode.php
      * @param string $mimeType Optional custom mime type
      */

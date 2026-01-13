@@ -22,6 +22,8 @@ class ClientOptionsConverter
 {
     /**
      * Converts the given ClientOptions to the guzzle options array format.
+     *
+     * @return array<string, mixed>
      */
     public function toGuzzleOptionsArray(ClientOptions $clientOptions): array
     {
@@ -60,6 +62,8 @@ class ClientOptionsConverter
 
     /**
      * @see http://docs.guzzlephp.org/en/6.5/request-options.html#allow-redirects
+     *
+     * @return array{max:int,referer:bool}|false
      */
     private function createAllowRedirectsKey(ClientOptions $clientOptions): array | false
     {
