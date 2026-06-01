@@ -14,10 +14,6 @@ declare(strict_types=1);
 namespace Artemeon\HttpClient\Client\Decorator;
 
 use Artemeon\HttpClient\Client\HttpClient;
-use Artemeon\HttpClient\Client\Options\ClientOptions;
-use Artemeon\HttpClient\Http\Request;
-use Artemeon\HttpClient\Http\Response;
-use Override;
 
 /**
  * Abstract base class for the decorator pattern.
@@ -30,10 +26,4 @@ abstract class HttpClientDecorator implements HttpClient
     public function __construct(protected HttpClient $httpClient)
     {
     }
-
-    /**
-     * @inheritDoc
-     */
-    #[Override]
-    abstract public function send(Request $request, ?ClientOptions $clientOptions = null): Response;
 }

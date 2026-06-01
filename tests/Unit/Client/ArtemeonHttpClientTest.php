@@ -24,7 +24,6 @@ use Artemeon\HttpClient\Exception\Request\Network\ConnectException;
 use Artemeon\HttpClient\Exception\Request\TransferException;
 use Artemeon\HttpClient\Exception\RuntimeException;
 use Artemeon\HttpClient\Http\Request;
-use Artemeon\HttpClient\Http\Response;
 use Artemeon\HttpClient\Http\Uri;
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Exception\BadResponseException as GuzzleBadResponseException;
@@ -43,6 +42,7 @@ use Mockery\MockInterface;
 use Override;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use Psr\Http\Message\ResponseInterface;
 
 /**
  * @internal
@@ -84,7 +84,7 @@ class ArtemeonHttpClientTest extends TestCase
         $request = Request::forGet(Uri::fromString('http://apache/'));
         $response = $this->httpClient->send($request);
 
-        self::assertInstanceOf(Response::class, $response);
+        self::assertInstanceOf(ResponseInterface::class, $response);
     }
 
     public function testSendWithOptionsConvertOptions(): void
@@ -98,7 +98,7 @@ class ArtemeonHttpClientTest extends TestCase
         $request = Request::forGet(Uri::fromString('http://apache/'));
         $response = $this->httpClient->send($request, $this->clientOptions);
 
-        self::assertInstanceOf(Response::class, $response);
+        self::assertInstanceOf(ResponseInterface::class, $response);
     }
 
     public function testSendConvertsGuzzleResponseToValidResponse(): void

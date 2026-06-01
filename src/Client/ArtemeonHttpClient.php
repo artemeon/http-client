@@ -24,11 +24,7 @@ use Artemeon\HttpClient\Exception\Request\Network\ConnectException;
 use Artemeon\HttpClient\Exception\Request\TransferException;
 use Artemeon\HttpClient\Exception\RuntimeException;
 use Artemeon\HttpClient\Http\Header\Fields\UserAgent;
-use Artemeon\HttpClient\Http\Header\Header;
 use Artemeon\HttpClient\Http\Header\HeaderField;
-use Artemeon\HttpClient\Http\Header\Headers;
-use Artemeon\HttpClient\Http\Request;
-use Artemeon\HttpClient\Http\Response;
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Exception\BadResponseException as GuzzleBadResponseException;
 use GuzzleHttp\Exception\ClientException as GuzzleClientException;
@@ -39,7 +35,8 @@ use GuzzleHttp\Exception\ServerException as GuzzleServerException;
 use GuzzleHttp\Exception\TooManyRedirectsException as GuzzleTooManyRedirectsException;
 use GuzzleHttp\Exception\TransferException as GuzzleTransferException;
 use Override;
-use Psr\Http\Message\ResponseInterface as GuzzleResponse;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
 
 /**
  * HttpClient implementation with guzzle.
@@ -53,7 +50,7 @@ class ArtemeonHttpClient implements HttpClient
     }
 
     #[Override]
-    final public function send(Request $request, ?ClientOptions $clientOptions = null): Response
+    final public function send(RequestInterface $request, ?ClientOptions $clientOptions = null): ResponseInterface
     {
         if ($clientOptions instanceof ClientOptions) {
             $guzzleOptions = $this->clientOptionsConverter->toGuzzleOptionsArray($clientOptions);
@@ -68,6 +65,11 @@ class ArtemeonHttpClient implements HttpClient
         }
 
         return $this->doSend($request, $guzzleOptions);
+    }
+
+    public function sendRequest(RequestInterface $request): ResponseInterface
+    {
+        return $this->doSend($request, []);
     }
 
     /**
@@ -89,10 +91,10 @@ class ArtemeonHttpClient implements HttpClient
      *
      * @throws HttpClientException
      */
-    private function doSend(Request $request, array $guzzleOptions): Response
+    private function doSend(RequestInterface $request, array $guzzleOptions): ResponseInterface
     {
         try {
-            $response = $this->guzzleClient->send($request, $guzzleOptions);
+            return $this->guzzleClient->send($request, $guzzleOptions);
         } catch (GuzzleClientException $previous) {
             throw ClientResponseException::fromResponse($this->getResponseFromGuzzleException($previous), $request, $previous->getMessage(), $previous);
         } catch (GuzzleServerException $previous) {
@@ -112,39 +114,17 @@ class ArtemeonHttpClient implements HttpClient
         } catch (GuzzleException $previous) {
             throw RuntimeException::fromGuzzleException($previous);
         }
-
-        return $this->convertGuzzleResponse($response);
     }
 
     /**
      * Checks the Guzzle exception for a response object and converts it to a Artemeon response object.
      */
-    private function getResponseFromGuzzleException(GuzzleRequestException $guzzleRequestException): ?Response
+    private function getResponseFromGuzzleException(GuzzleRequestException $guzzleRequestException): ?ResponseInterface
     {
         if (!$guzzleRequestException->hasResponse()) {
             return null;
         }
 
-        return $this->convertGuzzleResponse($guzzleRequestException->getResponse());
-    }
-
-    /**
-     * Converts a GuzzleResponse object to our Response object.
-     */
-    private function convertGuzzleResponse(?GuzzleResponse $guzzleResponse): Response
-    {
-        $headers = Headers::create();
-
-        foreach (array_keys($guzzleResponse->getHeaders()) as $headerField) {
-            $headers->add(Header::fromArray($headerField, $guzzleResponse->getHeader($headerField)));
-        }
-
-        return new Response(
-            $guzzleResponse->getStatusCode(),
-            $guzzleResponse->getProtocolVersion(),
-            $guzzleResponse->getBody(),
-            $headers,
-            $guzzleResponse->getReasonPhrase(),
-        );
+        return $guzzleRequestException->getResponse();
     }
 }

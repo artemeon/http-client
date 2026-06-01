@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Artemeon\HttpClient\Exception;
 
-use Throwable;
+use Psr\Http\Client\ClientExceptionInterface;
 
 /**
  * Interface to catch all possible HttpClient exceptions.
  */
-interface HttpClientException extends Throwable
+interface HttpClientException extends ClientExceptionInterface
 {
 }

@@ -14,25 +14,26 @@ declare(strict_types=1);
 namespace Artemeon\HttpClient\Exception\Request;
 
 use Artemeon\HttpClient\Exception\RuntimeException;
-use Artemeon\HttpClient\Http\Request;
 use Exception;
+use Psr\Http\Client\NetworkExceptionInterface;
+use Psr\Http\Message\RequestInterface;
 use Throwable;
 
 /**
  * Class for all runtime exceptions during the request/response transfers.
  */
-class TransferException extends RuntimeException
+class TransferException extends RuntimeException implements NetworkExceptionInterface
 {
-    protected Request $request;
+    protected RequestInterface $request;
 
     /**
      * Named constructor to create an instance based on the given request object.
      *
-     * @param Request $request The failed request object
+     * @param RequestInterface $request The failed request object
      * @param string $message The error message
      * @param Exception|null $previous The precious third party exception
      */
-    public static function fromRequest(Request $request, string $message, ?Exception $previous = null): static
+    public static function fromRequest(RequestInterface $request, string $message, ?Exception $previous = null): static
     {
         $instance = new static($message, 0, $previous);
         $instance->request = $request;
@@ -48,7 +49,7 @@ class TransferException extends RuntimeException
     /**
      * Returns the request object of the failed request.
      */
-    public function getRequest(): Request
+    public function getRequest(): RequestInterface
     {
         return $this->request;
     }
