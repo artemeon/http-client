@@ -30,10 +30,11 @@ use Artemeon\HttpClient\Http\Header\HeaderField;
 use Artemeon\HttpClient\Http\Header\Headers;
 use Artemeon\HttpClient\Http\MediaType;
 use Artemeon\HttpClient\Http\Request;
-use Artemeon\HttpClient\Http\Response;
 use Artemeon\HttpClient\Http\Uri;
 use Exception;
 use Override;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
 
 /**
  * Http client decorator to add transparent access tokens to requests. Fetches the 'Access Token' from
@@ -45,12 +46,12 @@ class ClientCredentialsDecorator extends HttpClientDecorator
      * ClientCredentialsDecorator constructor.
      *
      * @param HttpClient $httpClient The http client to decorate
-     * @param Request $accessTokenRequest The http request object
+     * @param RequestInterface $accessTokenRequest The http request object
      * @param AccessTokenCache $accessTokenCache Cache strategy to store the access token
      */
     public function __construct(
         HttpClient $httpClient,
-        private readonly Request $accessTokenRequest,
+        private readonly RequestInterface $accessTokenRequest,
         private readonly AccessTokenCache $accessTokenCache,
     ) {
         parent::__construct($httpClient);
@@ -99,7 +100,7 @@ class ClientCredentialsDecorator extends HttpClientDecorator
      * @inheritDoc
      */
     #[Override]
-    public function send(Request $request, ?ClientOptions $clientOptions = null): Response
+    public function send(RequestInterface $request, ?ClientOptions $clientOptions = null): ResponseInterface
     {
         if ($this->accessTokenCache->isExpired()) {
             $this->accessTokenCache->add($this->requestAccessToken());
@@ -110,6 +111,11 @@ class ClientCredentialsDecorator extends HttpClientDecorator
         $requestWithAuthorisation = $request->withHeader($authorisation->getName(), $authorisation->getValue());
 
         return $this->httpClient->send($requestWithAuthorisation, $clientOptions);
+    }
+
+    public function sendRequest(RequestInterface $request): ResponseInterface
+    {
+        return $this->send($request);
     }
 
     /**
@@ -135,7 +141,7 @@ class ClientCredentialsDecorator extends HttpClientDecorator
      *
      * @throws RuntimeException
      */
-    private function assertIsValidJsonResponse(Response $response): void
+    private function assertIsValidJsonResponse(ResponseInterface $response): void
     {
         if ($response->getStatusCode() !== 200) {
             throw new RuntimeException(

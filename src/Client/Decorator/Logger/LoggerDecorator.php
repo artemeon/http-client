@@ -19,9 +19,9 @@ use Artemeon\HttpClient\Client\Options\ClientOptions;
 use Artemeon\HttpClient\Exception\HttpClientException;
 use Artemeon\HttpClient\Exception\Request\Http\ClientResponseException;
 use Artemeon\HttpClient\Exception\Request\Http\ServerResponseException;
-use Artemeon\HttpClient\Http\Request;
-use Artemeon\HttpClient\Http\Response;
 use Override;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -38,7 +38,7 @@ class LoggerDecorator extends HttpClientDecorator
      * @inheritDoc
      */
     #[Override]
-    public function send(Request $request, ?ClientOptions $clientOptions = null): Response
+    public function send(RequestInterface $request, ?ClientOptions $clientOptions = null): ResponseInterface
     {
         try {
             return $this->httpClient->send($request, $clientOptions);
@@ -51,5 +51,10 @@ class LoggerDecorator extends HttpClientDecorator
 
             throw $exception;
         }
+    }
+
+    public function sendRequest(RequestInterface $request): ResponseInterface
+    {
+        return $this->send($request);
     }
 }

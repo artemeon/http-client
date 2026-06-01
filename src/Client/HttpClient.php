@@ -23,18 +23,19 @@ use Artemeon\HttpClient\Exception\Request\Http\ServerResponseException;
 use Artemeon\HttpClient\Exception\Request\Network\ConnectException;
 use Artemeon\HttpClient\Exception\Request\TransferException;
 use Artemeon\HttpClient\Exception\RuntimeException;
-use Artemeon\HttpClient\Http\Request;
-use Artemeon\HttpClient\Http\Response;
+use Psr\Http\Client\ClientInterface;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
 
 /**
  * Interface to plug in third party http-client libraries.
  */
-interface HttpClient
+interface HttpClient extends ClientInterface
 {
     /**
      * Sends the request.
      *
-     * @param Request $request Request object to send
+     * @param RequestInterface $request Request object to send
      * @param ClientOptions|null $clientOptions Optional client configuration object
      *
      * @throws HttpClientException Interface to catch all possible exceptions
@@ -48,5 +49,5 @@ interface HttpClient
      * @throws RedirectResponseException 2.1.2.3 All response exceptions with 300 status codes
      * @throws \InvalidArgumentException
      */
-    public function send(Request $request, ?ClientOptions $clientOptions = null): Response;
+    public function send(RequestInterface $request, ?ClientOptions $clientOptions = null): ResponseInterface;
 }
