@@ -140,19 +140,26 @@ class ClientCredentialsDecorator extends HttpClientDecorator
         if ($response->getStatusCode() !== 200) {
             throw new RuntimeException(
                 sprintf(
-                    'Invalid status code: s% for access token request, Body: %s',
+                    'Invalid status code: %s for access token request, Body: %s',
                     $response->getStatusCode(),
                     $response->getBody()->__toString(),
                 ),
             );
         }
 
-        // According RFC header fields are case incentive, normalize to lower for comparison
-        $contentType = $response->getHeader(HeaderField::CONTENT_TYPE);
-        $contentType = array_map('strtolower', $contentType);
-
-        if (!in_array(MediaType::JSON, $contentType)) {
+        if ($this->extractMediaType($response->getHeaderLine(HeaderField::CONTENT_TYPE)) !== MediaType::JSON) {
             throw new RuntimeException('Content type should be: ' . MediaType::JSON);
         }
+    }
+
+    /**
+     * Returns the media type of a content type header value like "application/json; charset=UTF-8". Parameters like
+     * "charset" do not change the media type, and the media type is case-insensitive.
+     */
+    private function extractMediaType(string $contentType): string
+    {
+        [$mediaType] = explode(';', $contentType, 2);
+
+        return strtolower(trim($mediaType));
     }
 }
