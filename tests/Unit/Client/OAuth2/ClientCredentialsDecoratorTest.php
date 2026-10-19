@@ -11,7 +11,7 @@
 
 declare(strict_types=1);
 
-namespace Artemeon\HttpClient\Tests\Unit\Client;
+namespace Artemeon\HttpClient\Tests\Unit\Client\OAuth2;
 
 use Artemeon\HttpClient\Client\Decorator\OAuth2\ClientCredentials;
 use Artemeon\HttpClient\Client\Decorator\OAuth2\ClientCredentialsDecorator;
