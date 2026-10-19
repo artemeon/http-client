@@ -1,6 +1,7 @@
 ## 1.1.3 - 2026-10-19
 - Fixed: The `ClientCredentialsDecorator` accepts an access token response whose content type carries parameters, e.g. `application/json;charset=UTF-8` (previously rejected with "Content type should be: application/json").
 - Fixed: The exception for an invalid status code of the access token request now contains the status code.
+- Fixed: The `ClientCredentialsDecorator` passes the client options of a request (e.g. timeout, proxy, TLS) to the access token request as well.
 
 ## 1.1.2 - 2026-02-18
 - Widen the Guzzle dependency range from `~7.9.2` to `^7.9.2`.

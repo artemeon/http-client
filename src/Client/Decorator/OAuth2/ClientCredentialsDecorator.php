@@ -102,7 +102,7 @@ class ClientCredentialsDecorator extends HttpClientDecorator
     public function send(Request $request, ?ClientOptions $clientOptions = null): Response
     {
         if ($this->accessTokenCache->isExpired()) {
-            $this->accessTokenCache->add($this->requestAccessToken());
+            $this->accessTokenCache->add($this->requestAccessToken($clientOptions));
         }
 
         $accessToken = $this->accessTokenCache->get();

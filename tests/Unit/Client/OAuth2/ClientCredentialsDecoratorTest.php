@@ -16,6 +16,7 @@ namespace Artemeon\HttpClient\Tests\Unit\Client\OAuth2;
 use Artemeon\HttpClient\Client\Decorator\OAuth2\ClientCredentials;
 use Artemeon\HttpClient\Client\Decorator\OAuth2\ClientCredentialsDecorator;
 use Artemeon\HttpClient\Client\HttpClient;
+use Artemeon\HttpClient\Client\Options\ClientOptions;
 use Artemeon\HttpClient\Exception\Request\Http\ServerResponseException;
 use Artemeon\HttpClient\Exception\RuntimeException;
 use Artemeon\HttpClient\Http\Header\Header;
@@ -129,6 +130,24 @@ class ClientCredentialsDecoratorTest extends TestCase
 
         self::assertSame('grant_type=client_credentials', $tokenRequest->getBody()->__toString());
         self::assertSame('Basic ' . base64_encode('client:secret'), $tokenRequest->getHeaderLine('Authorization'));
+    }
+
+    public function testClientOptionsAreUsedForTheAccessTokenRequestAsWell(): void
+    {
+        $clientOptions = ClientOptions::fromDefaults();
+        $clientOptions->optSetTimeout(5);
+
+        /** @var list<ClientOptions|null> $usedOptions */
+        $usedOptions = [];
+        $this->httpClient->expects('send')->twice()->andReturnUsing(static function (Request $sent, ?ClientOptions $options) use (&$usedOptions): Response {
+            $usedOptions[] = $options;
+
+            return (string) $sent->getUri() === self::TOKEN_URL ? self::tokenResponse('application/json') : new Response(200, '1.1');
+        });
+
+        $this->createDecorator()->send(Request::forGet(Uri::fromString('https://api.example.com/resource')), $clientOptions);
+
+        self::assertSame([$clientOptions, $clientOptions], $usedOptions);
     }
 
     public function testFailedAccessTokenRequestIsReportedWithTheCause(): void
